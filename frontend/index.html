@@ -10,7 +10,7 @@
 </head>
 
 
-<body class="bg-black text-amber-100 font-medieval">
+<body class="scroll-smooth bg-black text-amber-100 font-medieval">
   <!-- HEADER -->
   <header class="fixed top-0 left-0 w-full z-50">
 
@@ -25,33 +25,27 @@
       flex items-center justify-between">
 
       <!-- Logo -->
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full 
-          border border-emerald-400/40
-          flex items-center justify-center
-          text-emerald-300
-          shadow-[0_0_20px_rgba(16,185,129,0.4)]">
-          ⚔
-        </div>
+      <div class="flex items-center gap-4">
+
+        <img src="/images/logo.png" alt="Логотип Академии Ведьмаков"
+          class="w-20 h-20 md:w-14 md:h-14 object-contain scale-150" />
 
         <div class="leading-tight">
-          <p class="text-lg sm:text-xl font-semibold 
-            text-emerald-200
-            tracking-wide">
+          <p class="text-lg sm:text-xl font-semibold text-emerald-200 tracking-wide">
             Академия Ведьмаков
           </p>
-          <p class="text-[9px] tracking-[3px] 
-            text-emerald-400/60 uppercase">
+          <p class="text-[9px] tracking-[3px] text-emerald-400/60 uppercase">
             Знание есть оружие
           </p>
         </div>
+
       </div>
 
       <!-- Desktop nav -->
       <nav class="hidden md:flex items-center gap-10 
         text-sm tracking-widest text-emerald-200/70">
 
-        <a href="#" class="hover:text-emerald-300 transition">Контракты</a>
+        <a href="#contracts" class="hover:text-emerald-300 transition">Контракты</a>
         <a href="#" class="hover:text-emerald-300 transition">Бестиарий</a>
         <a href="#" class="hover:text-emerald-300 transition">Алхимия</a>
         <a href="#" class="hover:text-emerald-300 transition">Гильдия</a>
@@ -78,7 +72,7 @@
          opacity-0 pointer-events-none
          transition-all duration-500">
 
-      <a href="#" class="hover:text-emerald-400 transition">Контракты</a>
+      <a href="#contracts" class="hover:text-emerald-400 transition">Контракты</a>
       <a href="#" class="hover:text-emerald-400 transition">Бестиарий</a>
       <a href="#" class="hover:text-emerald-400 transition">Алхимия</a>
       <a href="#" class="hover:text-emerald-400 transition">Гильдия</a>
@@ -100,6 +94,8 @@
     <div class="absolute inset-0 z-10 
       bg-gradient-to-b from-[#071312]/80 via-[#071312]/70 to-black">
     </div>
+    <!-- Fireflies -->
+    <div id="fireflies" class="absolute inset-0 z-20 pointer-events-none"></div>
 
     <!-- Green glow overlay -->
     <div class="absolute inset-0 z-10 
@@ -139,7 +135,7 @@
 
       <p class="text-emerald-100/60 max-w-2xl mx-auto mb-12 
         text-sm md:text-lg leading-relaxed italic">
-        Ведьмаками не рождаются — ими становятся. Пройди Испытания Трав,
+        Ведьмаками не рождаются — ими становятся. Пройди Испытания трав,
         освой боевые знаки, постигни искусство алхимии и займи своё место
         среди легенд Континента.
       </p>
@@ -219,6 +215,339 @@
     </div>
 
   </section>
+
+  <!-- GUILD CONTRACTS -->
+  <section id="contracts" class="scroll-mt-24 relative py-24 bg-[#061311] overflow-hidden">
+
+    <!-- subtle pattern overlay -->
+    <div class="absolute inset-0 opacity-10 
+      bg-[radial-gradient(rgba(16,185,129,0.3)_1px,transparent_1px)]
+      bg-[size:40px_40px]">
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-6">
+
+      <!-- Section header -->
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl text-emerald-200 font-semibold 
+          drop-shadow-[0_0_20px_rgba(16,185,129,0.4)]">
+          Контракты Гильдии
+        </h2>
+        <p class="text-emerald-400/60 mt-3 italic">
+          6 контрактов доступно
+        </p>
+      </div>
+
+      <!-- Cards -->
+      <!-- MAIN GRID -->
+      <div class="grid lg:grid-cols-4 gap-10">
+
+        <!-- LEFT SIDE (Contracts) -->
+        <div class="lg:col-span-3">
+          <div class="grid md:grid-cols-2 xl:grid-cols-3 sm:grid-cols-2 gap-10">
+
+            <!-- Card 1 -->
+            <div class="group bg-[#0b1f1c] border border-emerald-900/40 
+          rounded-xl overflow-hidden 
+          hover:border-emerald-400/50
+          transition duration-500
+          shadow-[0_0_25px_rgba(0,0,0,0.6)]">
+
+              <div class="h-48 bg-[url('/images/wedya.jpg')] bg-cover bg-center opacity-80"></div>
+
+              <div class="p-6">
+
+                <h3 class="text-lg text-emerald-200 mb-3">
+                  Знаки и Заклинания: Путь Ведьмака
+                </h3>
+
+                <p class="text-sm text-emerald-200/60 mb-6 leading-relaxed">
+                  Освой путь боевых знаков: Аард, Игни, Аксий, Ирден и Квен.
+                  Познай древнюю магию охотников на чудовищ.
+                </p>
+
+                <button class="w-full py-2 mt-4
+              bg-gradient-to-r from-amber-700 to-amber-500
+              text-black text-sm font-semibold
+              rounded-md
+              shadow-[0_0_15px_rgba(251,191,36,0.4)]
+              hover:shadow-[0_0_30px_rgba(251,191,36,0.7)]
+              transition duration-300">
+                  Продолжить Испытание
+                </button>
+
+              </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="group bg-[#0b1f1c] border border-emerald-900/40 
+          rounded-xl overflow-hidden 
+          hover:border-emerald-400/50
+          transition duration-500">
+
+
+              <div class="h-48 bg-[url('/images/wedya.jpg')] bg-cover bg-center opacity-80"></div>
+
+              <div class="p-6">
+
+                <h3 class="text-lg text-emerald-200 mb-3">
+                  Бестиарий Севера
+                </h3>
+
+                <p class="text-sm text-emerald-200/60 mb-6 leading-relaxed">
+                  Полное руководство по чудовищам Континента.
+                  Узнай их слабости и способы охоты.
+                </p>
+
+                <button class="w-full py-2 mt-4
+              border border-emerald-400/50
+              text-emerald-200
+              rounded-md
+              hover:bg-emerald-400/10
+              transition duration-300">
+                  Принять Контракт
+                </button>
+
+              </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="group bg-[#0b1f1c] border border-emerald-900/40 
+          rounded-xl overflow-hidden 
+          hover:border-emerald-400/50
+          transition duration-500">
+
+              <div class="h-48 bg-[url('/images/wedya.jpg')] bg-cover bg-center opacity-80"></div>
+
+              <div class="p-6">
+
+                <h3 class="text-lg text-emerald-200 mb-3">
+                  Алхимия Зелий и Бомб
+                </h3>
+
+                <p class="text-sm text-emerald-200/60 mb-6 leading-relaxed">
+                  Тайное искусство зельеварения.
+                  Освой смертельные смеси ведьмаков.
+                </p>
+
+                <button class="w-full py-2 mt-4
+              border border-emerald-400/50
+              text-emerald-200
+              rounded-md
+              hover:bg-emerald-400/10
+              transition duration-300">
+                  Начать Обучение
+                </button>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <!-- RIGHT SIDEBAR -->
+        <div class="space-y-8">
+
+          <!-- Ваши Испытания -->
+          <div class="bg-[#0b1f1c] border border-emerald-900/40 
+      rounded-xl p-6
+      shadow-[0_0_30px_rgba(0,0,0,0.6)]">
+
+            <h3 class="text-emerald-300 font-semibold mb-6 
+        flex items-center gap-2">
+              🜂 Ваши Испытания
+            </h3>
+
+            <!-- Progress Item -->
+            <div class="mb-6">
+              <div class="flex justify-between text-xs text-emerald-400/70 mb-1">
+                <span>Путь Ведьмака</span>
+                <span>67%</span>
+              </div>
+              <div class="w-full h-2 bg-emerald-900/40 rounded">
+                <div class="h-2 bg-gradient-to-r from-emerald-500 to-emerald-300 rounded" style="width:67%"></div>
+              </div>
+            </div>
+
+            <div class="mb-6">
+              <div class="flex justify-between text-xs text-emerald-400/70 mb-1">
+                <span>Алхимия Зелий</span>
+                <span>23%</span>
+              </div>
+              <div class="w-full h-2 bg-emerald-900/40 rounded">
+                <div class="h-2 bg-gradient-to-r from-amber-500 to-amber-300 rounded" style="width:23%"></div>
+              </div>
+            </div>
+
+            <div class="mb-8">
+              <div class="flex justify-between text-xs text-emerald-400/70 mb-1">
+                <span>Фехтование</span>
+                <span>89%</span>
+              </div>
+              <div class="w-full h-2 bg-emerald-900/40 rounded">
+                <div class="h-2 bg-gradient-to-r from-emerald-400 to-emerald-200 rounded" style="width:89%"></div>
+              </div>
+            </div>
+
+            <div class="border-t border-emerald-900/40 pt-6">
+
+              <div class="flex justify-between text-sm text-emerald-300 mb-2">
+                <span>Опыт Ведьмака</span>
+                <span>8 540 / 10 000 ОП</span>
+              </div>
+
+              <div class="w-full h-3 bg-emerald-900/40 rounded">
+                <div class="h-3 bg-gradient-to-r from-amber-600 to-amber-400 rounded" style="width:85%"></div>
+              </div>
+
+              <p class="text-xs text-emerald-400/60 mt-2">
+                До уровня 36 осталось 1 460 ОП
+              </p>
+
+            </div>
+
+          </div>
+
+          <!-- Легенды Академии -->
+          <div class="bg-[#0b1f1c] border border-emerald-900/40 
+      rounded-xl p-6
+      shadow-[0_0_30px_rgba(0,0,0,0.6)]">
+
+            <h3 class="text-amber-400 font-semibold mb-6 flex items-center gap-2">
+              🏆 Легенды Академии
+            </h3>
+
+            <div class="space-y-4 text-sm">
+
+              <!-- Item -->
+              <div class="flex items-center justify-between p-3 
+          bg-emerald-900/20 rounded-lg border border-emerald-900/40">
+
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-full 
+              bg-gradient-to-br from-gray-300 to-gray-500 
+              flex items-center justify-center text-black text-xs font-bold">
+                    ЯН
+                  </div>
+
+                  <div>
+                    <p class="text-emerald-200">Якуб из Новиграда</p>
+                    <p class="text-emerald-400/60 text-xs">Страж Континента</p>
+                  </div>
+                </div>
+
+                <span class="text-emerald-300">42 ур.</span>
+              </div>
+
+              <div class="flex items-center justify-between p-3 
+          bg-emerald-900/20 rounded-lg border border-emerald-900/40">
+
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-full 
+              bg-gradient-to-br from-emerald-400 to-emerald-600 
+              flex items-center justify-center text-black text-xs font-bold">
+                    ЗС
+                  </div>
+
+                  <div>
+                    <p class="text-emerald-200">Зоса Стенборг</p>
+                    <p class="text-emerald-400/60 text-xs">Мастер Теней</p>
+                  </div>
+                </div>
+
+                <span class="text-emerald-300">38 ур.</span>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="relative bg-[#03100d] border-t border-emerald-900/40 overflow-hidden">
+
+    <!-- subtle background glow -->
+    <div class="absolute inset-0 opacity-10
+      bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.4),transparent_70%)]">
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-6 py-20">
+
+      <div class="grid md:grid-cols-3 gap-12">
+
+        <!-- LEFT -->
+        <div>
+          <div class="flex items-center gap-3 mb-6">
+            <img src="/images/logo.png" alt="Логотип" class="w-10 h-10 object-contain
+                      scale-150" />
+            <h3 class="text-emerald-300 text-lg font-semibold">
+              Академия Ведьмаков
+            </h3>
+          </div>
+
+          <p class="text-emerald-400/60 text-sm leading-relaxed mb-6">
+            Основана в 1173 по Континентальному летоисчислению.
+            Знание — единственное оружие, которое не тупится.
+          </p>
+
+          <p class="tracking-[0.6em] text-emerald-500/70 text-xs">
+            ᚢ ᛈ ᚦ ᚱ ᛟ ᚾ ᛉ
+          </p>
+        </div>
+
+        <!-- CENTER -->
+        <div>
+          <h4 class="text-amber-400 font-semibold mb-6">Знания</h4>
+          <ul class="space-y-3 text-emerald-300/70 text-sm">
+            <li><a href="#" class="hover:text-emerald-300 transition">Контракты</a></li>
+            <li><a href="#" class="hover:text-emerald-300 transition">Бестиарий</a></li>
+            <li><a href="#" class="hover:text-emerald-300 transition">Алхимия</a></li>
+            <li><a href="#" class="hover:text-emerald-300 transition">Летопись</a></li>
+          </ul>
+        </div>
+
+        <!-- RIGHT -->
+        <div>
+          <h4 class="text-amber-400 font-semibold mb-6">Академия</h4>
+          <ul class="space-y-3 text-emerald-300/70 text-sm">
+            <li><a href="#" class="hover:text-emerald-300 transition">О нас</a></li>
+            <li><a href="#" class="hover:text-emerald-300 transition">Преподаватели</a></li>
+            <li><a href="#" class="hover:text-emerald-300 transition">Гильдия</a></li>
+            <li><a href="#" class="hover:text-emerald-300 transition">Таверна</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Decorative divider -->
+      <div class="flex items-center justify-center gap-6 my-16 text-amber-500/70">
+        <div class="h-px w-24 bg-gradient-to-r from-transparent via-amber-600 to-transparent"></div>
+        <span class="text-lg tracking-widest">✦ ᛟ ✦</span>
+        <div class="h-px w-24 bg-gradient-to-r from-transparent via-amber-600 to-transparent"></div>
+      </div>
+
+      <!-- Bottom row -->
+      <div class="flex flex-col md:flex-row items-center justify-between
+        text-xs text-emerald-500/60 gap-4">
+
+        <p>
+          © 1173–1274 Академия Ведьмаков.
+          Все контракты защищены законами Континента.
+        </p>
+
+        <p class="tracking-widest text-emerald-400/70">
+          Пᚱ СТАРЫЙ ЯЗЫК
+        </p>
+
+      </div>
+
+    </div>
+
+  </footer>
 
 </body>
 <script type="module" src="/src/main.js"></script>
