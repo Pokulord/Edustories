@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Личный кабинет</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&subset=cyrillic"
+    rel="stylesheet">
+</head>
+
+<body class="font-medieval text-emerald-200 relative min-h-screen overflow-x-hidden">
+
+
+  <!-- BACKGROUND IMAGE -->
+  <div class="fixed inset-0 -z-30 bg-[url('/images/hero-bg.png')] bg-cover bg-center"></div>
+
+  <!-- DARK OVERLAY -->
+  <div class="fixed inset-0 -z-20 bg-gradient-to-b from-[#041512]/80 via-[#041512]/70 to-black"></div>
+
+  <!-- AURORA -->
+  <div class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_40%_0%,rgba(16,185,129,0.25),transparent_60%)]"></div>
+
+  <!-- OVERLAY FOR MOBILE -->
+  <div id="overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm
+              opacity-0 pointer-events-none
+              transition-opacity duration-300 lg:hidden z-40">
+  </div>
+
+  <div class="flex min-h-screen">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50
+             w-72
+             bg-[#041512]/70 backdrop-blur-2xl
+             border-r border-emerald-900/40
+             px-8 py-10
+             transform -translate-x-full lg:translate-x-0
+             transition-transform duration-300
+             flex flex-col">
+
+      <div class="flex items-center gap-4 mb-14">
+
+        <!-- Logo Image -->
+        <div class="w-10 h-10 rounded-full overflow-hidden
+              shadow-[0_0_12px_rgba(16,185,129,0.6)]">
+          <img src="/images/logo.png" alt="Логотип" class="w-full h-full object-cover">
+        </div>
+
+        <!-- Text -->
+        <h2 class="text-xl leading-tight tracking-wide text-emerald-200">
+          Академия<br>Ведьмаков
+        </h2>
+
+      </div>
+
+      <nav class="space-y-8 text-[15px]">
+
+        <!-- ACTIVE -->
+        <div class="relative flex items-center gap-4 text-amber-400">
+
+          <div class="absolute -left-6 w-36 h-12
+        bg-[radial-gradient(circle,rgba(251,191,36,0.35),transparent_70%)]
+        blur-2xl">
+          </div>
+
+          <!-- HOME ICON -->
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5M5 9.5V21h5v-6h4v6h5V9.5" />
+          </svg>
+
+          <span>Главная</span>
+        </div>
+
+        <!-- МОЁ ОБУЧЕНИЕ -->
+        <div class="flex items-center gap-4 text-emerald-300/80 hover:text-emerald-200 transition">
+
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h10" />
+          </svg>
+
+          <span>Моё обучение</span>
+        </div>
+
+        <!-- БЕСТИАРИЙ -->
+        <div class="flex items-center gap-4 text-emerald-300/80 hover:text-emerald-200 transition">
+
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12M6 12h12" />
+          </svg>
+
+          <span>Бестиарий</span>
+        </div>
+
+        <!-- ИСПЫТАНИЯ -->
+        <div class="flex items-center gap-4 text-emerald-300/80 hover:text-emerald-200 transition">
+
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 2l4 8-4 4-4-4 4-8z" />
+          </svg>
+
+          <span>Испытания</span>
+        </div>
+
+        <!-- ГИЛЬДИЯ -->
+        <div class="flex items-center gap-4 text-emerald-300/80 hover:text-emerald-200 transition">
+
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M6 18V9m6 9V5m6 13v-7" />
+          </svg>
+
+          <span>Гильдия</span>
+        </div>
+
+        <!-- ПРОФИЛЬ -->
+        <div class="flex items-center gap-4 text-emerald-300/80 hover:text-emerald-200 transition">
+
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <circle cx="12" cy="8" r="4" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 20c0-4 12-4 12 0" />
+          </svg>
+
+          <span>Профиль</span>
+        </div>
+
+        <!-- СООБЩЕНИЯ -->
+        <div class="flex items-center gap-4 text-emerald-300/80 hover:text-emerald-200 transition">
+
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M21 15a4 4 0 01-4 4H8l-5 3V7a4 4 0 014-4h10a4 4 0 014 4v8z" />
+          </svg>
+
+          <span>Сообщения</span>
+        </div>
+
+        <!-- НАСТРОЙКИ -->
+        <div class="flex items-center gap-4 text-emerald-300/80 hover:text-emerald-200 transition">
+
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3" />
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M19.4 15a7.97 7.97 0 000-6M4.6 9a7.97 7.97 0 000 6" />
+          </svg>
+
+          <span>Настройки</span>
+        </div>
+
+      </nav>
+
+      <div class="mt-auto pt-10 border-t border-emerald-900/40 text-sm text-emerald-400/70">
+        Выйти
+      </div>
+
+    </aside>
+
+    <!-- MAIN -->
+    <div class="flex-1 flex flex-col">
+
+      <!-- HEADER -->
+      <header class="px-6 sm:px-10 lg:px-14 py-6 sm:py-8 border-b border-emerald-900/40">
+
+        <div class="flex justify-between items-start">
+
+          <div>
+            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-light">
+              Добро пожаловать, Геральт
+            </h1>
+            <p class="mt-3 text-sm italic text-emerald-400/70">
+              «Знание есть оружие»
+            </p>
+          </div>
+
+          <div class="flex items-center gap-5">
+
+            <!-- Notifications -->
+            <div class="relative group cursor-pointer">
+
+              <!-- Bell Icon -->
+              <svg class="w-6 h-6 text-emerald-300/80 group-hover:text-emerald-200 transition" fill="none"
+                stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0a3 3 0 11-6 0" />
+              </svg>
+
+              <!-- Notification Dot -->
+              <span class="absolute -top-1 -right-1
+                 w-2.5 h-2.5
+                 bg-amber-500
+                 rounded-full
+                 shadow-[0_0_10px_rgba(251,191,36,0.8)]">
+              </span>
+
+            </div>
+
+            <!-- Profile -->
+            <div class="flex items-center gap-4">
+
+              <div class="text-right hidden sm:block">
+                <p>Геральт из Ривии</p>
+                <p class="text-sm text-emerald-400/70">Ученик</p>
+              </div>
+
+              <div class="w-10 h-10 rounded-full overflow-hidden
+                shadow-[0_0_12px_rgba(16,185,129,0.5)]">
+                <img src="/images/avatar.jpg" alt="Аватар" class="w-full h-full object-cover">
+              </div>
+              <button id="burger" class="lg:hidden text-2xl">☰</button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </header>
+
+      <!-- CONTENT -->
+      <div class="px-6 sm:px-10 lg:px-14 py-10
+           grid grid-cols-1 xl:grid-cols-3 gap-8 lg:gap-10">
+
+        <!-- LEFT -->
+        <div class="xl:col-span-2 space-y-8">
+
+          <!-- PROGRESS -->
+          <div class="rounded-xl p-8 bg-[#0b201c]/80 border border-emerald-800/40">
+
+            <h3 class="mb-6 text-lg">Ваш прогресс</h3>
+
+            <div class="flex justify-between mb-4">
+              <div>
+                <p class="text-sm opacity-70">Уровень ученика</p>
+                <p class="text-xl mt-2">Ученик</p>
+              </div>
+
+              <div class="text-right">
+                <p class="text-sm opacity-70">Текущий ранг</p>
+                <p class="text-xl mt-2 text-emerald-300">Новобранец</p>
+              </div>
+            </div>
+
+            <div class="flex justify-between text-xs mb-2 opacity-70">
+              <span>1 250 / 2 000 XP</span>
+              <span>До следующего уровня: 750 XP</span>
+            </div>
+
+            <div class="h-2 bg-emerald-900/40 rounded-full overflow-hidden">
+              <div class="h-full bg-emerald-400 rounded-full" style="width:62%"></div>
+            </div>
+
+          </div>
+
+          <!-- CONTINUE -->
+          <div class="border border-emerald-800/40 rounded-xl p-8
+            bg-[#0b201c]/80">
+
+            <h3 class="mb-8 text-lg">Продолжить обучение</h3>
+
+            <div class="space-y-10">
+
+              <!-- ITEM -->
+              <div class="flex flex-col sm:flex-row gap-6 sm:gap-8
+            p-4 rounded-lg
+            hover:bg-emerald-900/20 transition">
+
+                <!-- IMAGE -->
+                <div class="w-full sm:w-40 h-48 sm:h-28
+              bg-emerald-900/40 rounded-lg overflow-hidden flex-shrink-0">
+                  <img src="/images/travnich.png" alt="Основы травничества" class="w-full h-full object-cover">
+                </div>
+
+                <!-- CONTENT -->
+                <div class="flex-1 flex flex-col justify-between">
+
+                  <!-- TEXT -->
+                  <div>
+                    <h4 class="text-lg">Основы травничества</h4>
+                    <p class="text-sm opacity-70 mt-2">Урок 3 из 7</p>
+                  </div>
+
+                  <!-- BOTTOM ROW (Mobile-friendly) -->
+                  <div class="flex items-center justify-between mt-6 sm:mt-4">
+
+                    <p class="text-lg">42%</p>
+
+                    <button class="px-6 py-2
+                     border border-emerald-400
+                     rounded-md
+                     hover:bg-emerald-400/10
+                     transition">
+                      Продолжить
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <!-- ITEM -->
+              <div class="flex flex-col sm:flex-row gap-6 sm:gap-8
+            p-4 rounded-lg
+            hover:bg-emerald-900/20 transition">
+
+                <!-- IMAGE -->
+                <div class="w-full sm:w-40 h-48 sm:h-28
+              bg-emerald-900/40 rounded-lg overflow-hidden flex-shrink-0">
+                  <img src="/images/travnich.png" alt="Основы травничества" class="w-full h-full object-cover">
+                </div>
+
+                <!-- CONTENT -->
+                <div class="flex-1 flex flex-col justify-between">
+
+                  <!-- TEXT -->
+                  <div>
+                    <h4 class="text-lg">Основы травничества</h4>
+                    <p class="text-sm opacity-70 mt-2">Урок 3 из 7</p>
+                  </div>
+
+                  <!-- BOTTOM ROW (Mobile-friendly) -->
+                  <div class="flex items-center justify-between mt-6 sm:mt-4">
+
+                    <p class="text-lg">42%</p>
+
+                    <button class="px-6 py-2
+                     border border-emerald-400
+                     rounded-md
+                     hover:bg-emerald-400/10
+                     transition">
+                      Продолжить
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="space-y-8">
+
+          <!-- ACHIEVEMENTS -->
+          <div class="rounded-xl p-8 bg-[#0b201c]/80 border border-emerald-800/40">
+            <div class="flex justify-between mb-6">
+              <h3>Ваши достижения</h3>
+              <button id="openAchievements" class="text-sm text-emerald-400 hover:text-emerald-300 transition">
+                Смотреть все
+              </button>
+            </div>
+
+            <div class="space-y-5 text-sm">
+              <div class="flex justify-between">
+                <span>Первые шаги</span>
+                <span class="text-emerald-400">✓</span>
+              </div>
+
+              <div class="flex justify-between">
+                <span>Травник</span>
+                <span class="text-emerald-400">✓</span>
+              </div>
+
+              <div class="flex justify-between">
+                <span>Исследователь</span>
+                <span>3/5</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- EVENT -->
+          <div class="rounded-xl p-8 bg-[#0b201c]/80 border border-emerald-800/40">
+            <h3 class="mb-6">Ближайшее событие</h3>
+            <p class="text-sm opacity-70 mb-6">
+              Испытание на стойкость
+            </p>
+
+            <button class="w-full py-2
+                bg-gradient-to-r from-amber-600 to-amber-400
+                text-black rounded-md">
+              Подробнее
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ACHIEVEMENTS MODAL -->
+  <div id="achievementsModal" class="fixed inset-0 z-50
+            flex items-center justify-center
+            opacity-0 pointer-events-none
+            transition-all duration-300">
+
+    <!-- Overlay -->
+    <div id="modalOverlay" class="absolute inset-0 bg-black/70 backdrop-blur-sm">
+    </div>
+
+    <!-- Modal Card -->
+    <div class="relative w-[95%] sm:w-[600px] max-h-[85vh]
+              bg-[#071a17]/90 backdrop-blur-2xl
+              border border-emerald-800/40
+              rounded-2xl p-8
+              shadow-[0_0_60px_rgba(0,0,0,0.7)]
+              overflow-y-auto
+              transform scale-95
+              transition-all duration-300" id="modalCard">
+
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-8">
+
+        <h2 class="text-xl text-emerald-200">
+          Все достижения
+        </h2>
+
+        <button id="closeAchievements" class="text-emerald-400 hover:text-emerald-200 text-xl">
+          ✕
+        </button>
+
+      </div>
+
+      <!-- Content -->
+      <div class="space-y-6">
+
+        <!-- Achievement -->
+        <div class="flex justify-between items-center
+                  p-4 rounded-lg
+                  bg-emerald-900/20 border border-emerald-800/40">
+
+          <div>
+            <p class="text-emerald-200">Первые шаги</p>
+            <p class="text-sm text-emerald-400/60">
+              Завершите первый урок
+            </p>
+          </div>
+
+          <span class="text-emerald-400">✓</span>
+        </div>
+
+        <div class="flex justify-between items-center
+                  p-4 rounded-lg
+                  bg-emerald-900/20 border border-emerald-800/40">
+
+          <div>
+            <p class="text-emerald-200">Травник</p>
+            <p class="text-sm text-emerald-400/60">
+              Соберите 10 видов трав
+            </p>
+          </div>
+
+          <span class="text-emerald-400">✓</span>
+        </div>
+
+        <div class="flex justify-between items-center
+                  p-4 rounded-lg
+                  bg-emerald-900/20 border border-emerald-800/40">
+
+          <div>
+            <p class="text-emerald-200">Исследователь</p>
+            <p class="text-sm text-emerald-400/60">
+              Откройте 5 локаций
+            </p>
+            <p class="text-sm text-emerald-400/60 font-bold">
+              Получено: хрен знает когда
+            </p>
+          </div>
+
+          <span class="text-amber-400">3 / 5</span>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module">
+    const burger = document.getElementById("burger");
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+
+    burger?.addEventListener("click", () => {
+      sidebar.classList.toggle("-translate-x-full");
+      overlay.classList.toggle("opacity-0");
+      overlay.classList.toggle("pointer-events-none");
+    });
+
+    overlay?.addEventListener("click", () => {
+      sidebar.classList.add("-translate-x-full");
+      overlay.classList.add("opacity-0", "pointer-events-none");
+    });
+
+    const openBtn = document.getElementById("openAchievements");
+    const modal = document.getElementById("achievementsModal");
+    const modalCard = document.getElementById("modalCard");
+    const closeBtn = document.getElementById("closeAchievements");
+    const achievment_overlay = document.getElementById("modalOverlay");
+
+    openBtn?.addEventListener("click", () => {
+      modal.classList.remove("opacity-0", "pointer-events-none");
+      modalCard.classList.remove("scale-95");
+    });
+
+    function closeModal() {
+      modal.classList.add("opacity-0", "pointer-events-none");
+      modalCard.classList.add("scale-95");
+    }
+
+    closeBtn?.addEventListener("click", closeModal);
+    achievment_overlay?.addEventListener("click", closeModal);
+  </script>
+  <script type="module" src="/src/main.js"></script>
+
+
+
+</body>
+
+</html>
