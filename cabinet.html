@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Личный кабинет</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&subset=cyrillic"
+    rel="stylesheet">
+</head>
+
+<body class="font-medieval text-emerald-200 relative min-h-screen overflow-x-hidden">
+
+
+  <!-- BACKGROUND IMAGE -->
+  <div class="fixed inset-0 -z-30 bg-[url('/images/hero-bg.png')] bg-cover bg-center"></div>
+
+  <!-- DARK OVERLAY -->
+  <div class="fixed inset-0 -z-20 bg-gradient-to-b from-[#041512]/80 via-[#041512]/70 to-black"></div>
+
+  <!-- AURORA -->
+  <div class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_40%_0%,rgba(16,185,129,0.25),transparent_60%)]"></div>
+
+  <!-- OVERLAY FOR MOBILE -->
+  <div id="overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm
+              opacity-0 pointer-events-none
+              transition-opacity duration-300 lg:hidden z-40">
+  </div>
+
+  <div class="flex min-h-screen">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50
+           w-56
+           bg-[#041512]/80 backdrop-blur-2xl
+           border-r border-emerald-900/40
+           px-5 py-8
+           transform -translate-x-full lg:translate-x-0
+           transition-transform duration-300
+           flex flex-col shrink-0">
+
+      <!-- Logo -->
+      <div class="flex items-center gap-3 mb-12 px-2">
+        <div class="w-8 h-8 rounded-full overflow-hidden shadow-[0_0_12px_rgba(16,185,129,0.6)] shrink-0">
+          <img src="/images/logo.png" class="w-full h-full object-cover" alt="logo">
+        </div>
+        <h2 class="text-base leading-tight tracking-wide text-emerald-200">
+          Академия<br>Ведьмаков
+        </h2>
+        <!-- Крестик закрытия — только мобиль -->
+                    <button id="burger-close" class="lg:hidden ml-auto
+            w-8 h-8 flex items-center justify-center
+            rounded-lg text-emerald-400/60 hover:text-emerald-300 transition shrink-0">
+                        ✕
+                    </button>
+      </div>
+
+      <!-- Nav -->
+      <nav class="space-y-1 text-[15px] flex-1">
+
+        <!-- Главная -->
+        <a href="#"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-amber-400 bg-amber-500/10 relative transition">
+          <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-amber-400 rounded-r-full"></div>
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+          </svg>
+          <span>Главная</span>
+        </a>
+
+        <!-- Моё обучение -->
+        <a href="#"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-emerald-300/70 hover:text-emerald-200 hover:bg-emerald-900/20 transition">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+          </svg>
+          <span>Моё обучение</span>
+        </a>
+
+        <!-- Бестиарий -->
+        <a href="#"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-emerald-300/70 hover:text-emerald-200 hover:bg-emerald-900/20 transition">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+          </svg>
+          <span>Бестиарий</span>
+        </a>
+
+        <!-- Испытания -->
+        <a href="#"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-emerald-300/70 hover:text-emerald-200 hover:bg-emerald-900/20 transition">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0" />
+          </svg>
+          <span>Испытания</span>
+        </a>
+
+        <!-- Гильдия -->
+        <a href="#"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-emerald-300/70 hover:text-emerald-200 hover:bg-emerald-900/20 transition">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+          </svg>
+          <span>Гильдия</span>
+        </a>
+
+        <!-- Профиль -->
+        <a href="profile.html"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-emerald-300/70 hover:text-emerald-200 hover:bg-emerald-900/20 transition">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+          </svg>
+          <span>Профиль</span>
+        </a>
+
+        <!-- Сообщения -->
+        <a href="#"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-emerald-300/70 hover:text-emerald-200 hover:bg-emerald-900/20 transition">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+          </svg>
+          <span>Сообщения</span>
+        </a>
+
+        <!-- Настройки -->
+        <a href="#"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-emerald-300/70 hover:text-emerald-200 hover:bg-emerald-900/20 transition">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+          </svg>
+          <span>Настройки</span>
+        </a>
+
+      </nav>
+
+      <!-- Выйти -->
+      <div class="pt-6 border-t border-emerald-900/40">
+        <a href="#"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-emerald-400/60 hover:text-emerald-300 hover:bg-emerald-900/20 transition text-[15px]">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+          </svg>
+          <span>Выйти</span>
+        </a>
+      </div>
+
+    </aside>
+
+    <!-- MAIN -->
+    <div class="flex-1 flex flex-col">
+
+      <!-- HEADER -->
+      <header class="relative
+    px-6 sm:px-10 lg:px-14
+    py-6 sm:py-8
+    border-b border-emerald-900/40">
+
+        <div class="flex items-start justify-between">
+
+          <!-- LEFT: Burger -->
+          <button id="burger" class="lg:hidden text-2xl text-emerald-300/80
+             hover:text-emerald-200 transition">
+            ☰
+          </button>
+
+          <!-- CENTER: Title -->
+          <div class="flex-1 px-6 sm:px-10">
+            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-light">
+              Добро пожаловать, Геральт
+            </h1>
+
+            <p class="mt-3 text-sm italic text-emerald-400/70">
+              «Знание есть оружие»
+            </p>
+          </div>
+
+          <!-- RIGHT: Notifications + Profile -->
+          <div class="flex items-center gap-6">
+
+            <!-- Notifications -->
+            <div class="relative group cursor-pointer">
+
+              <svg class="w-6 h-6 text-emerald-300/80
+               group-hover:text-emerald-200 transition" fill="none" stroke="currentColor" stroke-width="1.8"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0a3 3 0 11-6 0" />
+              </svg>
+
+              <span class="absolute -top-1 -right-1
+               w-2.5 h-2.5
+               bg-amber-500
+               rounded-full
+               shadow-[0_0_10px_rgba(251,191,36,0.8)]">
+              </span>
+
+            </div>
+
+            <!-- Profile -->
+            <div class="flex items-center gap-4">
+
+              <div class="text-right hidden sm:block">
+                <p>Геральт из Ривии</p>
+                <p class="text-sm text-emerald-400/70">Ученик</p>
+              </div>
+
+              <div class="w-10 h-10 rounded-full overflow-hidden
+              shadow-[0_0_12px_rgba(16,185,129,0.5)]">
+                <img src="/images/avatar.jpg" alt="Аватар" class="w-full h-full object-cover">
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </header>
+
+      <!-- CONTENT -->
+      <div class="px-6 sm:px-10 lg:px-14 py-10
+           grid grid-cols-1 xl:grid-cols-3 gap-8 lg:gap-10">
+
+        <!-- LEFT -->
+        <div class="xl:col-span-2 space-y-8">
+
+          <!-- PROGRESS -->
+          <div class="rounded-xl p-8 bg-[#0b201c]/80 border border-emerald-800/40">
+
+            <h3 class="mb-6 text-lg">Ваш прогресс</h3>
+
+            <div class="flex justify-between mb-4">
+              <div>
+                <p class="text-sm opacity-70">Уровень ученика</p>
+                <p class="text-xl mt-2">Ученик</p>
+              </div>
+
+              <div class="text-right">
+                <p class="text-sm opacity-70">Текущий ранг</p>
+                <p class="text-xl mt-2 text-emerald-300">Новобранец</p>
+              </div>
+            </div>
+
+            <div class="flex justify-between text-xs mb-2 opacity-70">
+              <span>1 250 / 2 000 XP</span>
+              <span>До следующего уровня: 750 XP</span>
+            </div>
+
+            <div class="h-2 bg-emerald-900/40 rounded-full overflow-hidden">
+              <div class="h-full bg-emerald-400 rounded-full" style="width:62%"></div>
+            </div>
+
+          </div>
+
+          <!-- CONTINUE -->
+          <div class="border border-emerald-800/40 rounded-xl p-8
+            bg-[#0b201c]/80">
+
+            <h3 class="mb-8 text-lg">Продолжить обучение</h3>
+
+            <div class="space-y-10">
+
+              <!-- ITEM -->
+              <div class="flex flex-col sm:flex-row gap-6 sm:gap-8
+            p-4 rounded-lg
+            hover:bg-emerald-900/20 transition">
+
+                <!-- IMAGE -->
+                <div class="w-full sm:w-40 h-48 sm:h-28
+              bg-emerald-900/40 rounded-lg overflow-hidden flex-shrink-0">
+                  <img src="/images/travnich.png" alt="Основы травничества" class="w-full h-full object-cover">
+                </div>
+
+                <!-- CONTENT -->
+                <div class="flex-1 flex flex-col justify-between">
+
+                  <!-- TEXT -->
+                  <div>
+                    <h4 class="text-lg">Основы травничества</h4>
+                    <p class="text-sm opacity-70 mt-2">Урок 3 из 7</p>
+                  </div>
+
+                  <!-- BOTTOM ROW (Mobile-friendly) -->
+                  <div class="flex items-center justify-between mt-6 sm:mt-4">
+
+                    <p class="text-lg">42%</p>
+
+                    <button class="px-6 py-2
+                     border border-emerald-400
+                     rounded-md
+                     hover:bg-emerald-400/10
+                     transition">
+                      Продолжить
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <!-- ITEM -->
+              <div class="flex flex-col sm:flex-row gap-6 sm:gap-8
+            p-4 rounded-lg
+            hover:bg-emerald-900/20 transition">
+
+                <!-- IMAGE -->
+                <div class="w-full sm:w-40 h-48 sm:h-28
+              bg-emerald-900/40 rounded-lg overflow-hidden flex-shrink-0">
+                  <img src="/images/travnich.png" alt="Основы травничества" class="w-full h-full object-cover">
+                </div>
+
+                <!-- CONTENT -->
+                <div class="flex-1 flex flex-col justify-between">
+
+                  <!-- TEXT -->
+                  <div>
+                    <h4 class="text-lg">Основы травничества</h4>
+                    <p class="text-sm opacity-70 mt-2">Урок 3 из 7</p>
+                  </div>
+
+                  <!-- BOTTOM ROW (Mobile-friendly) -->
+                  <div class="flex items-center justify-between mt-6 sm:mt-4">
+
+                    <p class="text-lg">42%</p>
+
+                    <button class="px-6 py-2
+                     border border-emerald-400
+                     rounded-md
+                     hover:bg-emerald-400/10
+                     transition">
+                      Продолжить
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="space-y-8">
+
+          <!-- ACHIEVEMENTS -->
+          <div class="rounded-xl p-8 bg-[#0b201c]/80 border border-emerald-800/40">
+            <div class="flex justify-between mb-6">
+              <h3>Ваши достижения</h3>
+              <button id="openAchievements" class="text-sm text-emerald-400 hover:text-emerald-300 transition">
+                Смотреть все
+              </button>
+            </div>
+
+            <div class="space-y-5 text-sm">
+              <div class="flex justify-between">
+                <span>Первые шаги</span>
+                <span class="text-emerald-400">✓</span>
+              </div>
+
+              <div class="flex justify-between">
+                <span>Травник</span>
+                <span class="text-emerald-400">✓</span>
+              </div>
+
+              <div class="flex justify-between">
+                <span>Исследователь</span>
+                <span>3/5</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- EVENT -->
+          <div class="rounded-xl p-8 bg-[#0b201c]/80 border border-emerald-800/40">
+            <h3 class="mb-6">Ближайшее событие</h3>
+            <p class="text-sm opacity-70 mb-6">
+              Испытание на стойкость
+            </p>
+
+            <button class="w-full py-2
+                bg-gradient-to-r from-amber-600 to-amber-400
+                text-black rounded-md">
+              Подробнее
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ACHIEVEMENTS MODAL -->
+  <div id="achievementsModal" class="fixed inset-0 z-50
+            flex items-center justify-center
+            opacity-0 pointer-events-none
+            transition-all duration-300">
+
+    <!-- Overlay -->
+    <div id="modalOverlay" class="absolute inset-0 bg-black/70 backdrop-blur-sm">
+    </div>
+
+    <!-- Modal Card -->
+    <div class="relative w-[95%] sm:w-[600px] max-h-[85vh]
+              bg-[#071a17]/90 backdrop-blur-2xl
+              border border-emerald-800/40
+              rounded-2xl p-8
+              shadow-[0_0_60px_rgba(0,0,0,0.7)]
+              overflow-y-auto
+              transform scale-95
+              transition-all duration-300" id="modalCard">
+
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-8">
+
+        <h2 class="text-xl text-emerald-200">
+          Все достижения
+        </h2>
+
+        <button id="closeAchievements" class="text-emerald-400 hover:text-emerald-200 text-xl">
+          ✕
+        </button>
+
+      </div>
+
+      <!-- Content -->
+      <div class="space-y-6">
+
+        <!-- Achievement -->
+        <div class="flex justify-between items-center
+                  p-4 rounded-lg
+                  bg-emerald-900/20 border border-emerald-800/40">
+
+          <div>
+            <p class="text-emerald-200">Первые шаги</p>
+            <p class="text-sm text-emerald-400/60">
+              Завершите первый урок
+            </p>
+          </div>
+
+          <span class="text-emerald-400">✓</span>
+        </div>
+
+        <div class="flex justify-between items-center
+                  p-4 rounded-lg
+                  bg-emerald-900/20 border border-emerald-800/40">
+
+          <div>
+            <p class="text-emerald-200">Травник</p>
+            <p class="text-sm text-emerald-400/60">
+              Соберите 10 видов трав
+            </p>
+          </div>
+
+          <span class="text-emerald-400">✓</span>
+        </div>
+
+        <div class="flex justify-between items-center
+                  p-4 rounded-lg
+                  bg-emerald-900/20 border border-emerald-800/40">
+
+          <div>
+            <p class="text-emerald-200">Исследователь</p>
+            <p class="text-sm text-emerald-400/60">
+              Откройте 5 локаций
+            </p>
+            <p class="text-sm text-emerald-400/60 font-bold">
+              Получено: хрен знает когда
+            </p>
+          </div>
+
+          <span class="text-amber-400">3 / 5</span>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module">
+    import './src/style.css';
+    const burger = document.getElementById("burger");
+    const sidebar = document.getElementById("sidebar");
+    const burgerClose = document.getElementById('burger-close');
+    const overlay = document.getElementById("overlay");
+
+    burger?.addEventListener("click", () => {
+      sidebar.classList.toggle("-translate-x-full");
+      overlay.classList.toggle("opacity-0");
+      overlay.classList.toggle("pointer-events-none");
+    });
+
+    overlay?.addEventListener("click", () => {
+      sidebar.classList.add("-translate-x-full");
+      overlay.classList.add("opacity-0", "pointer-events-none");
+    });
+
+    const openBtn = document.getElementById("openAchievements");
+    const modal = document.getElementById("achievementsModal");
+    const modalCard = document.getElementById("modalCard");
+    const closeBtn = document.getElementById("closeAchievements");
+    const achievment_overlay = document.getElementById("modalOverlay");
+
+    openBtn?.addEventListener("click", () => {
+      modal.classList.remove("opacity-0", "pointer-events-none");
+      modalCard.classList.remove("scale-95");
+    });
+
+    function closeModal() {
+      modal.classList.add("opacity-0", "pointer-events-none");
+      modalCard.classList.add("scale-95");
+    }
+
+    function closeSidebar() {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+            }
+
+    closeBtn?.addEventListener("click", closeModal);
+    achievment_overlay?.addEventListener("click", closeModal);
+
+    burgerClose?.addEventListener('click', closeSidebar);
+  </script>
+
+
+
+</body>
+
+</html>
