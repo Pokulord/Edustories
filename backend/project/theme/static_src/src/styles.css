@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.firefly {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16,185,129,1) 0%, rgba(16,185,129,0.6) 40%, transparent 70%);
+  box-shadow: 0 0 12px rgba(16,185,129,0.9),
+              0 0 25px rgba(16,185,129,0.6);
+  animation: floatUp linear infinite, flicker ease-in-out infinite;
+}
+
+/* движение вверх */
+@keyframes floatUp {
+  from {
+    transform: translateY(0px) translateX(0px);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  to {
+    transform: translateY(-120vh) translateX(40px);
+    opacity: 0;
+  }
+}
+
+/* мерцание */
+@keyframes flicker {
+  0%,100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
