@@ -529,12 +529,20 @@
       const openFormBtn = event.target.closest('[data-action="open-form"], #openContractFormBtn');
       if (openFormBtn) {
         event.preventDefault();
+        
+        // === ДОБАВЛЕНА ПРОВЕРКА АВТОРИЗАЦИИ ===
+        if (window.WitcherAuth && !window.WitcherAuth.isLoggedIn()) {
+          window.WitcherAuth.openAuthRequiredWarning();
+          return; // Прерываем функцию, форма не откроется
+        }
+        // ======================================
+        
         openForm();
         return;
       }
 
       const openDetailsBtn = event.target.closest('[data-action="open-details"]');
-      if (openDetailsBtn) {
+       if (openDetailsBtn) {
         event.preventDefault();
         openDetails(openDetailsBtn.getAttribute('data-id'));
       }

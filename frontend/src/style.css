@@ -99,3 +99,309 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(16,185,129,0.45);
 }
+
+/* Авторизация */
+
+:root {
+  --wa-auth-bg: rgba(2, 8, 7, 0.78);
+  --wa-auth-panel: #0b1f1c;
+  --wa-auth-panel-border: rgba(6, 95, 70, 0.6);
+  --wa-auth-text: #d1fae5;
+  --wa-auth-muted: rgba(110, 231, 183, 0.65);
+  --wa-auth-accent: #34d399;
+  --wa-auth-accent-2: #10b981;
+  --wa-auth-gold-1: #b45309;
+  --wa-auth-gold-2: #f59e0b;
+  --wa-auth-error: #fca5a5;
+  --wa-auth-error-bg: rgba(127, 29, 29, 0.2);
+  --wa-auth-error-border: rgba(239, 68, 68, 0.4);
+  --wa-auth-notice-bg: rgba(6, 78, 59, 0.25);
+  --wa-auth-notice-border: rgba(16, 185, 129, 0.3);
+}
+
+.wa-auth-trigger {
+  border: 1px solid rgba(52, 211, 153, 0.5);
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--wa-auth-text);
+  padding: 0.6rem 1.2rem;
+  font: inherit;
+  font-size: 0.875rem;
+  letter-spacing: 0.18em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wa-auth-trigger:hover {
+  background: rgba(52, 211, 153, 0.1);
+  color: #ecfdf5;
+}
+
+.wa-auth-trigger--mobile {
+  padding: 0.85rem 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+}
+
+.wa-auth-trigger--logout {
+  border-color: rgba(245, 158, 11, 0.5);
+  color: #fcd34d;
+}
+
+.wa-auth-trigger--logout:hover {
+  background: rgba(245, 158, 11, 0.1);
+  color: #fde68a;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+.wa-auth-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  overflow-y: auto;
+  background: var(--wa-auth-bg);
+  backdrop-filter: blur(4px);
+  animation: waAuthFadeIn 0.2s ease-out;
+}
+
+.wa-auth-backdrop.is-open {
+  display: flex;
+}
+
+.wa-auth-panel {
+  width: 100%;
+  max-width: 34rem;
+  margin: 2rem 0;
+  border-radius: 1rem;
+  border: 1px solid var(--wa-auth-panel-border);
+  background: var(--wa-auth-panel);
+  color: var(--wa-auth-text);
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  animation: waAuthSlideUp 0.3s ease-out;
+}
+
+.wa-auth-panel--compact {
+  max-width: 28rem;
+  padding: 1.5rem;
+}
+
+.wa-auth-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(6, 95, 70, 0.6);
+}
+
+.wa-auth-body {
+  padding: 1.5rem;
+}
+
+.wa-auth-kicker {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: rgba(110, 231, 183, 0.65);
+}
+
+.wa-auth-kicker--warning {
+  margin-bottom: 0.5rem;
+  color: rgba(251, 191, 36, 0.7);
+}
+
+.wa-auth-title {
+  margin: 0.25rem 0 0;
+  font-size: 2rem;
+  line-height: 1.15;
+  font-weight: 600;
+  color: #ecfdf5;
+  text-shadow: 0 0 15px rgba(16, 185, 129, 0.35);
+}
+
+.wa-auth-title--small {
+  font-size: 1.6rem;
+}
+
+.wa-auth-text {
+  margin: 0.75rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: rgba(209, 250, 229, 0.78);
+}
+
+.wa-auth-link {
+  display: inline-block;
+  margin-bottom: 1.25rem;
+  color: rgba(110, 231, 183, 0.8);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.wa-auth-link:hover {
+  color: #a7f3d0;
+}
+
+.wa-auth-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.wa-auth-field {
+  display: block;
+}
+
+.wa-auth-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  color: #86efac;
+}
+
+.wa-auth-input {
+  width: 100%;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 0.375rem;
+  background: rgba(5, 15, 13, 0.7);
+  color: var(--wa-auth-text);
+  padding: 0.75rem 0.9rem;
+  font: inherit;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.wa-auth-input:focus {
+  outline: none;
+  border-color: rgba(94, 234, 212, 0.8);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+  background: rgba(5, 15, 13, 0.9);
+}
+
+.wa-auth-input::placeholder {
+  color: rgba(110, 155, 145, 0.7);
+  font-style: italic;
+}
+
+.wa-auth-message {
+  border-radius: 0.5rem;
+  padding: 0.75rem 0.9rem;
+  font-size: 0.9rem;
+}
+
+.wa-auth-message--notice {
+  margin-bottom: 1rem;
+  border: 1px solid var(--wa-auth-notice-border);
+  background: var(--wa-auth-notice-bg);
+  color: #d1fae5;
+}
+
+.wa-auth-message--error {
+  border: 1px solid var(--wa-auth-error-border);
+  background: var(--wa-auth-error-bg);
+  color: var(--wa-auth-error);
+}
+
+.wa-auth-btn {
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.85rem 1.2rem;
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wa-auth-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.wa-auth-btn--primary {
+  background: linear-gradient(90deg, var(--wa-auth-gold-1) 0%, var(--wa-auth-gold-2) 100%);
+  color: #111827;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  box-shadow: 0 0 25px rgba(251, 191, 36, 0.35);
+}
+
+.wa-auth-btn--primary:hover:not(:disabled) {
+  box-shadow: 0 0 40px rgba(251, 191, 36, 0.6);
+}
+
+.wa-auth-btn--secondary {
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  background: transparent;
+  color: var(--wa-auth-text);
+}
+
+.wa-auth-btn--secondary:hover {
+  background: rgba(52, 211, 153, 0.1);
+}
+
+.wa-auth-toggle {
+  margin-top: 1.25rem;
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: rgba(110, 231, 183, 0.8);
+  font: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.wa-auth-toggle:hover {
+  color: #d1fae5;
+}
+
+.wa-auth-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.wa-auth-icon-btn {
+  border: none;
+  background: transparent;
+  color: rgba(110, 231, 183, 0.65);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.wa-auth-icon-btn:hover {
+  color: var(--wa-auth-accent);
+}
+
+@keyframes waAuthFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes waAuthSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (min-width: 640px) {
+  .wa-auth-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}

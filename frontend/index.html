@@ -53,6 +53,14 @@
 
       </nav>
 
+      <!-- Авторизация, Заполняется динамически из auth.js -->
+      <button id="authActionBtn" class="wa-auth-trigger" type="button">
+          Авторизация
+      </button>
+      <button id="authLogoutBtn" class="wa-auth-trigger wa-auth-trigger--logout is-hidden" type="button">
+          Выйти
+      </button>
+
       <!-- Burger -->
       <button id="burger" class="md:hidden flex flex-col gap-1.5 relative z-50">
 
@@ -72,6 +80,12 @@
          opacity-0 pointer-events-none
          transition-all duration-500">
 
+      <button id="mobileAuthAction" class="wa-auth-trigger wa-auth-trigger--mobile" type="button">
+            Авторизация
+      </button>
+      <button id="mobileLogoutAction" class="wa-auth-trigger wa-auth-trigger--mobile wa-auth-trigger--logout is-hidden" type="button">
+            Выйти
+      </button>
       <a href="#contracts" class="hover:text-emerald-400 transition">Контракты</a>
       <a href="#" class="hover:text-emerald-400 transition">Бестиарий</a>
       <a href="#" class="hover:text-emerald-400 transition">Алхимия</a>
@@ -166,6 +180,92 @@
         </a>
 
       </div>
+
+      <!-- Общий контейнер модальных окон -->
+<div id="modalRoot">
+  <!-- AUTH MODAL -->
+  <div id="authModalBackdrop" class="wa-auth-backdrop" aria-hidden="true">
+    <div class="wa-auth-panel" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+      <div class="wa-auth-head">
+        <div>
+          <div class="wa-auth-kicker">Гильдия · допуск в архив</div>
+          <h2 id="authModalTitle" class="wa-auth-title">Авторизация</h2>
+        </div>
+
+        <button id="authModalCloseBtn" class="wa-auth-icon-btn" type="button" aria-label="Закрыть">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 6l12 12M6 18L18 6" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="wa-auth-body">
+        <a href="/" class="wa-auth-link">← Вернуться на главную страницу</a>
+
+        <div id="authNoticeBox" class="wa-auth-message wa-auth-message--notice" hidden></div>
+
+        <form id="authForm" class="wa-auth-form">
+          <label class="wa-auth-field">
+            <span class="wa-auth-label">Имя пользователя</span>
+            <input
+              id="authUsername"
+              class="wa-auth-input"
+              type="text"
+              placeholder="Введите имя пользователя"
+              required
+              minlength="3"
+              maxlength="32"
+            />
+          </label>
+
+          <label class="wa-auth-field">
+            <span class="wa-auth-label">Пароль</span>
+            <input
+              id="authPassword"
+              class="wa-auth-input"
+              type="password"
+              placeholder="Введите пароль"
+              required
+              minlength="4"
+              maxlength="64"
+            />
+          </label>
+
+          <div id="authErrorBox" class="wa-auth-message wa-auth-message--error" hidden></div>
+
+          <button id="authSubmitButton" class="wa-auth-btn wa-auth-btn--primary" type="submit">
+            Войти
+          </button>
+        </form>
+
+        <button id="authToggleMode" class="wa-auth-toggle" type="button">
+          Нет аккаунта? Зарегистрироваться
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTH WARNING MODAL -->
+  <div id="authWarningBackdrop" class="wa-auth-backdrop" aria-hidden="true">
+    <div class="wa-auth-panel wa-auth-panel--compact" role="dialog" aria-modal="true" aria-labelledby="authWarningTitle">
+      <div class="wa-auth-kicker wa-auth-kicker--warning">Предупреждение Гильдии</div>
+      <h3 id="authWarningTitle" class="wa-auth-title wa-auth-title--small">Требуется авторизация</h3>
+      <p class="wa-auth-text">
+        Для размещения контракта необходимо авторизоваться или зарегистрироваться.
+        Желаете продолжить?
+      </p>
+
+      <div class="wa-auth-actions">
+        <button id="authWarningCancelBtn" class="wa-auth-btn wa-auth-btn--secondary" type="button">
+          Отказаться
+        </button>
+        <button id="authWarningContinueBtn" class="wa-auth-btn wa-auth-btn--primary" type="button">
+          Продолжить
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
       <!-- Stats -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-10 text-center">
@@ -579,5 +679,6 @@
 </body>
 <script type="module" src="/src/main.js"></script>
 <script type="module" src="/src/order.js"></script>
+<script type="module" src="/src/auth.js"></script>
 
 </html>
