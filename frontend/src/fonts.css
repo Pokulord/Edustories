@@ -1,0 +1,48 @@
+/* ─── Вариант 1: Классический фэнтези ─────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,600;0,700;1,400&family=PT+Serif:ital@0;1&display=swap');
+
+/* ─── Вариант 2: Летописный ────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Ruslan+Display&family=Alegreya:ital,wght@0,400;0,500;1,400&family=Neucha&display=swap');
+
+/* ─── Вариант 3: Строгий и благородный ────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&display=swap');
+
+/* ================================================================
+   Тема шрифтов применяется через data-font на <html>
+   ================================================================ */
+
+/* ─── Вариант 1 (default / classic) ───────────────────────────── */
+:root,
+[data-font="classic"] {
+  --font-heading: 'Cormorant', serif;
+  --font-body:    'PT Serif', serif;
+  --font-quote:   'Cormorant', serif;
+}
+
+/* ─── Вариант 2 (chronicle) ────────────────────────────────────── */
+[data-font="chronicle"] {
+  --font-heading: 'Ruslan Display', cursive;
+  --font-body:    'Alegreya', serif;
+  --font-quote:   'Neucha', cursive;
+}
+
+/* ─── Вариант 3 (noble) ────────────────────────────────────────── */
+[data-font="noble"] {
+  --font-heading: 'Playfair Display', serif;
+  --font-body:    'Lora', serif;
+  --font-quote:   'Lora', serif;
+}
+
+/* ─── Применяем переменные ─────────────────────────────────────── */
+body {
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* Кириллические цитаты (italic) */
+.font-quote {
+  font-family: var(--font-quote);
+}

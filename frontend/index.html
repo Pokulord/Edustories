@@ -4,12 +4,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Анти-FOUC: применяем тему ДО загрузки CSS -->
+  <script>
+    (function () {
+      var theme = localStorage.getItem("witcherAcademyTheme");
+      if (theme !== "light") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    })();
+  </script>
   <title>Академия Ведьмаков</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&display=swap&subset=cyrillic"
     rel="stylesheet">
 </head>
 
-<body class="scroll-smooth font-medieval transition-colors duration-500
+<body class="scroll-smooth transition-colors duration-500
              bg-black text-amber-100
              dark:bg-black dark:text-amber-100">
 
@@ -25,8 +36,7 @@
       transition-colors duration-500">
     </div>
 
-    <div class="relative max-w-7xl mx-auto px-6 py-4 
-      flex items-center justify-between">
+    <div class="relative max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
       <!-- Logo -->
       <div class="flex items-center gap-4">
@@ -55,84 +65,74 @@
         <a href="#" class="dark:hover:text-emerald-300 hover:text-emerald-600 transition">Таверна</a>
       </nav>
 
-<<<<<<< HEAD
-      <!-- Авторизация, Заполняется динамически из auth.js -->
-      <button id="authActionBtn" class="wa-auth-trigger" type="button">
-          Авторизация
-      </button>
-      <button id="authLogoutBtn" class="wa-auth-trigger wa-auth-trigger--logout is-hidden" type="button">
-          Выйти
-      </button>
+      <!-- Right controls -->
+<div class="flex items-center gap-4">
 
-      <!-- Burger -->
-      <button id="burger" class="md:hidden flex flex-col gap-1.5 relative z-50">
-=======
-      <!-- Right controls: theme toggle + burger -->
-      <div class="flex items-center gap-4">
->>>>>>> 33eaea0759713babc2e8f5cc3104d8859d30840c
+  <!-- Кнопка Авторизация / Кабинет -->
+  <button id="authActionBtn" 
+          class="wa-auth-trigger hidden md:inline-flex items-center px-6 py-2.5 
+                 font-medium text-sm tracking-wider rounded-2xl border-2 transition-all duration-300
+                 dark:border-emerald-400/70 dark:text-emerald-100 dark:hover:bg-emerald-400/10 dark:hover:border-emerald-300
+                 border-emerald-700 text-emerald-800 hover:bg-emerald-50 hover:border-emerald-800 hover:shadow-md"
+          type="button">
+    Авторизация
+  </button>
 
-        <!-- Theme Toggle -->
-        <button id="themeToggle" class="relative w-16 h-8 rounded-full transition-colors duration-500 focus:outline-none flex-shrink-0
-         dark:bg-emerald-900/80 bg-emerald-100 
-         border dark:border-emerald-700/40 border-emerald-300/60">
+  <!-- Кнопка Выйти -->
+  <button id="authLogoutBtn" 
+          class="wa-auth-trigger wa-auth-trigger--logout is-hidden hidden md:inline-flex items-center px-6 py-2.5 
+                 font-medium text-sm tracking-wider rounded-2xl border-2 transition-all duration-300
+                 dark:border-amber-400/70 dark:text-amber-200 dark:hover:bg-amber-400/10 dark:hover:border-amber-300
+                 border-amber-600 text-amber-700 hover:bg-amber-50 hover:border-amber-700 hover:shadow-md"
+          type="button">
+    Выйти
+  </button>
 
-          <!-- Moon icon (left = dark side) -->
-          <span class="absolute left-2 top-1/2 -translate-y-1/2 text-sm pointer-events-none select-none leading-none">
-            🌙
-          </span>
+  <!-- Theme Toggle -->
+  <button id="themeToggle"
+    class="relative w-16 h-8 rounded-full transition-colors duration-500 focus:outline-none flex-shrink-0
+      dark:bg-emerald-900/80 bg-emerald-100 
+      border dark:border-emerald-700/40 border-emerald-300/60">
+    <span class="absolute left-2 top-1/2 -translate-y-1/2 text-sm pointer-events-none select-none leading-none">🌙</span>
+    <span class="absolute right-2 top-1/2 -translate-y-1/2 text-sm pointer-events-none select-none leading-none">☀️</span>
+    <span id="themeThumb" class="absolute top-1 left-1 w-6 h-6 rounded-full shadow-md 
+      transition-transform duration-500
+      dark:bg-emerald-400 bg-white border dark:border-transparent border-emerald-300
+      dark:translate-x-0 translate-x-8">
+    </span>
+  </button>
 
-          <!-- Sun icon (right = light side) -->
-          <span class="absolute right-2 top-1/2 -translate-y-1/2 text-sm pointer-events-none select-none leading-none">
-            ☀️
-          </span>
+  <!-- Burger -->
+  <button id="burger" class="md:hidden flex flex-col gap-1.5 relative z-50 p-1" aria-label="Меню">
+    <span class="w-6 h-0.5 dark:bg-emerald-300 bg-emerald-800 rounded transition-all duration-300"></span>
+    <span class="w-6 h-0.5 dark:bg-emerald-300 bg-emerald-800 rounded transition-all duration-300"></span>
+    <span class="w-6 h-0.5 dark:bg-emerald-300 bg-emerald-800 rounded transition-all duration-300"></span>
+  </button>
 
-          <!-- Thumb -->
-          <span id="themeThumb" class="absolute top-1 left-1 w-6 h-6 rounded-full shadow-md 
-           transition-transform duration-500
-           dark:bg-emerald-400 bg-white border dark:border-transparent border-emerald-300
-           dark:translate-x-0 translate-x-8">
-          </span>
-
-        </button>
-
-        <!-- Burger -->
-        <button id="burger" class="md:hidden flex flex-col gap-1.5 relative z-50">
-          <span class="w-7 h-[2px] dark:bg-emerald-300 bg-emerald-800 transition-all"></span>
-          <span class="w-7 h-[2px] dark:bg-emerald-300 bg-emerald-800 transition-all"></span>
-          <span class="w-7 h-[2px] dark:bg-emerald-300 bg-emerald-800 transition-all"></span>
-        </button>
-
-      </div>
+</div>
     </div>
 
     <!-- MOBILE MENU -->
     <div id="mobileMenu" class="fixed inset-0 
-         dark:bg-[#071312]/95 bg-white/95 backdrop-blur-2xl
-         flex flex-col items-center justify-center
-         gap-8 text-xl dark:text-emerald-200 text-emerald-800
-         opacity-0 pointer-events-none
-         transition-all duration-500">
-<<<<<<< HEAD
+        dark:bg-[#071312]/95 bg-white/95 backdrop-blur-2xl
+        flex flex-col items-center justify-center
+        gap-8 text-xl dark:text-emerald-200 text-emerald-800
+        opacity-0 pointer-events-none
+        transition-all duration-500">
 
-      <button id="mobileAuthAction" class="wa-auth-trigger wa-auth-trigger--mobile" type="button">
-            Авторизация
-      </button>
-      <button id="mobileLogoutAction" class="wa-auth-trigger wa-auth-trigger--mobile wa-auth-trigger--logout is-hidden" type="button">
-            Выйти
-      </button>
-      <a href="#contracts" class="hover:text-emerald-400 transition">Контракты</a>
-      <a href="#" class="hover:text-emerald-400 transition">Бестиарий</a>
-      <a href="#" class="hover:text-emerald-400 transition">Алхимия</a>
-      <a href="#" class="hover:text-emerald-400 transition">Гильдия</a>
-      <a href="#" class="hover:text-emerald-400 transition">Таверна</a>
-
-=======
       <a href="#contracts" class="dark:hover:text-emerald-400 hover:text-emerald-600 transition">Контракты</a>
       <a href="#" class="dark:hover:text-emerald-400 hover:text-emerald-600 transition">Бестиарий</a>
       <a href="#" class="dark:hover:text-emerald-400 hover:text-emerald-600 transition">Алхимия</a>
       <a href="#" class="dark:hover:text-emerald-400 hover:text-emerald-600 transition">Гильдия</a>
       <a href="#" class="dark:hover:text-emerald-400 hover:text-emerald-600 transition">Таверна</a>
->>>>>>> 33eaea0759713babc2e8f5cc3104d8859d30840c
+            <!-- Авторизация в бургере -->
+      <button id="mobileAuthAction" class="wa-auth-trigger wa-auth-trigger--mobile" type="button">
+        Авторизация
+      </button>
+            <button id="mobileLogoutAction"
+        class="wa-auth-trigger wa-auth-trigger--mobile wa-auth-trigger--logout is-hidden" type="button">
+        Выйти
+      </button>
     </div>
 
   </header>
@@ -142,14 +142,12 @@
 
     <!-- Dark background -->
     <div class="absolute inset-0 z-0 dark:block hidden
-      bg-[url('/images/hero-bg.png')] 
-      bg-cover bg-center">
+      bg-[url('/images/hero-bg.png')] bg-cover bg-center">
     </div>
 
     <!-- Light background -->
     <div class="absolute inset-0 z-0 dark:hidden block
-      bg-[url('/images/hero-bg-light.png')] 
-      bg-cover bg-center">
+      bg-[url('/images/hero-bg-light.png')] bg-cover bg-center">
     </div>
 
     <!-- Dark cinematic overlay -->
@@ -186,7 +184,6 @@
     <!-- Content -->
     <div class="relative z-20 px-6 max-w-4xl mx-auto">
 
-      <!-- Runes -->
       <p class="tracking-[0.6em] text-sm mb-4
         dark:text-emerald-300/70 text-emerald-700/60 transition-colors duration-500">
         ᚢ ᛈ ᚦ ᚱ ᛟ ᚾ ᛉ
@@ -197,7 +194,6 @@
         — Знание есть оружие —
       </p>
 
-      <!-- Title -->
       <h1 class="text-3xl sm:text-5xl md:text-6xl mb-4 font-semibold leading-tight
         dark:text-emerald-100 text-emerald-900 transition-colors duration-500">
         Академия Ведьмаков
@@ -218,8 +214,6 @@
 
       <!-- Buttons -->
       <div class="flex flex-col sm:flex-row justify-center gap-6 mb-20">
-
-        <!-- Primary -->
         <a href="./cabinet.html" class="px-10 py-3 font-semibold rounded-md transition duration-300
           dark:bg-gradient-to-r dark:from-amber-700 dark:to-amber-500 dark:text-black
           dark:shadow-[0_0_25px_rgba(251,191,36,0.4)] dark:hover:shadow-[0_0_45px_rgba(251,191,36,0.7)]
@@ -228,168 +222,181 @@
           hover:scale-105">
           ⚔ Начать Путь Ведьмака
         </a>
-
-        <!-- Secondary -->
         <a href="#" class="px-10 py-3 rounded-md transition duration-300
           dark:border dark:border-emerald-400/60 dark:text-emerald-200 dark:hover:bg-emerald-400/10
           border border-emerald-700/50 text-emerald-800 hover:bg-emerald-100/60
           backdrop-blur-sm">
           📜 Изучить Бестиарий
         </a>
-
       </div>
-
-      <!-- Общий контейнер модальных окон -->
-<div id="modalRoot">
-  <!-- AUTH MODAL -->
-  <div id="authModalBackdrop" class="wa-auth-backdrop" aria-hidden="true">
-    <div class="wa-auth-panel" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
-      <div class="wa-auth-head">
-        <div>
-          <div class="wa-auth-kicker">Гильдия · допуск в архив</div>
-          <h2 id="authModalTitle" class="wa-auth-title">Авторизация</h2>
-        </div>
-
-        <button id="authModalCloseBtn" class="wa-auth-icon-btn" type="button" aria-label="Закрыть">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M6 6l12 12M6 18L18 6" />
-          </svg>
-        </button>
-      </div>
-
-      <div class="wa-auth-body">
-        <a href="/" class="wa-auth-link">← Вернуться на главную страницу</a>
-
-        <div id="authNoticeBox" class="wa-auth-message wa-auth-message--notice" hidden></div>
-
-        <form id="authForm" class="wa-auth-form">
-          <label class="wa-auth-field">
-            <span class="wa-auth-label">Имя пользователя</span>
-            <input
-              id="authUsername"
-              class="wa-auth-input"
-              type="text"
-              placeholder="Введите имя пользователя"
-              required
-              minlength="3"
-              maxlength="32"
-            />
-          </label>
-
-          <label class="wa-auth-field">
-            <span class="wa-auth-label">Пароль</span>
-            <input
-              id="authPassword"
-              class="wa-auth-input"
-              type="password"
-              placeholder="Введите пароль"
-              required
-              minlength="4"
-              maxlength="64"
-            />
-          </label>
-
-          <div id="authErrorBox" class="wa-auth-message wa-auth-message--error" hidden></div>
-
-          <button id="authSubmitButton" class="wa-auth-btn wa-auth-btn--primary" type="submit">
-            Войти
-          </button>
-        </form>
-
-        <button id="authToggleMode" class="wa-auth-toggle" type="button">
-          Нет аккаунта? Зарегистрироваться
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- AUTH WARNING MODAL -->
-  <div id="authWarningBackdrop" class="wa-auth-backdrop" aria-hidden="true">
-    <div class="wa-auth-panel wa-auth-panel--compact" role="dialog" aria-modal="true" aria-labelledby="authWarningTitle">
-      <div class="wa-auth-kicker wa-auth-kicker--warning">Предупреждение Гильдии</div>
-      <h3 id="authWarningTitle" class="wa-auth-title wa-auth-title--small">Требуется авторизация</h3>
-      <p class="wa-auth-text">
-        Для размещения контракта необходимо авторизоваться или зарегистрироваться.
-        Желаете продолжить?
-      </p>
-
-      <div class="wa-auth-actions">
-        <button id="authWarningCancelBtn" class="wa-auth-btn wa-auth-btn--secondary" type="button">
-          Отказаться
-        </button>
-        <button id="authWarningContinueBtn" class="wa-auth-btn wa-auth-btn--primary" type="button">
-          Продолжить
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
 
       <!-- Stats -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-10 text-center">
-
         <div>
-          <p class="text-3xl font-semibold
-            dark:text-emerald-300 text-emerald-800
-            dark:drop-shadow-[0_0_15px_rgba(16,185,129,0.4)]
-            transition-colors duration-500">
-            12 847
-          </p>
+          <p class="text-3xl font-semibold dark:text-emerald-300 text-emerald-800
+            dark:drop-shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-colors duration-500">12 847</p>
           <p class="text-xs mt-2 uppercase tracking-widest
-            dark:text-emerald-200/60 text-emerald-700/70 transition-colors duration-500">
-            Учеников на Тропе
-          </p>
+            dark:text-emerald-200/60 text-emerald-700/70 transition-colors duration-500">Учеников на Тропе</p>
         </div>
-
         <div>
-          <p class="text-3xl font-semibold
-            dark:text-emerald-300 text-emerald-800
-            dark:drop-shadow-[0_0_15px_rgba(16,185,129,0.4)]
-            transition-colors duration-500">
-            48
-          </p>
+          <p class="text-3xl font-semibold dark:text-emerald-300 text-emerald-800
+            dark:drop-shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-colors duration-500">48</p>
           <p class="text-xs mt-2 uppercase tracking-widest
-            dark:text-emerald-200/60 text-emerald-700/70 transition-colors duration-500">
-            Контрактов в Гильдии
-          </p>
+            dark:text-emerald-200/60 text-emerald-700/70 transition-colors duration-500">Контрактов в Гильдии</p>
         </div>
-
         <div>
-          <p class="text-3xl font-semibold
-            dark:text-emerald-300 text-emerald-800
-            dark:drop-shadow-[0_0_15px_rgba(16,185,129,0.4)]
-            transition-colors duration-500">
-            6
-          </p>
+          <p class="text-3xl font-semibold dark:text-emerald-300 text-emerald-800
+            dark:drop-shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-colors duration-500">6</p>
           <p class="text-xs mt-2 uppercase tracking-widest
-            dark:text-emerald-200/60 text-emerald-700/70 transition-colors duration-500">
-            Школ Ведьмаков
-          </p>
+            dark:text-emerald-200/60 text-emerald-700/70 transition-colors duration-500">Школ Ведьмаков</p>
         </div>
-
         <div>
-          <p class="text-3xl font-semibold
-            dark:text-emerald-300 text-emerald-800
-            dark:drop-shadow-[0_0_15px_rgba(16,185,129,0.4)]
-            transition-colors duration-500">
-            ∞
-          </p>
+          <p class="text-3xl font-semibold dark:text-emerald-300 text-emerald-800
+            dark:drop-shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-colors duration-500">∞</p>
           <p class="text-xs mt-2 uppercase tracking-widest
-            dark:text-emerald-200/60 text-emerald-700/70 transition-colors duration-500">
-            Путь Мастера
-          </p>
+            dark:text-emerald-200/60 text-emerald-700/70 transition-colors duration-500">Путь Мастера</p>
         </div>
-
       </div>
 
     </div>
   </section>
 
+  <!-- ===================== MODALS ===================== -->
+
+  <!--
+    AUTH MODAL
+    Открывается через dialogElement.showModal()
+    Закрывается через dialogElement.close() или нативным ::backdrop click
+    
+    Адаптивность: на мобиле — полный экран снизу (bottom sheet),
+    на десктопе — центрированная карточка.
+  -->
+  <dialog id="authModal"
+    class="
+      fixed inset-0 m-auto
+      w-full max-w-md
+      rounded-xl border
+      p-0 overflow-hidden
+      backdrop:bg-black/70 backdrop:backdrop-blur-sm
+
+      dark:bg-[#071312] dark:border-emerald-900/60 dark:text-emerald-100
+      bg-white border-emerald-200/60 text-emerald-900
+
+      /* mobile: bottom sheet */
+      max-sm:fixed max-sm:bottom-0 max-sm:left-0 max-sm:right-0
+      max-sm:top-auto max-sm:m-0
+      max-sm:w-full max-sm:max-w-full
+      max-sm:rounded-b-none max-sm:rounded-t-2xl
+
+      transition-colors duration-500
+    "
+    aria-labelledby="authModalTitle">
+
+    <div class="wa-auth-head">
+      <div>
+        <div class="wa-auth-kicker">Гильдия · допуск в архив</div>
+        <h2 id="authModalTitle" class="wa-auth-title">Авторизация</h2>
+      </div>
+      <!-- Закрытие через нативный dialog.close() -->
+      <button id="authModalCloseBtn" class="wa-auth-icon-btn" type="button" aria-label="Закрыть">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 6l12 12M6 18L18 6" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="wa-auth-body">
+      <a href="/" class="wa-auth-link">← Вернуться на главную страницу</a>
+
+      <div id="authNoticeBox" class="wa-auth-message wa-auth-message--notice" hidden></div>
+
+      <form id="authForm" class="wa-auth-form" method="dialog">
+        <label class="wa-auth-field">
+          <span class="wa-auth-label">Имя пользователя</span>
+          <input
+            id="authUsername"
+            class="wa-auth-input"
+            type="text"
+            placeholder="Введите имя пользователя"
+            required
+            minlength="3"
+            maxlength="32"
+          />
+        </label>
+
+        <label class="wa-auth-field">
+          <span class="wa-auth-label">Пароль</span>
+          <input
+            id="authPassword"
+            class="wa-auth-input"
+            type="password"
+            placeholder="Введите пароль"
+            required
+            minlength="4"
+            maxlength="64"
+          />
+        </label>
+
+        <div id="authErrorBox" class="wa-auth-message wa-auth-message--error" hidden></div>
+
+        <button id="authSubmitButton" class="wa-auth-btn wa-auth-btn--primary" type="submit">
+          Войти
+        </button>
+      </form>
+
+      <button id="authToggleMode" class="wa-auth-toggle" type="button">
+        Нет аккаунта? Зарегистрироваться
+      </button>
+    </div>
+  </dialog>
+
+  <!--
+    AUTH WARNING MODAL
+    Открывается через dialogElement.showModal()
+  -->
+  <dialog id="authWarningModal"
+    class="
+      fixed inset-0 m-auto
+      w-full max-w-sm
+      rounded-xl border p-8
+      backdrop:bg-black/70 backdrop:backdrop-blur-sm
+
+      dark:bg-[#071312] dark:border-emerald-900/60 dark:text-emerald-100
+      bg-white border-emerald-200/60 text-emerald-900
+
+      /* mobile: bottom sheet */
+      max-sm:fixed max-sm:bottom-0 max-sm:left-0 max-sm:right-0
+      max-sm:top-auto max-sm:m-0
+      max-sm:w-full max-sm:max-w-full
+      max-sm:rounded-b-none max-sm:rounded-t-2xl
+
+      transition-colors duration-500
+    "
+    aria-labelledby="authWarningTitle">
+
+    <div class="wa-auth-kicker wa-auth-kicker--warning">Предупреждение Гильдии</div>
+    <h3 id="authWarningTitle" class="wa-auth-title wa-auth-title--small">Требуется авторизация</h3>
+    <p class="wa-auth-text">
+      Для размещения контракта необходимо авторизоваться или зарегистрироваться.
+      Желаете продолжить?
+    </p>
+
+    <div class="wa-auth-actions">
+      <button id="authWarningCancelBtn" class="wa-auth-btn wa-auth-btn--secondary" type="button">
+        Отказаться
+      </button>
+      <button id="authWarningContinueBtn" class="wa-auth-btn wa-auth-btn--primary" type="button">
+        Продолжить
+      </button>
+    </div>
+  </dialog>
+
+  <!-- ===================== /MODALS ===================== -->
+
   <!-- GUILD CONTRACTS -->
   <section id="contracts" class="scroll-mt-24 relative py-24 overflow-hidden
     dark:bg-[#061311] bg-[#f0f7f2] transition-colors duration-500">
 
-    <!-- subtle pattern overlay -->
     <div class="absolute inset-0 opacity-10 
       bg-[radial-gradient(rgba(16,185,129,0.3)_1px,transparent_1px)]
       bg-[size:40px_40px]">
@@ -397,7 +404,6 @@
 
     <div class="relative max-w-7xl mx-auto px-6">
 
-      <!-- Section header -->
       <div class="text-center mb-16">
         <h2 class="text-3xl md:text-4xl font-semibold 
           dark:text-emerald-200 text-emerald-900
@@ -409,15 +415,15 @@
           dark:text-emerald-400/60 text-emerald-700/70 transition-colors duration-500">
           6 контрактов доступно
         </p>
-        <!-- Кнопка открытия двухэтапной формы -->
-      <div class="mt-8 flex justify-center">
-        <button
-          id="openContractFormBtn"
-          class="px-8 py-3 bg-gradient-to-r from-amber-700 to-amber-500 text-black font-semibold rounded-md transition duration-300 shadow-[0_0_25px_rgba(251,191,36,0.4)] hover:shadow-[0_0_45px_rgba(251,191,36,0.7)] hover:scale-105 text-sm tracking-widest uppercase"
-        >
-          ✦ Разместить Контракт
-        </button>
-      </div>
+        <div class="mt-8 flex justify-center">
+          <button id="openContractFormBtn"
+            class="px-8 py-3 bg-gradient-to-r from-amber-700 to-amber-500 text-black font-semibold rounded-md 
+              transition duration-300 
+              shadow-[0_0_25px_rgba(251,191,36,0.4)] hover:shadow-[0_0_45px_rgba(251,191,36,0.7)] 
+              hover:scale-105 text-sm tracking-widest uppercase">
+            ✦ Разместить Контракт
+          </button>
+        </div>
       </div>
 
       <!-- MAIN GRID -->
@@ -428,22 +434,17 @@
           <div class="grid md:grid-cols-2 xl:grid-cols-3 sm:grid-cols-2 gap-10">
 
             <!-- Card 1 -->
-            <div class="group border rounded-xl overflow-hidden 
-              transition duration-500
+            <div class="group border rounded-xl overflow-hidden transition duration-500
               dark:bg-[#0b1f1c] dark:border-emerald-900/40 dark:hover:border-emerald-400/50
               dark:shadow-[0_0_25px_rgba(0,0,0,0.6)]
               bg-white border-emerald-200/60 hover:border-emerald-500/50
               shadow-[0_4px_20px_rgba(6,95,70,0.08)] hover:shadow-[0_4px_30px_rgba(6,95,70,0.15)]">
-
               <div class="h-48 bg-[url('/images/wedya.jpg')] bg-cover bg-center opacity-80"></div>
-
               <div class="p-6">
-                <h3 class="text-lg mb-3
-                  dark:text-emerald-200 text-emerald-900 transition-colors duration-500">
+                <h3 class="text-lg mb-3 dark:text-emerald-200 text-emerald-900 transition-colors duration-500">
                   Знаки и Заклинания: Путь Ведьмака
                 </h3>
-                <p class="text-sm mb-6 leading-relaxed
-                  dark:text-emerald-200/60 text-emerald-800/70 transition-colors duration-500">
+                <p class="text-sm mb-6 leading-relaxed dark:text-emerald-200/60 text-emerald-800/70 transition-colors duration-500">
                   Освой путь боевых знаков: Аард, Игни, Аксий, Ирден и Квен.
                   Познай древнюю магию охотников на чудовищ.
                 </p>
@@ -458,21 +459,16 @@
             </div>
 
             <!-- Card 2 -->
-            <div class="group border rounded-xl overflow-hidden 
-              transition duration-500
+            <div class="group border rounded-xl overflow-hidden transition duration-500
               dark:bg-[#0b1f1c] dark:border-emerald-900/40 dark:hover:border-emerald-400/50
               bg-white border-emerald-200/60 hover:border-emerald-500/50
               shadow-[0_4px_20px_rgba(6,95,70,0.08)] hover:shadow-[0_4px_30px_rgba(6,95,70,0.15)]">
-
               <div class="h-48 bg-[url('/images/wedya.jpg')] bg-cover bg-center opacity-80"></div>
-
               <div class="p-6">
-                <h3 class="text-lg mb-3
-                  dark:text-emerald-200 text-emerald-900 transition-colors duration-500">
+                <h3 class="text-lg mb-3 dark:text-emerald-200 text-emerald-900 transition-colors duration-500">
                   Бестиарий Севера
                 </h3>
-                <p class="text-sm mb-6 leading-relaxed
-                  dark:text-emerald-200/60 text-emerald-800/70 transition-colors duration-500">
+                <p class="text-sm mb-6 leading-relaxed dark:text-emerald-200/60 text-emerald-800/70 transition-colors duration-500">
                   Полное руководство по чудовищам Континента.
                   Узнай их слабости и способы охоты.
                 </p>
@@ -485,21 +481,16 @@
             </div>
 
             <!-- Card 3 -->
-            <div class="group border rounded-xl overflow-hidden 
-              transition duration-500
+            <div class="group border rounded-xl overflow-hidden transition duration-500
               dark:bg-[#0b1f1c] dark:border-emerald-900/40 dark:hover:border-emerald-400/50
               bg-white border-emerald-200/60 hover:border-emerald-500/50
               shadow-[0_4px_20px_rgba(6,95,70,0.08)] hover:shadow-[0_4px_30px_rgba(6,95,70,0.15)]">
-
               <div class="h-48 bg-[url('/images/wedya.jpg')] bg-cover bg-center opacity-80"></div>
-
               <div class="p-6">
-                <h3 class="text-lg mb-3
-                  dark:text-emerald-200 text-emerald-900 transition-colors duration-500">
+                <h3 class="text-lg mb-3 dark:text-emerald-200 text-emerald-900 transition-colors duration-500">
                   Алхимия Зелий и Бомб
                 </h3>
-                <p class="text-sm mb-6 leading-relaxed
-                  dark:text-emerald-200/60 text-emerald-800/70 transition-colors duration-500">
+                <p class="text-sm mb-6 leading-relaxed dark:text-emerald-200/60 text-emerald-800/70 transition-colors duration-500">
                   Тайное искусство зельеварения.
                   Освой смертельные смеси ведьмаков.
                 </p>
@@ -522,65 +513,45 @@
             dark:bg-[#0b1f1c] dark:border-emerald-900/40 dark:shadow-[0_0_30px_rgba(0,0,0,0.6)]
             bg-white border-emerald-200/60 shadow-[0_4px_20px_rgba(6,95,70,0.08)]
             transition-colors duration-500">
-
             <h3 class="font-semibold mb-6 flex items-center gap-2
               dark:text-emerald-300 text-emerald-800 transition-colors duration-500">
               🜂 Ваши Испытания
             </h3>
-
             <div class="mb-6">
-              <div class="flex justify-between text-xs mb-1
-                dark:text-emerald-400/70 text-emerald-700/80 transition-colors duration-500">
-                <span>Путь Ведьмака</span>
-                <span>67%</span>
+              <div class="flex justify-between text-xs mb-1 dark:text-emerald-400/70 text-emerald-700/80 transition-colors duration-500">
+                <span>Путь Ведьмака</span><span>67%</span>
               </div>
-              <div class="w-full h-2 rounded
-                dark:bg-emerald-900/40 bg-emerald-100 transition-colors duration-500">
+              <div class="w-full h-2 rounded dark:bg-emerald-900/40 bg-emerald-100 transition-colors duration-500">
                 <div class="h-2 bg-gradient-to-r from-emerald-500 to-emerald-300 rounded" style="width:67%"></div>
               </div>
             </div>
-
             <div class="mb-6">
-              <div class="flex justify-between text-xs mb-1
-                dark:text-emerald-400/70 text-emerald-700/80 transition-colors duration-500">
-                <span>Алхимия Зелий</span>
-                <span>23%</span>
+              <div class="flex justify-between text-xs mb-1 dark:text-emerald-400/70 text-emerald-700/80 transition-colors duration-500">
+                <span>Алхимия Зелий</span><span>23%</span>
               </div>
-              <div class="w-full h-2 rounded
-                dark:bg-emerald-900/40 bg-emerald-100 transition-colors duration-500">
+              <div class="w-full h-2 rounded dark:bg-emerald-900/40 bg-emerald-100 transition-colors duration-500">
                 <div class="h-2 bg-gradient-to-r from-amber-500 to-amber-300 rounded" style="width:23%"></div>
               </div>
             </div>
-
             <div class="mb-8">
-              <div class="flex justify-between text-xs mb-1
-                dark:text-emerald-400/70 text-emerald-700/80 transition-colors duration-500">
-                <span>Фехтование</span>
-                <span>89%</span>
+              <div class="flex justify-between text-xs mb-1 dark:text-emerald-400/70 text-emerald-700/80 transition-colors duration-500">
+                <span>Фехтование</span><span>89%</span>
               </div>
-              <div class="w-full h-2 rounded
-                dark:bg-emerald-900/40 bg-emerald-100 transition-colors duration-500">
+              <div class="w-full h-2 rounded dark:bg-emerald-900/40 bg-emerald-100 transition-colors duration-500">
                 <div class="h-2 bg-gradient-to-r from-emerald-400 to-emerald-200 rounded" style="width:89%"></div>
               </div>
             </div>
-
-            <div class="border-t pt-6
-              dark:border-emerald-900/40 border-emerald-200/60 transition-colors duration-500">
-              <div class="flex justify-between text-sm mb-2
-                dark:text-emerald-300 text-emerald-800 transition-colors duration-500">
-                <span>Опыт Ведьмака</span>
-                <span>8 540 / 10 000 ОП</span>
+            <div class="border-t pt-6 dark:border-emerald-900/40 border-emerald-200/60 transition-colors duration-500">
+              <div class="flex justify-between text-sm mb-2 dark:text-emerald-300 text-emerald-800 transition-colors duration-500">
+                <span>Опыт Ведьмака</span><span>8 540 / 10 000 ОП</span>
               </div>
-              <div class="w-full h-3 rounded
-                dark:bg-emerald-900/40 bg-emerald-100 transition-colors duration-500">
+              <div class="w-full h-3 rounded dark:bg-emerald-900/40 bg-emerald-100 transition-colors duration-500">
                 <div class="h-3 bg-gradient-to-r from-amber-600 to-amber-400 rounded" style="width:85%"></div>
               </div>
-              <p class="text-xs mt-2
-                dark:text-emerald-400/60 text-emerald-700/60 transition-colors duration-500">
+              <p class="text-xs mt-2 dark:text-emerald-400/60 text-emerald-700/60 transition-colors duration-500">
                 До уровня 36 осталось 1 460 ОП
               </p>
             </div>
-
           </div>
 
           <!-- Легенды Академии -->
@@ -588,81 +559,53 @@
             dark:bg-[#0b1f1c] dark:border-emerald-900/40 dark:shadow-[0_0_30px_rgba(0,0,0,0.6)]
             bg-white border-emerald-200/60 shadow-[0_4px_20px_rgba(6,95,70,0.08)]
             transition-colors duration-500">
-
             <h3 class="font-semibold mb-6 flex items-center gap-2
               text-amber-600 dark:text-amber-400 transition-colors duration-500">
               🏆 Легенды Академии
             </h3>
-
             <div class="space-y-4 text-sm">
 
               <div class="flex items-center justify-between p-3 rounded-lg border
                 dark:bg-emerald-900/20 dark:border-emerald-900/40
-                bg-emerald-50/80 border-emerald-200/60
-                transition-colors duration-500">
+                bg-emerald-50/80 border-emerald-200/60 transition-colors duration-500">
                 <div class="flex items-center gap-3">
                   <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold
-                    bg-gradient-to-br from-gray-300 to-gray-500 text-black">
-                    ЯН
-                  </div>
+                    bg-gradient-to-br from-gray-300 to-gray-500 text-black">ЯН</div>
                   <div>
-                    <p class="dark:text-emerald-200 text-emerald-900 transition-colors duration-500">
-                      Якуб из Новиграда
-                    </p>
-                    <p class="text-xs dark:text-emerald-400/60 text-emerald-700/60 transition-colors duration-500">
-                      Страж Континента
-                    </p>
+                    <p class="dark:text-emerald-200 text-emerald-900 transition-colors duration-500">Якуб из Новиграда</p>
+                    <p class="text-xs dark:text-emerald-400/60 text-emerald-700/60 transition-colors duration-500">Страж Континента</p>
                   </div>
                 </div>
-                <span class="dark:text-emerald-300 text-emerald-700 transition-colors duration-500">
-                  42 ур.
-                </span>
+                <span class="dark:text-emerald-300 text-emerald-700 transition-colors duration-500">42 ур.</span>
               </div>
 
               <div class="flex items-center justify-between p-3 rounded-lg border
                 dark:bg-emerald-900/20 dark:border-emerald-900/40
-                bg-emerald-50/80 border-emerald-200/60
-                transition-colors duration-500">
+                bg-emerald-50/80 border-emerald-200/60 transition-colors duration-500">
                 <div class="flex items-center gap-3">
                   <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold
-                    bg-gradient-to-br from-emerald-400 to-emerald-600 text-black">
-                    ЗС
-                  </div>
+                    bg-gradient-to-br from-emerald-400 to-emerald-600 text-black">ЗС</div>
                   <div>
-                    <p class="dark:text-emerald-200 text-emerald-900 transition-colors duration-500">
-                      Зоса Стенборг
-                    </p>
-                    <p class="text-xs dark:text-emerald-400/60 text-emerald-700/60 transition-colors duration-500">
-                      Мастер Теней
-                    </p>
+                    <p class="dark:text-emerald-200 text-emerald-900 transition-colors duration-500">Зоса Стенборг</p>
+                    <p class="text-xs dark:text-emerald-400/60 text-emerald-700/60 transition-colors duration-500">Мастер Теней</p>
                   </div>
                 </div>
-                <span class="dark:text-emerald-300 text-emerald-700 transition-colors duration-500">
-                  38 ур.
-                </span>
+                <span class="dark:text-emerald-300 text-emerald-700 transition-colors duration-500">38 ур.</span>
               </div>
 
               <div class="flex items-center justify-between p-3 rounded-lg border
                 dark:bg-emerald-900/20 dark:border-emerald-900/40
-                bg-emerald-50/80 border-emerald-200/60
-                transition-colors duration-500">
+                bg-emerald-50/80 border-emerald-200/60 transition-colors duration-500">
                 <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded-full overflow-hidden
-                    bg-gradient-to-br from-emerald-400 to-emerald-600">
+                  <div class="w-9 h-9 rounded-full overflow-hidden bg-gradient-to-br from-emerald-400 to-emerald-600">
                     <img src="./images/svyat.webp" alt="" class="w-full h-full object-cover" />
                   </div>
                   <div>
-                    <p class="dark:text-emerald-200 text-emerald-900 transition-colors duration-500">
-                      Свят из ниоткуда
-                    </p>
-                    <p class="text-xs dark:text-emerald-400/60 text-emerald-700/60 transition-colors duration-500">
-                      Мастер Теней
-                    </p>
+                    <p class="dark:text-emerald-200 text-emerald-900 transition-colors duration-500">Свят из ниоткуда</p>
+                    <p class="text-xs dark:text-emerald-400/60 text-emerald-700/60 transition-colors duration-500">Мастер Теней</p>
                   </div>
                 </div>
-                <span class="dark:text-emerald-300 text-emerald-700 transition-colors duration-500">
-                  38 ур.
-                </span>
+                <span class="dark:text-emerald-300 text-emerald-700 transition-colors duration-500">38 ур.</span>
               </div>
 
             </div>
@@ -686,12 +629,10 @@
     <div class="relative max-w-7xl mx-auto px-6 py-20">
       <div class="grid md:grid-cols-3 gap-12">
 
-        <!-- LEFT -->
         <div>
           <div class="flex items-center gap-3 mb-6">
             <img src="./images/logo.png" alt="Логотип" class="w-10 h-10 object-contain scale-150" />
-            <h3 class="text-lg font-semibold
-              dark:text-emerald-300 text-emerald-900 transition-colors duration-500">
+            <h3 class="text-lg font-semibold dark:text-emerald-300 text-emerald-900 transition-colors duration-500">
               Академия Ведьмаков
             </h3>
           </div>
@@ -700,19 +641,14 @@
             Основана в 1173 по Континентальному летоисчислению.
             Знание — единственное оружие, которое не тупится.
           </p>
-          <p class="tracking-[0.6em] text-xs
-            dark:text-emerald-500/70 text-emerald-700/60 transition-colors duration-500">
+          <p class="tracking-[0.6em] text-xs dark:text-emerald-500/70 text-emerald-700/60 transition-colors duration-500">
             ᚢ ᛈ ᚦ ᚱ ᛟ ᚾ ᛉ
           </p>
         </div>
 
-        <!-- CENTER -->
         <div>
-          <h4 class="font-semibold mb-6 text-amber-600 dark:text-amber-400 transition-colors duration-500">
-            Знания
-          </h4>
-          <ul class="space-y-3 text-sm
-            dark:text-emerald-300/70 text-emerald-800/80 transition-colors duration-500">
+          <h4 class="font-semibold mb-6 text-amber-600 dark:text-amber-400 transition-colors duration-500">Знания</h4>
+          <ul class="space-y-3 text-sm dark:text-emerald-300/70 text-emerald-800/80 transition-colors duration-500">
             <li><a href="#" class="dark:hover:text-emerald-300 hover:text-emerald-600 transition">Контракты</a></li>
             <li><a href="#" class="dark:hover:text-emerald-300 hover:text-emerald-600 transition">Бестиарий</a></li>
             <li><a href="#" class="dark:hover:text-emerald-300 hover:text-emerald-600 transition">Алхимия</a></li>
@@ -720,13 +656,9 @@
           </ul>
         </div>
 
-        <!-- RIGHT -->
         <div>
-          <h4 class="font-semibold mb-6 text-amber-600 dark:text-amber-400 transition-colors duration-500">
-            Академия
-          </h4>
-          <ul class="space-y-3 text-sm
-            dark:text-emerald-300/70 text-emerald-800/80 transition-colors duration-500">
+          <h4 class="font-semibold mb-6 text-amber-600 dark:text-amber-400 transition-colors duration-500">Академия</h4>
+          <ul class="space-y-3 text-sm dark:text-emerald-300/70 text-emerald-800/80 transition-colors duration-500">
             <li><a href="#" class="dark:hover:text-emerald-300 hover:text-emerald-600 transition">О нас</a></li>
             <li><a href="#" class="dark:hover:text-emerald-300 hover:text-emerald-600 transition">Преподаватели</a></li>
             <li><a href="#" class="dark:hover:text-emerald-300 hover:text-emerald-600 transition">Гильдия</a></li>
@@ -736,7 +668,6 @@
 
       </div>
 
-      <!-- Divider -->
       <div class="flex items-center justify-center gap-6 my-16
         dark:text-amber-500/70 text-amber-700/70 transition-colors duration-500">
         <div class="h-px w-24 bg-gradient-to-r from-transparent via-amber-600 to-transparent"></div>
@@ -744,24 +675,21 @@
         <div class="h-px w-24 bg-gradient-to-r from-transparent via-amber-600 to-transparent"></div>
       </div>
 
-      <!-- Bottom row -->
       <div class="flex flex-col md:flex-row items-center justify-between text-xs gap-4
         dark:text-emerald-500/60 text-emerald-700/60 transition-colors duration-500">
-        <p>
-          © 1173–1274 Академия Ведьмаков.
-          Все контракты защищены законами Континента.
-        </p>
+        <p>© 1173–1274 Академия Ведьмаков. Все контракты защищены законами Континента.</p>
         <p class="tracking-widest dark:text-emerald-400/70 text-emerald-700/70 transition-colors duration-500">
           Пᚱ СТАРЫЙ ЯЗЫК
         </p>
       </div>
-
     </div>
   </footer>
 
 </body>
+<script type="module" src="/src/theme.js"></script>
 <script type="module" src="/src/main.js"></script>
 <script type="module" src="/src/order.js"></script>
 <script type="module" src="/src/auth.js"></script>
+<script type="module" src="/src/fontswitcher.js"></script>
 
 </html>

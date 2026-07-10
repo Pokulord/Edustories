@@ -1,25 +1,27 @@
 /* =====================================================================
- *  Вариант B — логика модального окна авторизации / регистрации
+ *  auth.js — логика авторизации / регистрации (нативный <dialog>)
  * ===================================================================== */
 
 (function () {
   "use strict";
 
-  const USERS_KEY = "witcherAcademyUsers";
-  const CURRENT_USER_KEY = "witcherAcademyLoggedInUser";
+  const USERS_KEY           = "witcherAcademyUsers";
+  const CURRENT_USER_KEY    = "witcherAcademyLoggedInUser";
   const POST_AUTH_INTENT_KEY = "witcherAcademyPostAuthIntent";
 
   const state = {
     mode: "login",
-    authOpen: false,
-    warningOpen: false,
     error: "",
     notice: "",
   };
 
+  /* ─── utils ─────────────────────────────────────────────────────── */
+
   function byId(id) {
     return document.getElementById(id);
   }
+
+  /* ─── storage ────────────────────────────────────────────────────── */
 
   function readUsers() {
     try {
@@ -65,9 +67,13 @@
     updateAuthButtons();
   }
 
+  /* ─── navigation ─────────────────────────────────────────────────── */
+
   function redirectToCabinet() {
     window.location.href = "cabinet.html";
   }
+
+  /* ─── ui helpers ─────────────────────────────────────────────────── */
 
   function setMessage(node, text) {
     if (!node) return;
@@ -75,41 +81,35 @@
     node.hidden = !text;
   }
 
-  function lockScroll(locked) {
-    document.body.style.overflow = locked ? "hidden" : "";
-  }
-
-  function syncScrollLock() {
-    lockScroll(state.authOpen || state.warningOpen);
-  }
+  /* ─── auth buttons ───────────────────────────────────────────────── */
 
   function updateAuthButtons() {
-    const user = getCurrentUser();
+    const user  = getCurrentUser();
     const label = user ? "Кабинет · " + user.username : "Авторизация";
 
-    const authButtons = [byId("authActionBtn"), byId("mobileAuthAction")];
-    const logoutButtons = [byId("authLogoutBtn"), byId("mobileLogoutAction")];
-
-    authButtons.forEach(function (btn) {
+    [byId("authActionBtn"), byId("mobileAuthAction")].forEach(function (btn) {
       if (!btn) return;
       btn.textContent = label;
       btn.classList.remove("is-hidden");
     });
 
-    logoutButtons.forEach(function (btn) {
+    [byId("authLogoutBtn"), byId("mobileLogoutAction")].forEach(function (btn) {
       if (!btn) return;
       if (user) btn.classList.remove("is-hidden");
-      else btn.classList.add("is-hidden");
+      else       btn.classList.add("is-hidden");
     });
   }
 
+  /* ─── auth modal render ──────────────────────────────────────────── */
+
   function applyAuthMode() {
     const isLogin = state.mode === "login";
-    const title = byId("authModalTitle");
+
+    const title  = byId("authModalTitle");
     const submit = byId("authSubmitButton");
     const toggle = byId("authToggleMode");
 
-    if (title) title.textContent = isLogin ? "Авторизация" : "Регистрация";
+    if (title)  title.textContent  = isLogin ? "Авторизация" : "Регистрация";
     if (submit) submit.textContent = isLogin ? "Войти" : "Зарегистрироваться";
     if (toggle) {
       toggle.textContent = isLogin
@@ -121,68 +121,84 @@
   function renderAuthState() {
     applyAuthMode();
     setMessage(byId("authNoticeBox"), state.notice);
-    setMessage(byId("authErrorBox"), state.error);
+    setMessage(byId("authErrorBox"),  state.error);
   }
 
+  /* ─── dialog open / close ────────────────────────────────────────── */
+
+  /**
+   * Открыть auth modal.
+   * Используем нативный showModal() — браузер сам блокирует скролл
+   * и добавляет inert на остальной контент.
+   */
   function openAuthModal(mode, notice) {
-    state.mode = mode || "login";
-    state.authOpen = true;
-    state.error = "";
+    state.mode   = mode   || "login";
+    state.error  = "";
     state.notice = notice || "";
 
-    const modal = byId("authModalBackdrop");
-    if (modal) {
-      modal.classList.add("is-open");
-      modal.setAttribute("aria-hidden", "false");
-    }
-
-    closeWarningModal();
     renderAuthState();
-    syncScrollLock();
 
+    const modal = byId("authModal");
+    if (!modal) return;
+
+    // Закрываем warning, если был открыт
+    const warning = byId("authWarningModal");
+    if (warning && warning.open) warning.close();
+
+    // showModal() бросит исключение, если уже открыт
+    if (!modal.open) modal.showModal();
+
+    // Фокус на поле ввода
     const username = byId("authUsername");
     if (username) {
-      window.setTimeout(function () {
-        username.focus();
-      }, 40);
+      window.setTimeout(function () { username.focus(); }, 40);
     }
   }
 
   function closeAuthModal() {
-    state.authOpen = false;
-    state.error = "";
+    state.error  = "";
     state.notice = "";
 
-    const modal = byId("authModalBackdrop");
-    if (modal) {
-      modal.classList.remove("is-open");
-      modal.setAttribute("aria-hidden", "true");
-    }
-
-    syncScrollLock();
+    const modal = byId("authModal");
+    if (modal && modal.open) modal.close();
   }
 
   function openWarningModal() {
-    state.warningOpen = true;
-    const modal = byId("authWarningBackdrop");
-    if (modal) {
-      modal.classList.add("is-open");
-      modal.setAttribute("aria-hidden", "false");
-    }
-    syncScrollLock();
+    const modal = byId("authWarningModal");
+    if (modal && !modal.open) modal.showModal();
   }
 
   function closeWarningModal() {
-    state.warningOpen = false;
-    const modal = byId("authWarningBackdrop");
-    if (modal) {
-      modal.classList.remove("is-open");
-      modal.setAttribute("aria-hidden", "true");
-    }
-    syncScrollLock();
+    const modal = byId("authWarningModal");
+    if (modal && modal.open) modal.close();
   }
 
+  /* ─── backdrop click helper ──────────────────────────────────────── */
+
+  /**
+   * Нативный <dialog> не закрывается по клику на ::backdrop автоматически.
+   * Определяем клик по бэкдропу через getBoundingClientRect:
+   * если клик вышел за пределы диалога — закрываем.
+   */
+  function bindBackdropClose(dialogEl, closeFn) {
+    if (!dialogEl) return;
+
+    dialogEl.addEventListener("click", function (e) {
+      const rect = dialogEl.getBoundingClientRect();
+      const clickedInside =
+        e.clientX >= rect.left &&
+        e.clientX <= rect.right &&
+        e.clientY >= rect.top  &&
+        e.clientY <= rect.bottom;
+
+      if (!clickedInside) closeFn();
+    });
+  }
+
+  /* ─── form submit ────────────────────────────────────────────────── */
+
   function handleAuthSubmit(event) {
+    // Предотвращаем нативное закрытие dialog от method="dialog"
     event.preventDefault();
 
     const usernameInput = byId("authUsername");
@@ -204,8 +220,10 @@
 
     const users = readUsers();
 
+    /* ── login ── */
     if (state.mode === "login") {
       const user = users[username];
+
       if (!user || user.password !== password) {
         state.error = "Неверное имя пользователя или пароль.";
         renderAuthState();
@@ -213,9 +231,9 @@
       }
 
       setCurrentUser({
-        username: username,
+        username:     username,
         registeredAt: user.registeredAt,
-        loginAt: new Date().toISOString(),
+        loginAt:      new Date().toISOString(),
       });
 
       updateAuthButtons();
@@ -224,6 +242,7 @@
       return;
     }
 
+    /* ── register ── */
     if (users[username]) {
       state.error = "Имя пользователя уже занято.";
       renderAuthState();
@@ -231,77 +250,100 @@
     }
 
     users[username] = {
-      password: password,
+      password:     password,
       registeredAt: new Date().toISOString(),
     };
     writeUsers(users);
 
-    state.mode = "login";
-    state.error = "";
+    state.mode   = "login";
+    state.error  = "";
     state.notice = "Регистрация успешна. Теперь войдите в систему.";
 
     const form = byId("authForm");
     if (form) form.reset();
+
     renderAuthState();
   }
 
+  /* ─── bind: auth modal ───────────────────────────────────────────── */
+
   function bindAuthModal() {
-    const modal = byId("authModalBackdrop");
-    const closeBtn = byId("authModalCloseBtn");
+    const modal     = byId("authModal");
+    const closeBtn  = byId("authModalCloseBtn");
     const toggleBtn = byId("authToggleMode");
-    const form = byId("authForm");
+    const form      = byId("authForm");
 
-    modal?.addEventListener("click", function (event) {
-      if (event.target === modal) closeAuthModal();
-    });
+    // Закрытие по backdrop
+    bindBackdropClose(modal, closeAuthModal);
 
+    // Кнопка X
     closeBtn?.addEventListener("click", closeAuthModal);
 
+    // Переключение login ↔ register
     toggleBtn?.addEventListener("click", function () {
-      state.mode = state.mode === "login" ? "register" : "login";
-      state.error = "";
+      state.mode   = state.mode === "login" ? "register" : "login";
+      state.error  = "";
       state.notice = "";
       renderAuthState();
     });
 
+    // Отправка формы
     form?.addEventListener("submit", handleAuthSubmit);
+
+    // Нативное событие закрытия (Esc браузером или dialog.close())
+    // Синхронизируем state, чтобы не было рассинхрона
+    modal?.addEventListener("close", function () {
+      state.error  = "";
+      state.notice = "";
+    });
   }
 
+  /* ─── bind: warning modal ────────────────────────────────────────── */
+
   function bindWarningModal() {
-    const modal = byId("authWarningBackdrop");
-    const cancelBtn = byId("authWarningCancelBtn");
+    const modal       = byId("authWarningModal");
+    const cancelBtn   = byId("authWarningCancelBtn");
     const continueBtn = byId("authWarningContinueBtn");
 
-    modal?.addEventListener("click", function (event) {
-      if (event.target === modal) closeWarningModal();
-    });
+    bindBackdropClose(modal, closeWarningModal);
 
     cancelBtn?.addEventListener("click", closeWarningModal);
 
     continueBtn?.addEventListener("click", function () {
       localStorage.setItem(POST_AUTH_INTENT_KEY, "create-contract");
+
       const mode = hasRegisteredUsers() ? "login" : "register";
       const notice = hasRegisteredUsers()
         ? "Авторизуйтесь, чтобы получить доступ к размещению контрактов."
         : "Сначала зарегистрируйтесь, чтобы получить доступ к размещению контрактов.";
+
       openAuthModal(mode, notice);
+    });
+
+    modal?.addEventListener("close", function () {
+      // ничего не нужно, state не хранит warningOpen
     });
   }
 
+  /* ─── bind: header buttons ───────────────────────────────────────── */
+
   function bindHeaderButtons() {
-    const authButtons = [byId("authActionBtn"), byId("mobileAuthAction")];
-    const logoutButtons = [byId("authLogoutBtn"), byId("mobileLogoutAction")];
+    const authButtons   = [byId("authActionBtn"),  byId("mobileAuthAction")];
+    const logoutButtons = [byId("authLogoutBtn"),   byId("mobileLogoutAction")];
 
     function onAuthClick(event) {
       event.preventDefault();
+
       if (isLoggedIn()) {
         redirectToCabinet();
         return;
       }
+
       const mode = hasRegisteredUsers() ? "login" : "register";
       const notice = hasRegisteredUsers()
         ? "Войдите в систему Академии Ведьмаков."
         : "У вас ещё нет аккаунта. Сначала создайте его в Академии Ведьмаков.";
+
       openAuthModal(mode, notice);
     }
 
@@ -321,16 +363,20 @@
     });
   }
 
+  /* ─── bind: Escape ───────────────────────────────────────────────── */
+
+  /**
+   * Нативный <dialog> уже закрывается по Escape самостоятельно.
+   * Дополнительно слушаем только если нужна кастомная логика.
+   * Здесь — просто оставляем браузерное поведение (ничего не делаем).
+   */
   function bindEsc() {
-    document.addEventListener("keydown", function (event) {
-      if (event.key !== "Escape") return;
-      if (state.authOpen) {
-        closeAuthModal();
-        return;
-      }
-      if (state.warningOpen) closeWarningModal();
-    });
+    // Нативный Escape обрабатывается браузером автоматически.
+    // Событие "close" на dialog отловит закрытие и очистит state.
+    // Дополнительный keydown не нужен.
   }
+
+  /* ─── init ───────────────────────────────────────────────────────── */
 
   function init() {
     updateAuthButtons();
@@ -341,16 +387,20 @@
     renderAuthState();
   }
 
+  /* ─── public API ─────────────────────────────────────────────────── */
+
   window.WitcherAuth = {
-    isLoggedIn: isLoggedIn,
-    getCurrentUser: getCurrentUser,
-    logout: logout,
-    openAuthModal: openAuthModal,
+    isLoggedIn:              isLoggedIn,
+    getCurrentUser:          getCurrentUser,
+    logout:                  logout,
+    openAuthModal:           openAuthModal,
     openAuthRequiredWarning: openWarningModal,
-    updateAuthButtons: updateAuthButtons,
-    redirectToCabinet: redirectToCabinet,
-    postAuthIntentKey: POST_AUTH_INTENT_KEY,
+    updateAuthButtons:       updateAuthButtons,
+    redirectToCabinet:       redirectToCabinet,
+    postAuthIntentKey:       POST_AUTH_INTENT_KEY,
   };
+
+  /* ─── bootstrap ──────────────────────────────────────────────────── */
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);

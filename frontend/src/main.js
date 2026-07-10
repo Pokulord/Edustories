@@ -1,27 +1,5 @@
 import './style.css';
-
-/* ─── Theme Toggle ─────────────────────────────────────────── */
-const html = document.documentElement
-const themeToggle = document.getElementById('themeToggle')
-
-// Читаем сохранённую тему или системную
-const savedTheme = localStorage.getItem('theme')
-if (savedTheme === 'light') {
-  html.classList.remove('dark')
-} else {
-  html.classList.add('dark')
-}
-
-themeToggle?.addEventListener('click', () => {
-  const isDark = html.classList.toggle('dark')
-  localStorage.setItem('theme', isDark ? 'dark' : 'light')
-
-  // Fireflies: показываем только в тёмной теме
-  const fireflies = document.getElementById('fireflies')
-  if (fireflies) {
-    fireflies.style.display = isDark ? 'block' : 'none'
-  }
-})
+import './fonts.css';
 
 /* ─── Burger Menu ──────────────────────────────────────────── */
 const burger = document.getElementById('burger')
