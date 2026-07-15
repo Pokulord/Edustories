@@ -63,7 +63,7 @@ class UserEmailAlreadyInUseError(BaseUserError):
     error_slug = "email_already_in_use"
 
     def __init__(self, email: Email):
-        message = f"Почта {email} уже используется"
+        message = f"Почта {email.value} уже используется"
         super().__init__(message, metadata={"email": email})
 
 

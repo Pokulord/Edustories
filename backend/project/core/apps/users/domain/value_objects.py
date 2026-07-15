@@ -11,7 +11,7 @@ class Email:
 
     def __post_init__(self):
         # Нормализация
-        normalized = str(self.value.strip).lower()
+        normalized = str(self.value.strip()).lower()
         object.__setattr__(self, 'value', normalized)
 
         if not self._is_valid_format(self.value):

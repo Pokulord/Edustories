@@ -8,6 +8,7 @@ class UserRoles(str, Enum):
     INSTRUCTOR = "Педагог"
     ADMIN = "Админ"
 
+
 class UserStatuses(str, Enum):
     """
     Перечисление для статусов пользователя
@@ -16,3 +17,4 @@ class UserStatuses(str, Enum):
     PENDING = "В ожидании подтверждения"
     BLOCKED = "Заблокирован"
     DELETED = "Удалён"
+
