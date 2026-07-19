@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="ru" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <script>
+    (function () {
+      var theme = localStorage.getItem("witcherAcademyTheme");
+      if (theme !== "light") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    })();
+  </script>
+
+  <title>Авторизация — Академия Ведьмаков</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&subset=cyrillic" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { fontFamily: { cormorant: ['Cormorant Garamond', 'serif'] } } }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Cormorant Garamond', serif; }
+
+    /* ── Firefly ── */
+    .firefly {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(52, 211, 153, 0.9);
+      box-shadow: 0 0 8px 2px rgba(52, 211, 153, 0.4);
+      animation: ff-drift var(--dur, 9s) var(--delay, 0s) infinite ease-in-out;
+      pointer-events: none;
+    }
+    @keyframes ff-drift {
+      0%   { transform: translate(0,0) scale(1); opacity: 0; }
+      15%  { opacity: 1; }
+      50%  { transform: translate(var(--tx,50px), var(--ty,-70px)) scale(1.3); opacity: 0.7; }
+      85%  { opacity: 0.3; }
+      100% { transform: translate(var(--tx2,-40px), var(--ty2,50px)) scale(0.7); opacity: 0; }
+    }
+
+    /* ── Rune float ── */
+    @keyframes runeFloat {
+      0%, 100% { transform: translateY(0px); opacity: 0.45; }
+      50%       { transform: translateY(-7px); opacity: 0.75; }
+    }
+    .rune-float { animation: runeFloat 5s ease-in-out infinite; }
+
+    /* ── Card ── */
+    .wa-card {
+      box-shadow:
+        0 0 80px rgba(16,185,129,0.07),
+        0 25px 70px rgba(0,0,0,0.45),
+        inset 0 1px 0 rgba(52,211,153,0.06);
+    }
+    html:not(.dark) .wa-card {
+      box-shadow:
+        0 0 40px rgba(6,95,70,0.07),
+        0 20px 50px rgba(0,0,0,0.07);
+    }
+
+    /* ── Input ── */
+    .wa-input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.75rem;
+      border-radius: 0.75rem;
+      font-size: 0.9rem;
+      font-family: 'Cormorant Garamond', serif;
+      border: 1px solid;
+      transition: border-color 0.25s, box-shadow 0.25s, background 0.5s;
+      outline: none;
+    }
+    .wa-input--right { padding-right: 3rem; }
+
+    html.dark .wa-input {
+      background: rgba(6, 40, 30, 0.5);
+      border-color: rgba(52,211,153,0.18);
+      color: #d1fae5;
+    }
+    html.dark .wa-input::placeholder { color: rgba(52,211,153,0.3); }
+    html.dark .wa-input:focus {
+      border-color: rgba(52,211,153,0.55);
+      box-shadow: 0 0 0 3px rgba(52,211,153,0.09), 0 0 18px rgba(52,211,153,0.06);
+    }
+
+    html:not(.dark) .wa-input {
+      background: rgba(236,253,245,0.6);
+      border-color: rgba(6,95,70,0.18);
+      color: #064e3b;
+    }
+    html:not(.dark) .wa-input::placeholder { color: rgba(6,95,70,0.35); }
+    html:not(.dark) .wa-input:focus {
+      border-color: rgba(6,95,70,0.45);
+      box-shadow: 0 0 0 3px rgba(6,95,70,0.08);
+    }
+
+    /* ── Input invalid state ── */
+    .wa-input.is-invalid {
+      border-color: rgba(239,68,68,0.6) !important;
+      box-shadow: 0 0 0 3px rgba(239,68,68,0.08) !important;
+    }
+
+    /* ── Buttons ── */
+    .wa-btn-primary {
+      background: linear-gradient(135deg, #92400e, #b45309, #d97706, #f59e0b);
+      color: #000;
+      font-weight: 700;
+      font-family: 'Cormorant Garamond', serif;
+      letter-spacing: 0.12em;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 0.75rem;
+      width: 100%;
+      padding: 0.9rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 0 28px rgba(251,191,36,0.32);
+      transition: box-shadow 0.3s, transform 0.2s;
+    }
+    .wa-btn-primary:hover {
+      box-shadow: 0 0 50px rgba(251,191,36,0.6);
+      transform: translateY(-1px);
+    }
+    .wa-btn-primary:active { transform: translateY(0); }
+    .wa-btn-primary:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .wa-btn-secondary {
+      background: transparent;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
+      border-radius: 0.75rem;
+      width: 100%;
+      padding: 0.85rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.3s;
+    }
+    html.dark .wa-btn-secondary {
+      border: 1px solid rgba(52,211,153,0.25);
+      color: rgba(209,250,229,0.65);
+    }
+    html.dark .wa-btn-secondary:hover {
+      background: rgba(52,211,153,0.07);
+      border-color: rgba(52,211,153,0.45);
+      color: #d1fae5;
+    }
+    html:not(.dark) .wa-btn-secondary {
+      border: 1px solid rgba(6,95,70,0.2);
+      color: rgba(6,78,59,0.65);
+    }
+    html:not(.dark) .wa-btn-secondary:hover {
+      background: rgba(236,253,245,0.8);
+      border-color: rgba(6,95,70,0.4);
+      color: #064e3b;
+    }
+
+    /* ── Tabs ── */
+    .wa-tab {
+      position: relative;
+      padding-bottom: 0.75rem;
+      font-size: 1.1rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      transition: color 0.3s;
+    }
+    .wa-tab::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; left: 50%; right: 50%;
+      height: 2px;
+      background: linear-gradient(90deg, #10b981, #34d399);
+      box-shadow: 0 0 10px rgba(52,211,153,0.5);
+      border-radius: 2px;
+      transition: left 0.3s ease, right 0.3s ease;
+    }
+    .wa-tab.active::after { left: 0; right: 0; }
+    html.dark .wa-tab { color: rgba(209,250,229,0.45); }
+    html.dark .wa-tab.active { color: #d1fae5; }
+    html.dark .wa-tab:hover:not(.active) { color: rgba(209,250,229,0.75); }
+    html:not(.dark) .wa-tab { color: rgba(6,78,59,0.45); }
+    html:not(.dark) .wa-tab.active { color: #064e3b; }
+    html:not(.dark) .wa-tab:hover:not(.active) { color: rgba(6,78,59,0.75); }
+
+    /* ── Field icon ── */
+    .field-icon {
+      position: absolute;
+      left: 0.875rem;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+    html.dark .field-icon { color: rgba(52,211,153,0.5); }
+    html:not(.dark) .field-icon { color: rgba(6,95,70,0.5); }
+
+    /* ── Eye toggle ── */
+    .eye-btn {
+      position: absolute;
+      right: 0.875rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+      transition: color 0.2s, opacity 0.2s;
+    }
+    html.dark .eye-btn { color: rgba(52,211,153,0.5); }
+    html.dark .eye-btn:hover { color: rgba(52,211,153,0.9); }
+    html:not(.dark) .eye-btn { color: rgba(6,95,70,0.5); }
+    html:not(.dark) .eye-btn:hover { color: rgba(6,95,70,0.9); }
+
+    /* ── Checkbox ── */
+    .wa-checkbox {
+      appearance: none;
+      width: 17px; height: 17px;
+      flex-shrink: 0;
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+      margin-top: 2px;
+      transition: all 0.2s;
+    }
+    html.dark .wa-checkbox {
+      border: 1px solid rgba(52,211,153,0.35);
+      background: transparent;
+    }
+    html.dark .wa-checkbox:checked {
+      background: rgba(52,211,153,0.18);
+      border-color: rgba(52,211,153,0.65);
+    }
+    html:not(.dark) .wa-checkbox {
+      border: 1px solid rgba(6,95,70,0.3);
+      background: transparent;
+    }
+    html:not(.dark) .wa-checkbox:checked {
+      background: rgba(6,95,70,0.1);
+      border-color: rgba(6,95,70,0.65);
+    }
+    .wa-checkbox:checked::after {
+      content: '✓';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      font-size: 11px;
+      line-height: 1;
+      color: #34d399;
+    }
+    html:not(.dark) .wa-checkbox:checked::after { color: #059669; }
+
+    /* ── Error box ── */
+    .wa-error {
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+    html.dark .wa-error {
+      background: rgba(127,29,29,0.2);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #fca5a5;
+    }
+    html:not(.dark) .wa-error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+    }
+
+    /* ── Strength bar ── */
+    .strength-bar { transition: width 0.4s ease, background-color 0.4s ease; }
+
+    /* ── Divider ── */
+    .wa-divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .wa-divider-line { flex: 1; height: 1px; }
+    html.dark .wa-divider-line { background: rgba(52,211,153,0.1); }
+    html:not(.dark) .wa-divider-line { background: rgba(6,95,70,0.12); }
+    .wa-divider-text { font-size: 0.75rem; letter-spacing: 0.15em; }
+    html.dark .wa-divider-text { color: rgba(52,211,153,0.35); }
+    html:not(.dark) .wa-divider-text { color: rgba(6,95,70,0.4); }
+
+    /* ── Label / hint ── */
+    .wa-label {
+      display: block;
+      font-size: 0.88rem;
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.03em;
+    }
+    html.dark .wa-label { color: rgba(167,243,208,0.7); }
+    html:not(.dark) .wa-label { color: rgba(6,78,59,0.8); }
+
+    .wa-hint {
+      font-size: 0.78rem;
+      margin-top: 0.35rem;
+      padding-left: 0.25rem;
+    }
+    html.dark .wa-hint { color: rgba(52,211,153,0.4); }
+    html:not(.dark) .wa-hint { color: rgba(6,95,70,0.45); }
+
+    /* ── Link ── */
+    .wa-link {
+      transition: color 0.2s;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    html.dark .wa-link { color: rgba(52,211,153,0.65); }
+    html.dark .wa-link:hover { color: #34d399; }
+    html:not(.dark) .wa-link { color: rgba(6,95,70,0.7); }
+    html:not(.dark) .wa-link:hover { color: #065f46; }
+
+    /* ── Theme thumb ── */
+    html.dark #themeThumb { transform: translateX(0); }
+    html:not(.dark) #themeThumb { transform: translateX(2rem); }
+  </style>
+
+</head>
+
+<body class="scroll-smooth transition-colors duration-500
+             bg-black text-amber-100
+             dark:bg-black dark:text-amber-100">
+
+<!-- Фоновые изображения -->
+<div class="fixed inset-0 z-0 dark:block hidden
+  bg-[url('images/hero-bg.png')] bg-cover bg-center"></div>
+
+<div class="fixed inset-0 z-0 dark:hidden block
+  bg-[url('images/hero-bg-light.png')] bg-cover bg-center"></div>
+
+<!-- Затемняющий слой для тёмной темы -->
+<div class="fixed inset-0 z-10 dark:block hidden
+  bg-gradient-to-b from-[#071312]/80 via-[#071312]/70 to-black"></div>
+
+<!-- Осветляющий слой для светлой темы -->
+<div class="fixed inset-0 z-10 dark:hidden block
+  bg-gradient-to-b from-white/30 via-white/10 to-white/60"></div>
+
+<!-- Декоративное свечение для тёмной темы -->
+<div class="fixed inset-0 z-10 dark:block hidden
+  bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.25),transparent_60%)]"></div>
+
+<!-- Декоративное свечение для светлой темы -->
+<div class="fixed inset-0 z-10 dark:hidden block
+  bg-[radial-gradient(ellipse_at_top,rgba(200,230,210,0.4),transparent_70%)]"></div>
+
+<!-- ✅ Верхняя панель -->
+<div class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-6 py-5">
+  <a href="/" class="text-sm dark:text-emerald-400/65 text-emerald-700/65">
+    ← На главную
+  </a>
+
+  <button id="themeToggle"
+    class="relative w-16 h-8 rounded-full
+           dark:bg-emerald-900/80 bg-emerald-100
+           border dark:border-emerald-700/40 border-emerald-300/60">
+    <span id="themeThumb"
+      class="absolute top-1 left-1 w-6 h-6 rounded-full
+             dark:bg-emerald-400 bg-white transition-transform duration-500"></span>
+  </button>
+</div>
+
+<main class="relative z-20 min-h-screen flex flex-col items-center justify-center px-4 py-28">
+
+<div class="wa-card w-full max-w-lg rounded-2xl overflow-hidden border
+            dark:bg-[#071312]/85 dark:border-emerald-900/50
+            bg-white/88 border-emerald-200/55 backdrop-blur-2xl">
+
+<div class="p-8 sm:p-10">
+
+<div class="text-center mb-7">
+  <p class="text-xs tracking-[0.3em] uppercase mb-1.5
+            dark:text-emerald-400/45 text-emerald-700/45">
+    Гильдия · допуск в архив
+  </p>
+  <h1 class="text-2xl sm:text-3xl font-semibold">
+    Авторизация
+  </h1>
+</div>
+
+<form id="loginForm" novalidate class="space-y-5">
+
+  <!-- Username -->
+  <div>
+    <label class="wa-label" for="loginUsername">Имя пользователя</label>
+    <input id="loginUsername" class="wa-input"
+      type="text"
+      placeholder="Введите имя пользователя"
+      required minlength="3" maxlength="32" />
+  </div>
+
+  <!-- Password -->
+  <div>
+    <label class="wa-label" for="loginPassword">Пароль</label>
+    <input id="loginPassword" class="wa-input"
+      type="password"
+      placeholder="Введите пароль"
+      required minlength="4" maxlength="64" />
+  </div>
+
+  <div id="loginError" class="wa-error hidden"></div>
+
+  <button type="submit" class="wa-btn-primary">
+    ⚔ Войти в Академию
+  </button>
+
+</form>
+
+<div class="wa-divider">
+  <div class="wa-divider-line"></div>
+  <span class="wa-divider-text">или</span>
+  <div class="wa-divider-line"></div>
+</div>
+
+<a href="register.html" class="wa-btn-secondary text-center">
+  Нет аккаунта? Зарегистрироваться
+</a>
+
+</div>
+</div>
+</main>
+
+<script>
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const dark = document.documentElement.classList.toggle('dark');
+  localStorage.setItem('witcherAcademyTheme', dark ? 'dark' : 'light');
+});
+
+document.getElementById('loginForm').addEventListener('submit', e => {
+  e.preventDefault();
+  window.location.href = '/cabinet.html';
+});
+</script>
+
+</body>
+</html>

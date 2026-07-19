@@ -4,7 +4,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Анти-FOUC: применяем тему ДО загрузки CSS -->
   <script>
     (function () {
       var theme = localStorage.getItem("witcherAcademyTheme");
@@ -27,7 +26,6 @@
   <!-- HEADER -->
   <header class="fixed top-0 left-0 w-full z-50">
 
-    <!-- Glass background -->
     <div class="absolute inset-0 
       dark:bg-[#071312]/70 bg-white/80
       backdrop-blur-xl 
@@ -66,50 +64,50 @@
       </nav>
 
       <!-- Right controls -->
-<div class="flex items-center gap-4">
+      <div class="flex items-center gap-4">
 
-  <!-- Кнопка Авторизация / Кабинет -->
-  <button id="authActionBtn" 
-          class="wa-auth-trigger hidden md:inline-flex items-center px-6 py-2.5 
-                 font-medium text-sm tracking-wider rounded-2xl border-2 transition-all duration-300
-                 dark:border-emerald-400/70 dark:text-emerald-100 dark:hover:bg-emerald-400/10 dark:hover:border-emerald-300
-                 border-emerald-700 text-emerald-800 hover:bg-emerald-50 hover:border-emerald-800 hover:shadow-md"
-          type="button">
-    Авторизация
-  </button>
+        <!-- Кнопка Авторизация -->
+        <a href="./register.html"
+           id="authActionBtn"
+           class="hidden md:inline-flex items-center px-6 py-2.5 
+                  font-medium text-sm tracking-wider rounded-2xl border-2 transition-all duration-300
+                  dark:border-emerald-400/70 dark:text-emerald-100 dark:hover:bg-emerald-400/10 dark:hover:border-emerald-300
+                  border-emerald-700 text-emerald-800 hover:bg-emerald-50 hover:border-emerald-800 hover:shadow-md">
+          Авторизация
+        </a>
 
-  <!-- Кнопка Выйти -->
-  <button id="authLogoutBtn" 
-          class="wa-auth-trigger wa-auth-trigger--logout is-hidden hidden md:inline-flex items-center px-6 py-2.5 
-                 font-medium text-sm tracking-wider rounded-2xl border-2 transition-all duration-300
-                 dark:border-amber-400/70 dark:text-amber-200 dark:hover:bg-amber-400/10 dark:hover:border-amber-300
-                 border-amber-600 text-amber-700 hover:bg-amber-50 hover:border-amber-700 hover:shadow-md"
-          type="button">
-    Выйти
-  </button>
+        <!-- Кнопка Выйти (скрыта по умолчанию, управляется JS) -->
+        <button id="authLogoutBtn"
+                class="is-hidden hidden md:inline-flex items-center px-6 py-2.5 
+                       font-medium text-sm tracking-wider rounded-2xl border-2 transition-all duration-300
+                       dark:border-amber-400/70 dark:text-amber-200 dark:hover:bg-amber-400/10 dark:hover:border-amber-300
+                       border-amber-600 text-amber-700 hover:bg-amber-50 hover:border-amber-700 hover:shadow-md"
+                type="button">
+          Выйти
+        </button>
 
-  <!-- Theme Toggle -->
-  <button id="themeToggle"
-    class="relative w-16 h-8 rounded-full transition-colors duration-500 focus:outline-none flex-shrink-0
-      dark:bg-emerald-900/80 bg-emerald-100 
-      border dark:border-emerald-700/40 border-emerald-300/60">
-    <span class="absolute left-2 top-1/2 -translate-y-1/2 text-sm pointer-events-none select-none leading-none">🌙</span>
-    <span class="absolute right-2 top-1/2 -translate-y-1/2 text-sm pointer-events-none select-none leading-none">☀️</span>
-    <span id="themeThumb" class="absolute top-1 left-1 w-6 h-6 rounded-full shadow-md 
-      transition-transform duration-500
-      dark:bg-emerald-400 bg-white border dark:border-transparent border-emerald-300
-      dark:translate-x-0 translate-x-8">
-    </span>
-  </button>
+        <!-- Theme Toggle -->
+        <button id="themeToggle"
+          class="relative w-16 h-8 rounded-full transition-colors duration-500 focus:outline-none flex-shrink-0
+            dark:bg-emerald-900/80 bg-emerald-100 
+            border dark:border-emerald-700/40 border-emerald-300/60">
+          <span class="absolute left-2 top-1/2 -translate-y-1/2 text-sm pointer-events-none select-none leading-none">🌙</span>
+          <span class="absolute right-2 top-1/2 -translate-y-1/2 text-sm pointer-events-none select-none leading-none">☀️</span>
+          <span id="themeThumb" class="absolute top-1 left-1 w-6 h-6 rounded-full shadow-md 
+            transition-transform duration-500
+            dark:bg-emerald-400 bg-white border dark:border-transparent border-emerald-300
+            dark:translate-x-0 translate-x-8">
+          </span>
+        </button>
 
-  <!-- Burger -->
-  <button id="burger" class="md:hidden flex flex-col gap-1.5 relative z-50 p-1" aria-label="Меню">
-    <span class="w-6 h-0.5 dark:bg-emerald-300 bg-emerald-800 rounded transition-all duration-300"></span>
-    <span class="w-6 h-0.5 dark:bg-emerald-300 bg-emerald-800 rounded transition-all duration-300"></span>
-    <span class="w-6 h-0.5 dark:bg-emerald-300 bg-emerald-800 rounded transition-all duration-300"></span>
-  </button>
+        <!-- Burger -->
+        <button id="burger" class="md:hidden flex flex-col gap-1.5 relative z-50 p-1" aria-label="Меню">
+          <span class="w-6 h-0.5 dark:bg-emerald-300 bg-emerald-800 rounded transition-all duration-300"></span>
+          <span class="w-6 h-0.5 dark:bg-emerald-300 bg-emerald-800 rounded transition-all duration-300"></span>
+          <span class="w-6 h-0.5 dark:bg-emerald-300 bg-emerald-800 rounded transition-all duration-300"></span>
+        </button>
 
-</div>
+      </div>
     </div>
 
     <!-- MOBILE MENU -->
@@ -125,12 +123,19 @@
       <a href="#" class="dark:hover:text-emerald-400 hover:text-emerald-600 transition">Алхимия</a>
       <a href="#" class="dark:hover:text-emerald-400 hover:text-emerald-600 transition">Гильдия</a>
       <a href="#" class="dark:hover:text-emerald-400 hover:text-emerald-600 transition">Таверна</a>
-            <!-- Авторизация в бургере -->
-      <button id="mobileAuthAction" class="wa-auth-trigger wa-auth-trigger--mobile" type="button">
+
+      <!-- Авторизация в бургере -->
+      <a href="./register.html"
+         id="mobileAuthAction"
+         class="text-xl dark:text-emerald-200 text-emerald-800
+                dark:hover:text-emerald-400 hover:text-emerald-600 transition">
         Авторизация
-      </button>
-            <button id="mobileLogoutAction"
-        class="wa-auth-trigger wa-auth-trigger--mobile wa-auth-trigger--logout is-hidden" type="button">
+      </a>
+
+      <button id="mobileLogoutAction"
+        class="is-hidden text-xl dark:text-amber-300 text-amber-700
+               dark:hover:text-amber-200 hover:text-amber-600 transition"
+        type="button">
         Выйти
       </button>
     </div>
@@ -140,46 +145,31 @@
   <!-- HERO SECTION -->
   <section class="relative min-h-screen flex items-center justify-center overflow-hidden text-center pt-24 md:pt-0">
 
-    <!-- Dark background -->
     <div class="absolute inset-0 z-0 dark:block hidden
-      bg-[url('/images/hero-bg.png')] bg-cover bg-center">
-    </div>
+      bg-[url('/images/hero-bg.png')] bg-cover bg-center"></div>
 
-    <!-- Light background -->
     <div class="absolute inset-0 z-0 dark:hidden block
-      bg-[url('/images/hero-bg-light.png')] bg-cover bg-center">
-    </div>
+      bg-[url('/images/hero-bg-light.png')] bg-cover bg-center"></div>
 
-    <!-- Dark cinematic overlay -->
     <div class="absolute inset-0 z-10 dark:block hidden
-      bg-gradient-to-b from-[#071312]/80 via-[#071312]/70 to-black">
-    </div>
+      bg-gradient-to-b from-[#071312]/80 via-[#071312]/70 to-black"></div>
 
-    <!-- Light misty overlay -->
     <div class="absolute inset-0 z-10 dark:hidden block
-      bg-gradient-to-b from-white/30 via-white/10 to-white/60">
-    </div>
+      bg-gradient-to-b from-white/30 via-white/10 to-white/60"></div>
 
-    <!-- Fireflies (dark only) -->
     <div id="fireflies" class="absolute inset-0 z-20 pointer-events-none dark:block hidden"></div>
 
-    <!-- Dark green glow -->
     <div class="absolute inset-0 z-10 dark:block hidden
-      bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.25),transparent_60%)]">
-    </div>
+      bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.25),transparent_60%)]"></div>
 
-    <!-- Light top glow -->
     <div class="absolute inset-0 z-10 dark:hidden block
-      bg-[radial-gradient(ellipse_at_top,rgba(200,230,210,0.4),transparent_70%)]">
-    </div>
+      bg-[radial-gradient(ellipse_at_top,rgba(200,230,210,0.4),transparent_70%)]"></div>
 
-    <!-- Dark floating particles -->
     <div class="absolute inset-0 z-10 pointer-events-none dark:block hidden
       bg-[radial-gradient(circle_at_20%_30%,rgba(255,255,255,0.4)_1px,transparent_1px),
           radial-gradient(circle_at_70%_60%,rgba(255,255,255,0.3)_1px,transparent_1px),
           radial-gradient(circle_at_40%_80%,rgba(255,255,255,0.25)_1px,transparent_1px)] 
-      bg-[length:600px_600px] opacity-40">
-    </div>
+      bg-[length:600px_600px] opacity-40"></div>
 
     <!-- Content -->
     <div class="relative z-20 px-6 max-w-4xl mx-auto">
@@ -212,7 +202,6 @@
         среди легенд Континента.
       </p>
 
-      <!-- Buttons -->
       <div class="flex flex-col sm:flex-row justify-center gap-6 mb-20">
         <a href="./cabinet.html" class="px-10 py-3 font-semibold rounded-md transition duration-300
           dark:bg-gradient-to-r dark:from-amber-700 dark:to-amber-500 dark:text-black
@@ -261,138 +250,6 @@
     </div>
   </section>
 
-  <!-- ===================== MODALS ===================== -->
-
-  <!--
-    AUTH MODAL
-    Открывается через dialogElement.showModal()
-    Закрывается через dialogElement.close() или нативным ::backdrop click
-    
-    Адаптивность: на мобиле — полный экран снизу (bottom sheet),
-    на десктопе — центрированная карточка.
-  -->
-  <dialog id="authModal"
-    class="
-      fixed inset-0 m-auto
-      w-full max-w-md
-      rounded-xl border
-      p-0 overflow-hidden
-      backdrop:bg-black/70 backdrop:backdrop-blur-sm
-
-      dark:bg-[#071312] dark:border-emerald-900/60 dark:text-emerald-100
-      bg-white border-emerald-200/60 text-emerald-900
-
-      /* mobile: bottom sheet */
-      max-sm:fixed max-sm:bottom-0 max-sm:left-0 max-sm:right-0
-      max-sm:top-auto max-sm:m-0
-      max-sm:w-full max-sm:max-w-full
-      max-sm:rounded-b-none max-sm:rounded-t-2xl
-
-      transition-colors duration-500
-    "
-    aria-labelledby="authModalTitle">
-
-    <div class="wa-auth-head">
-      <div>
-        <div class="wa-auth-kicker">Гильдия · допуск в архив</div>
-        <h2 id="authModalTitle" class="wa-auth-title">Авторизация</h2>
-      </div>
-      <!-- Закрытие через нативный dialog.close() -->
-      <button id="authModalCloseBtn" class="wa-auth-icon-btn" type="button" aria-label="Закрыть">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M6 6l12 12M6 18L18 6" />
-        </svg>
-      </button>
-    </div>
-
-    <div class="wa-auth-body">
-      <a href="/" class="wa-auth-link">← Вернуться на главную страницу</a>
-
-      <div id="authNoticeBox" class="wa-auth-message wa-auth-message--notice" hidden></div>
-
-      <form id="authForm" class="wa-auth-form" method="dialog">
-        <label class="wa-auth-field">
-          <span class="wa-auth-label">Имя пользователя</span>
-          <input
-            id="authUsername"
-            class="wa-auth-input"
-            type="text"
-            placeholder="Введите имя пользователя"
-            required
-            minlength="3"
-            maxlength="32"
-          />
-        </label>
-
-        <label class="wa-auth-field">
-          <span class="wa-auth-label">Пароль</span>
-          <input
-            id="authPassword"
-            class="wa-auth-input"
-            type="password"
-            placeholder="Введите пароль"
-            required
-            minlength="4"
-            maxlength="64"
-          />
-        </label>
-
-        <div id="authErrorBox" class="wa-auth-message wa-auth-message--error" hidden></div>
-
-        <button id="authSubmitButton" class="wa-auth-btn wa-auth-btn--primary" type="submit">
-          Войти
-        </button>
-      </form>
-
-      <button id="authToggleMode" class="wa-auth-toggle" type="button">
-        Нет аккаунта? Зарегистрироваться
-      </button>
-    </div>
-  </dialog>
-
-  <!--
-    AUTH WARNING MODAL
-    Открывается через dialogElement.showModal()
-  -->
-  <dialog id="authWarningModal"
-    class="
-      fixed inset-0 m-auto
-      w-full max-w-sm
-      rounded-xl border p-8
-      backdrop:bg-black/70 backdrop:backdrop-blur-sm
-
-      dark:bg-[#071312] dark:border-emerald-900/60 dark:text-emerald-100
-      bg-white border-emerald-200/60 text-emerald-900
-
-      /* mobile: bottom sheet */
-      max-sm:fixed max-sm:bottom-0 max-sm:left-0 max-sm:right-0
-      max-sm:top-auto max-sm:m-0
-      max-sm:w-full max-sm:max-w-full
-      max-sm:rounded-b-none max-sm:rounded-t-2xl
-
-      transition-colors duration-500
-    "
-    aria-labelledby="authWarningTitle">
-
-    <div class="wa-auth-kicker wa-auth-kicker--warning">Предупреждение Гильдии</div>
-    <h3 id="authWarningTitle" class="wa-auth-title wa-auth-title--small">Требуется авторизация</h3>
-    <p class="wa-auth-text">
-      Для размещения контракта необходимо авторизоваться или зарегистрироваться.
-      Желаете продолжить?
-    </p>
-
-    <div class="wa-auth-actions">
-      <button id="authWarningCancelBtn" class="wa-auth-btn wa-auth-btn--secondary" type="button">
-        Отказаться
-      </button>
-      <button id="authWarningContinueBtn" class="wa-auth-btn wa-auth-btn--primary" type="button">
-        Продолжить
-      </button>
-    </div>
-  </dialog>
-
-  <!-- ===================== /MODALS ===================== -->
-
   <!-- GUILD CONTRACTS -->
   <section id="contracts" class="scroll-mt-24 relative py-24 overflow-hidden
     dark:bg-[#061311] bg-[#f0f7f2] transition-colors duration-500">
@@ -416,6 +273,7 @@
           6 контрактов доступно
         </p>
         <div class="mt-8 flex justify-center">
+          <!-- Тоже ведёт на register.html если не авторизован -->
           <button id="openContractFormBtn"
             class="px-8 py-3 bg-gradient-to-r from-amber-700 to-amber-500 text-black font-semibold rounded-md 
               transition duration-300 
@@ -429,7 +287,6 @@
       <!-- MAIN GRID -->
       <div class="grid lg:grid-cols-4 gap-10">
 
-        <!-- LEFT SIDE (Contracts) -->
         <div class="lg:col-span-3">
           <div class="grid md:grid-cols-2 xl:grid-cols-3 sm:grid-cols-2 gap-10">
 
@@ -508,7 +365,6 @@
         <!-- RIGHT SIDEBAR -->
         <div class="space-y-8">
 
-          <!-- Ваши Испытания -->
           <div class="border rounded-xl p-6
             dark:bg-[#0b1f1c] dark:border-emerald-900/40 dark:shadow-[0_0_30px_rgba(0,0,0,0.6)]
             bg-white border-emerald-200/60 shadow-[0_4px_20px_rgba(6,95,70,0.08)]
@@ -554,7 +410,6 @@
             </div>
           </div>
 
-          <!-- Легенды Академии -->
           <div class="border rounded-xl p-6
             dark:bg-[#0b1f1c] dark:border-emerald-900/40 dark:shadow-[0_0_30px_rgba(0,0,0,0.6)]
             bg-white border-emerald-200/60 shadow-[0_4px_20px_rgba(6,95,70,0.08)]
@@ -689,7 +544,6 @@
 <script type="module" src="/src/theme.js"></script>
 <script type="module" src="/src/main.js"></script>
 <script type="module" src="/src/order.js"></script>
-<script type="module" src="/src/auth.js"></script>
 <script type="module" src="/src/fontswitcher.js"></script>
 
 </html>

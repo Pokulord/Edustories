@@ -388,7 +388,6 @@
 dialog {
   /* Сброс дефолтного позиционирования браузера */
   position: fixed;
-  margin: auto;
   padding: 0;
   border: none;
   background: transparent;
@@ -404,14 +403,19 @@ dialog::backdrop {
 /* ─── Auth Modal: desktop — по центру ──────────────────────────── */
 
 #authModal {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  inset: 0;
+}
+
+#authModal[open] {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+#authModal > * {
   width: 100%;
-  max-width: 28rem; /* ~448px, эквивалент max-w-md */
+  max-width: 28rem;
   max-height: 90dvh;
-  border-radius: 0.75rem;
-  overflow: hidden;
 }
 
 
@@ -426,6 +430,9 @@ dialog::backdrop {
   border-radius: 0.75rem;
   padding: 2rem;
 }
+
+
+
 
 /* ─── Warning Modal: mobile — bottom sheet ─────────────────────── */
 
