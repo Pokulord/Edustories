@@ -13,4 +13,10 @@ logger = logging.getLogger(__name__)
 class RegisterView(View):
     """Вьюха для регистрации новых пользователей"""
     def get(self, request):
-        return render(request, 'register.html', {'form': UserRegistrationForm})
+        return render(request, 'register.html')
+    
+
+class LoginView(View):
+    """Вьюха для авторизации"""
+    def get(self, request):
+        return render(request, 'login.html')

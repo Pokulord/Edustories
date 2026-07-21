@@ -1,0 +1,127 @@
+{% load static %}
+<!doctype html>
+<html lang="ru" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>{% block title %}Академия Ведьмаков{% endblock %}</title>
+
+  <!-- ✅ Theme preload (без мигания) -->
+  <script>
+    (function () {
+      const theme = localStorage.getItem("witcherAcademyTheme");
+      if (theme === "light") {
+        document.documentElement.classList.remove("dark");
+      } else {
+        document.documentElement.classList.add("dark");
+      }
+    })();
+  </script>
+
+  <!-- ✅ Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&subset=cyrillic"
+        rel="stylesheet">
+
+  <!-- ✅ Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            cormorant: ['Cormorant Garamond', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- ✅ Base styles -->
+  <style>
+    body {
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    /* Background overlay glow */
+    .bg-witcher-overlay {
+      background:
+        linear-gradient(to bottom,
+          rgba(2,17,13,0.85),
+          rgba(4,27,22,0.8),
+          rgba(2,14,11,0.95)
+        );
+    }
+
+    html.dark #themeThumb { transform: translateX(0); }
+    html:not(.dark) #themeThumb { transform: translateX(2rem); }
+
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body class="min-h-screen relative overflow-x-hidden
+             dark:bg-[#020e0b] dark:text-emerald-100
+             bg-[#f0f7f2] text-emerald-900 transition-colors duration-500">
+
+  <!-- ✅ Witcher Background -->
+  <div class="fixed inset-0 z-0 
+              bg-cover bg-center bg-fixed"
+       style="background-image: url('{% static "images/witcher-bg.jpg" %}');">
+  </div>
+
+  <!-- ✅ Overlay -->
+  <div class="fixed inset-0 z-0 bg-witcher-overlay"></div>
+
+  <!-- ✅ Emerald glow -->
+  <div class="fixed inset-0 z-0 pointer-events-none
+              bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(16,185,129,0.15),transparent)]">
+  </div>
+
+  <!-- ✅ Top Bar -->
+  <div class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-6 py-5">
+
+    <a href="{% url 'home' %}"
+       class="text-sm tracking-wider
+              dark:text-emerald-400/65 dark:hover:text-emerald-300
+              text-emerald-700/65 hover:text-emerald-600 transition">
+      ← На главную
+    </a>
+
+    <!-- Theme toggle -->
+    <button id="themeToggle"
+      class="relative w-16 h-8 rounded-full transition-colors duration-500
+             dark:bg-emerald-900/80 bg-emerald-100
+             border dark:border-emerald-700/40 border-emerald-300/60">
+
+      <span class="absolute left-2 top-1/2 -translate-y-1/2 text-sm">🌙</span>
+      <span class="absolute right-2 top-1/2 -translate-y-1/2 text-sm">☀️</span>
+
+      <span id="themeThumb"
+        class="absolute top-1 left-1 w-6 h-6 rounded-full shadow-md
+               dark:bg-emerald-400 bg-white
+               transition-transform duration-500">
+      </span>
+    </button>
+  </div>
+
+  <!-- ✅ Main content -->
+  <main class="relative z-20 min-h-screen flex flex-col">
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <!-- ✅ Theme Script -->
+  <script>
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const dark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('witcherAcademyTheme', dark ? 'dark' : 'light');
+    });
+  </script>
+
+  {% block extra_js %}{% endblock %}
+
+</body>
+</html>
