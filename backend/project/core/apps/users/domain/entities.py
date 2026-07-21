@@ -12,6 +12,7 @@ class User:
     first_name: str
     second_name: str
     email: Email
+    password: str | None = None
     is_email_confirmed: bool = False
     _roles: set[UserRoles] = field(default_factory= lambda: {UserRoles.STUDENT})
     status: UserStatuses = UserStatuses.PENDING

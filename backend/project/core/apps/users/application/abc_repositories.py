@@ -15,7 +15,7 @@ class AbstractUserRepository(ABC):
         ...
 
     @abstractmethod
-    def save(self, user: User) -> None:
+    def create(self, user_entity: User) -> None:
         """Абстрактный метод создания пользователя"""
         ...
 

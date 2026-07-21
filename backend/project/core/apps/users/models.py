@@ -1,8 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-from uuid import uuid4
+from django.utils.translation import gettext_lazy as _
+import uuid
 
-from .domain.enums import UserRoles, UserStatuses
+from .domain.enums import UserRoles
 
 
 class CustomUserManager(BaseUserManager):
@@ -14,11 +15,24 @@ class CustomUserManager(BaseUserManager):
         """
         if not email:
             raise ValueError("Email-адрес обязателен")
-        
-        self.normalize_email(email)
+
+        email = self.normalize_email(email)
 
         user = self.model(email=email, **extra_fields)
-        user.set_pasword(password)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+    
+    def create_superuser(self, email, password=None, **extra_fields):
+        """
+        Создаём суперпользователя с email и паролем
+        """
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('role', self.model.Role.ADMIN)
+
+        return self.create_user(email, password, **extra_fields)
         
 
 class RoleModel(models.Model):
@@ -35,4 +49,42 @@ class RoleModel(models.Model):
 
     def __str__(self):
         return UserRoles[self.code].value
+    
 
+class CustomUser(AbstractUser):
+    """Кастомная модель пользователя"""
+    class Role(models.TextChoices):
+        ADMIN = "ADMIN", _("Администратор")
+        INSTRUCTOR = "INSTRUCTOR", _("Наставник")
+        STUDENT = "STUDENT", _("Студент")
+
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    username = models.CharField(
+        _("username"),
+        max_length=150,
+        help_text=_("Юзернейм пользователя. Необязателен для заполнения"),
+        null=True,
+        blank=True
+    )
+
+    email = models.EmailField(_("email address"), unique=True)
+
+    role = models.CharField(
+        max_length=20,
+        choices=Role.choices,
+        default=Role.STUDENT
+    )
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
+    objects = CustomUserManager()
+
+    def __str__(self):
+        return f"Пользователь {self.email}"
+
+    class Meta:
+        verbose_name = _("пользователь")
+        verbose_name_plural = _("пользователи")
+
+
+    

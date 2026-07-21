@@ -31,6 +31,14 @@ class RoleAlreadyAssingError(BaseUserError):
         super().__init__(message, metadata={"role": role, "user_id": user_id})
 
 
+class CannotCreateUserError(BaseUserError):
+    """Ошибка, которая выбрасывается в процессе создания пользователя"""
+    error_slug: str = "user_was_not_created"
+
+    def __init__(self, user_id: UUID):
+        message = f"Пользователь {user_id} заблокирован"
+        super().__init__(message, metadata={"user_id": user_id})
+
 class UserBlockedError(BaseUserError):
     """Ошибка, которая выбрасывается, если пользователь заблокирован"""
     error_slug: str = "user_blocked"
