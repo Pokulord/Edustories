@@ -39,3 +39,6 @@ class Email:
     def _is_allowed_domain(cls, email: str) -> bool:
         """Проверяет email на разрешённые домены"""
         return email.endswith(ALLOWED_DOMAINS)
+    
+    def __str__(self):
+        return self.value

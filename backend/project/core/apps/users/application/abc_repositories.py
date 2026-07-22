@@ -9,10 +9,10 @@ class AbstractUserRepository(ABC):
     Абстрактный класс для репозитория работы с пользователями
     Реализует КРУД (CRUD)
     """
-    @abstractmethod
-    def get_by_id(self, uid: UUID) -> User | None:
-        """Абстрактный метод получения пользователя по id"""
-        ...
+    # @abstractmethod
+    # def get_by_id(self, uid: UUID) -> User | None:
+    #     """Абстрактный метод получения пользователя по id"""
+    #     ...
 
     @abstractmethod
     def create(self, user_entity: User) -> None:

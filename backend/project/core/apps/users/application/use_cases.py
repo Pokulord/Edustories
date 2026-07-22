@@ -18,7 +18,8 @@ class CreateUserUseCase:
 
     def execute(self, request_dto: RegisterUserRequest) -> UserRegisterOutput:
         """Метод, в котором мы через репозиторий(интерфейс) создаём пользователя"""
-        email = Email(request_dto.email)
+        email = str(Email(request_dto.email))
+        print(email)
         uid = uuid4()
         user_entity = User(
             uid=uid,

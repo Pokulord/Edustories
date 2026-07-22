@@ -3,7 +3,6 @@
 from uuid import UUID
 
 from .enums import UserStatuses
-from .value_objects import Email
 
 class DomainError(Exception):
     """Базовая доменная ошибка"""
@@ -70,8 +69,8 @@ class UserEmailAlreadyInUseError(BaseUserError):
     """Ошибка, которая выбрасывается в случае, если почта уже занята"""
     error_slug = "email_already_in_use"
 
-    def __init__(self, email: Email):
-        message = f"Почта {email.value} уже используется"
+    def __init__(self, email: str):
+        message = f"Почта {email} уже используется"
         super().__init__(message, metadata={"email": email})
 
 

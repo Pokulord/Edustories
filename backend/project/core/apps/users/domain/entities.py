@@ -8,10 +8,10 @@ from .exceptions import UserIsNotActiveError, UserEmailAlreadyConfirmedError, Us
 @dataclass
 class User:
     """Доменная сущность пользователя (априори он не подтверждён)"""
-    uid: UUID = field(default_factory=uuid4)
     first_name: str
     second_name: str
     email: Email
+    uid: UUID = field(default_factory=uuid4)
     password: str | None = None
     is_email_confirmed: bool = False
     _roles: set[UserRoles] = field(default_factory= lambda: {UserRoles.STUDENT})
