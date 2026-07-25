@@ -404,33 +404,72 @@
   </h1>
 </div>
 
-<form id="loginForm" novalidate class="space-y-5">
+<form method="post" action="{% url 'users:login' %}" novalidate class="space-y-5">
+  {% csrf_token %}
 
-  <!-- Username -->
+  <!-- Общие ошибки формы -->
+  {% if form.non_field_errors %}
+    <div class="wa-error">
+      {{ form.non_field_errors|join:", " }}
+    </div>
+  {% endif %}
+
+  <!-- Email -->
   <div>
-    <label class="wa-label" for="loginUsername">Имя пользователя</label>
-    <input id="loginUsername" class="wa-input"
-      type="text"
-      placeholder="Введите имя пользователя"
-      required minlength="3" maxlength="32" />
+    <label for="{{ form.email.id_for_label }}" class="wa-label">
+      {{ form.email.label }}
+    </label>
+
+    <div class="relative">
+      <span class="field-icon">✉</span>
+
+      <input
+        type="email"
+        name="{{ form.email.name }}"
+        id="{{ form.email.id_for_label }}"
+        value="{{ form.email.value|default:'' }}"
+        placeholder="example@email.com"
+        class="wa-input {% if form.email.errors %}is-invalid{% endif %}"
+        {% if form.email.field.required %}required{% endif %}
+      >
+    </div>
+
+    {% if form.email.errors %}
+      <div class="field-error">
+        {{ form.email.errors|join:", " }}
+      </div>
+    {% endif %}
   </div>
 
-  <!-- Password -->
+  <!-- Пароль -->
   <div>
-    <label class="wa-label" for="loginPassword">Пароль</label>
-    <input id="loginPassword" class="wa-input"
-      type="password"
-      placeholder="Введите пароль"
-      required minlength="4" maxlength="64" />
-  </div>
+    <label for="{{ form.password.id_for_label }}" class="wa-label">
+      {{ form.password.label }}
+    </label>
 
-  <div id="loginError" class="wa-error hidden"></div>
+    <div class="relative">
+      <span class="field-icon">🔒</span>
+
+      <input
+        type="password"
+        name="{{ form.password.name }}"
+        id="{{ form.password.id_for_label }}"
+        placeholder="Введите пароль"
+        class="wa-input wa-input--right {% if form.password.errors %}is-invalid{% endif %}"
+        {% if form.password.field.required %}required{% endif %}
+      >
+    </div>
+
+    {% if form.password.errors %}
+      <div class="field-error">
+        {{ form.password.errors|join:", " }}
+      </div>
+    {% endif %}
+  </div>
 
   <button type="submit" class="wa-btn-primary">
     ⚔ Войти в Академию
   </button>
-
-</form>
 
 <div class="wa-divider">
   <div class="wa-divider-line"></div>
@@ -452,10 +491,6 @@ document.getElementById('themeToggle').addEventListener('click', () => {
   localStorage.setItem('witcherAcademyTheme', dark ? 'dark' : 'light');
 });
 
-document.getElementById('loginForm').addEventListener('submit', e => {
-  e.preventDefault();
-  window.location.href = '/cabinet.html';
-});
 </script>
 
 </body>

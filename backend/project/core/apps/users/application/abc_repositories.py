@@ -9,11 +9,6 @@ class AbstractUserRepository(ABC):
     Абстрактный класс для репозитория работы с пользователями
     Реализует КРУД (CRUD)
     """
-    # @abstractmethod
-    # def get_by_id(self, uid: UUID) -> User | None:
-    #     """Абстрактный метод получения пользователя по id"""
-    #     ...
-
     @abstractmethod
     def create(self, user_entity: User) -> None:
         """Абстрактный метод создания пользователя"""
@@ -24,3 +19,7 @@ class AbstractUserRepository(ABC):
         """Абстрактный метод для проверки уникальности email"""
         ...
 
+    @abstractmethod
+    def get_by_email(self, email: Email) -> User|None:
+        """Абстрактный метод для получения пользователя по email"""
+        ...

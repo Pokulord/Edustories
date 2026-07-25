@@ -56,3 +56,26 @@ class UserRegistrationForm(forms.Form):
         if password and password_confirm and password != password_confirm:
             raise forms.ValidationError(_("Пароли не совпадают"))
         return cleaned_data
+    
+
+class LoginForm(forms.Form):
+    """Форма для аутентификации"""
+    email = forms.EmailField(
+        label="Email",
+        max_length=255,
+        widget=forms.EmailInput(attrs={
+            "class": "form-control",
+            "placeholder": "Введите email"
+        })
+    )
+
+    password = forms.CharField(
+        label="Пароль",
+        widget=forms.PasswordInput(attrs={
+            "class": "form-control",
+            "placeholder": "Введите пароль"
+        })
+    )
+
+    def clean_email(self):
+        return self.cleaned_data["email"].lower()

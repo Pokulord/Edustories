@@ -5,8 +5,9 @@ from uuid import uuid4
 from ..domain.entities import User
 from .abc_repositories import AbstractUserRepository
 from ..domain.value_objects import Email
-from ..domain.exceptions import UserEmailAlreadyInUseError, CannotCreateUserError
-from .dto import RegisterUserRequest, UserRegisterOutput
+from ..domain.exceptions import UserEmailAlreadyInUseError, CannotCreateUserError, UserIsNotActiveError
+from .exceptions import AuthenticationFailed
+from .dto import RegisterUserRequest, UserRegisterOutput, LoginUserRequest, LoginUserOutput
 
 logger = logging.getLogger(__name__)
 
@@ -45,3 +46,19 @@ class CreateUserUseCase:
                 last_name=request_dto.last_name,
                 email=request_dto.email
             )
+
+
+class LoginUserUseCase:
+    """Use-case для аутентификации пользователя"""
+
+    def __init__(self, user_repository: AbstractUserRepository):
+        self.user_repo = user_repository
+
+    def execute(self, login_command: LoginUserRequest) -> LoginUserOutput:
+        """Непосредственно бизнес-логика"""
+        email = str(Email(login_command.email))
+
+        user = self.user_repo.get_by_email(email)
+
+        # if not user.is_active:
+        #     raise UserIsNotActiveError(user.uid)

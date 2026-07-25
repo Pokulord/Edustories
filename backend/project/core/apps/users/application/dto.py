@@ -22,3 +22,19 @@ class UserRegisterOutput:
     email: str
     first_name: str
     last_name: str
+
+
+@dataclass 
+class LoginUserRequest:
+    """DTO для login view"""
+    email: str
+    ip_address: str|None = None
+    user_agent: str|None = None
+
+
+@dataclass
+class LoginUserOutput:
+    """DTO для передачи данных в login view"""
+    uid: str
+    role: str
+    
