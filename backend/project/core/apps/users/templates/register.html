@@ -421,7 +421,7 @@
              placeholder="Введите пароль"
              {% if form.password.field.required %}required{% endif %}
              minlength="8">
-      <button type="button" class="eye-btn" data-target="{{ form.password1.id_for_label }}" aria-label="Показать пароль">
+      <button type="button" class="eye-btn" data-target="{{ form.password.id_for_label }}" aria-label="Показать пароль">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -441,7 +441,7 @@
       <span class="field-icon">🔐</span>
       <input type="password" 
              name="{{ form.password_confirm.name }}"
-             id="{{ form.password_comfirm.id_for_label }}"
+             id="{{ form.password_confirm.id_for_label }}"
              class="wa-input wa-input--right {% if form.password_confirm.errors %}is-invalid{% endif %}"
              placeholder="Повторите пароль"
              {% if form.password_confirm.field.required %}required{% endif %}>
@@ -458,13 +458,16 @@
   </div>
 
   <!-- Согласие с условиями -->
-  <label class="flex items-start gap-3 cursor-pointer text-sm">
+  <div class="flex items-start gap-3 cursor-pointer py-1">
     <input type="checkbox" 
            name="terms" 
-           class="wa-checkbox" 
+           id="terms_checkbox"
+           class="wa-checkbox mt-1" 
            required>
-    <span class="dark:text-emerald-200/60 text-emerald-800/70">Я принимаю условия использования</span>
-  </label>
+    <label for="terms_checkbox" class="dark:text-emerald-200/60 text-emerald-800/70 text-sm cursor-pointer select-none">
+      Я принимаю условия использования
+    </label>
+  </div>
 
   <!-- Общая ошибка формы -->
   {% if form.non_field_errors %}
@@ -476,7 +479,6 @@
   <button type="submit" class="wa-btn-primary">
     ⚔ Создать аккаунт
   </button>
-
 </form>
 
 <div class="wa-divider">

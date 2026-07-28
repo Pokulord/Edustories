@@ -241,7 +241,11 @@
 
                                 <div class="w-10 h-10 rounded-full overflow-hidden
               shadow-[0_0_12px_rgba(16,185,129,0.5)]">
-                                    <img src="/images/avatar.jpg" alt="Аватар" class="w-full h-full object-cover">
+                                    {% if user.userprofile.avatar %}
+                                        <img src="{{ user.userprofile.avatar.url }}">
+                                    {% else %}
+                                        <img src="{% static 'images/default-avatar.png' %}">
+                                    {% endif %}
                                 </div>
 
                             </div>
@@ -274,7 +278,11 @@
                                 <div class="w-28 h-28 rounded-full overflow-hidden shrink-0
                         border-2 border-emerald-700/40
                         shadow-[0_0_30px_rgba(16,185,129,0.5)]">
-                                    <img src="/images/avatar.jpg" class="w-full h-full object-cover" alt="Геральт">
+                                    {% if user.userprofile.avatar %}
+                                        <img src="{{ user.userprofile.avatar.url }}">
+                                    {% else %}
+                                        <img src="{% static 'images/default-avatar.png' %}">
+                                    {% endif %}
                                 </div>
 
                                 <!-- Info -->

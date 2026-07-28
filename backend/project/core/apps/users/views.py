@@ -1,26 +1,34 @@
-from django.shortcuts import render, redirect
+"""
+Вьюхи (по возможности работаем только с HTTP)
+"""
+
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse
 from django.http import HttpResponseRedirect
+from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views import View
-import logging
 
-from .application.dto import RegisterUserRequest, LoginUserRequest
-from .domain.exceptions import UserEmailAlreadyInUseError, CannotCreateUserError, ForbiddenEmailDomainError, UserIsNotActiveError
-from .forms import UserRegistrationForm, LoginForm
-from .consts import ERROR_MESSAGES_MAPPING
+from .application.dto import LoginUserRequest, RegisterUserRequest
 from .application.use_cases import CreateUserUseCase, LoginUserUseCase
-from .infrastructure.repositories import DjangoUserRepository
+from .consts import ERROR_MESSAGES_MAPPING
 from .domain.constants import ALLOWED_DOMAINS
+from .domain.exceptions import (
+    CannotCreateUserError,
+    ForbiddenEmailDomainError,
+    UserEmailAlreadyInUseError,
+    UserIsNotActiveError,
+)
+from .forms import LoginForm, UserRegistrationForm
+from .infrastructure.repositories import DjangoUserRepository
 
 
 class RegisterView(View):
+    """Вьюха для регистрации новых пользователей"""
     def __init__(self):
         self.use_case = CreateUserUseCase(
             user_repository=DjangoUserRepository()
         )
-    """Вьюха для регистрации новых пользователей"""
     def get(self, request):
         if request.user.is_authenticated:
             return redirect('users:user_profile')
@@ -71,9 +79,10 @@ class LoginView(View):
             user_repository=DjangoUserRepository()
         )
     def get(self, request):
+        form = LoginForm()
         if request.user.is_authenticated:
             return redirect('users:user_profile')
-        return render(request, 'login.html')
+        return render(request, 'login.html', {'form': form})
     def post(self, request):
         form = LoginForm(request.POST)
 
