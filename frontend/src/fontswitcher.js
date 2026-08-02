@@ -25,8 +25,6 @@ function applyFont(fontKey) {
   localStorage.setItem(FONT_KEY, key);
   updateSwitcherUI(key);
 
-  // Дебаг — убери после проверки
-  console.log("[FontSwitcher] applied:", key, document.documentElement.getAttribute("data-font"));
 }
 
 /* ─── UI ─────────────────────────────────────────────────────────── */
