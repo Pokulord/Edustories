@@ -1,57 +1,74 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Дорожная карта — Путь Ведьмака</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Raleway:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: 'Raleway', sans-serif;
       background-color: #081410;
       overflow-x: hidden;
     }
-    .title-font { font-family: 'Cinzel', serif; }
 
-    /* ─── Скролл-обёртка ─── */
+    .title-font {
+      font-family: 'Cinzel', serif;
+    }
+
     .map-scroll {
       width: 100%;
       overflow-x: auto;
       overflow-y: hidden;
       cursor: grab;
       scrollbar-width: thin;
-      scrollbar-color: rgba(52,211,153,0.45) rgba(8,20,16,0.5);
+      scrollbar-color: rgba(52, 211, 153, 0.45) rgba(8, 20, 16, 0.5);
       -webkit-overflow-scrolling: touch;
     }
-    .map-scroll:active { cursor: grabbing; }
-    .map-scroll::-webkit-scrollbar { height: 5px; }
-    .map-scroll::-webkit-scrollbar-track { background: rgba(8,20,16,0.5); }
-    .map-scroll::-webkit-scrollbar-thumb {
-      background: rgba(52,211,153,0.45);
-      border-radius: 3px;
-    }
-    .map-scroll::-webkit-scrollbar-thumb:hover {
-      background: rgba(52,211,153,0.75);
+
+    .map-scroll:active {
+      cursor: grabbing;
     }
 
-    /* ─── Внутренний холст ─── */
+    .map-scroll::-webkit-scrollbar {
+      height: 5px;
+    }
+
+    .map-scroll::-webkit-scrollbar-track {
+      background: rgba(8, 20, 16, 0.5);
+    }
+
+    .map-scroll::-webkit-scrollbar-thumb {
+      background: rgba(52, 211, 153, 0.45);
+      border-radius: 3px;
+    }
+
+    .map-scroll::-webkit-scrollbar-thumb:hover {
+      background: rgba(52, 211, 153, 0.75);
+    }
+
     .map-canvas {
       position: relative;
       height: clamp(420px, 56vh, 680px);
-      /* width задаётся JS */
     }
 
     .map-bg {
       position: absolute;
       inset: 0;
-      background: #081410 url('./images/roadmap_back.png') center / cover no-repeat;
       z-index: 0;
+      background: #081410 url('./images/roadmap_back.png') center / cover no-repeat;
     }
 
-    /* ─── Картинки узлов ─── */
     .node-img {
       position: absolute;
       top: 0;
@@ -61,15 +78,21 @@
       pointer-events: none;
       z-index: 1;
       -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 22%, #000 78%, transparent 100%);
-              mask-image: linear-gradient(to right, transparent 0%, #000 22%, #000 78%, transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0%, #000 22%, #000 78%, transparent 100%);
     }
+
     .node-img.is-first {
       -webkit-mask-image: linear-gradient(to right, #000 0%, #000 55%, transparent 100%);
-              mask-image: linear-gradient(to right, #000 0%, #000 55%, transparent 100%);
+      mask-image: linear-gradient(to right, #000 0%, #000 55%, transparent 100%);
     }
+
     .node-img.is-last {
       -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 45%, #000 100%);
-              mask-image: linear-gradient(to right, transparent 0%, #000 45%, #000 100%);
+      mask-image: linear-gradient(to right, transparent 0%, #000 45%, #000 100%);
+    }
+
+    .node-img.is-locked {
+      filter: brightness(0.5) saturate(0.55);
     }
 
     .map-fade {
@@ -77,44 +100,118 @@
       inset: 0;
       z-index: 2;
       pointer-events: none;
-      background: linear-gradient(
-        to bottom,
-        rgba(8,20,16,0.78) 0%,
-        transparent 16%,
-        transparent 78%,
-        rgba(8,20,16,0.88) 100%
-      );
+      background: linear-gradient(to bottom,
+          rgba(8, 20, 16, 0.78) 0%, transparent 16%,
+          transparent 78%, rgba(8, 20, 16, 0.88) 100%);
     }
 
-    /* ─── SVG путь ─── */
+    /* ══════════════════════════════════════
+       ТУМАН — накладываем PNG-спрайты
+    ══════════════════════════════════════ */
+    .fog-layer {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      z-index: 25;
+      pointer-events: none;
+      overflow: hidden;
+      /* Мягкое появление слева */
+      -webkit-mask-image: linear-gradient(to right,
+          transparent 0%, rgba(0, 0, 0, .2) 5%, rgba(0, 0, 0, .65) 15%, #000 28%, #000 100%);
+      mask-image: linear-gradient(to right,
+          transparent 0%, rgba(0, 0, 0, .2) 5%, rgba(0, 0, 0, .65) 15%, #000 28%, #000 100%);
+    }
+
+    .fog-sprite {
+      position: absolute;
+      background-image: url('./images/fog.png');
+      /* ← твой PNG */
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      /* Белый фон → чёрный, дым → светлый; screen убирает чёрное */
+      filter: invert(1) brightness(1.1) contrast(0.95);
+      mix-blend-mode: screen;
+      will-change: transform;
+    }
+
+    /* Плавный дрейф */
+    @keyframes fog-drift-a {
+      0% {
+        transform: translate3d(0, 0, 0) scaleX(1);
+      }
+
+      50% {
+        transform: translate3d(-3%, -8px, 0) scaleX(1.05);
+      }
+
+      100% {
+        transform: translate3d(0, 0, 0) scaleX(1);
+      }
+    }
+
+    @keyframes fog-drift-b {
+      0% {
+        transform: translate3d(0, 0, 0) scaleX(1.04);
+      }
+
+      50% {
+        transform: translate3d(4%, 10px, 0) scaleX(1);
+      }
+
+      100% {
+        transform: translate3d(0, 0, 0) scaleX(1.04);
+      }
+    }
+
+    @keyframes fog-drift-c {
+      0% {
+        transform: translate3d(-2%, 4px, 0) scaleX(1);
+      }
+
+      50% {
+        transform: translate3d(3%, -6px, 0) scaleX(1.07);
+      }
+
+      100% {
+        transform: translate3d(-2%, 4px, 0) scaleX(1);
+      }
+    }
+
     .path-svg {
       position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 5;
+      left: 0;
+      top: 0;
+      z-index: 10;
       pointer-events: none;
       overflow: visible;
     }
-    @keyframes dash-flow { to { stroke-dashoffset: -40; } }
+
+    @keyframes dash-flow {
+      to {
+        stroke-dashoffset: -40;
+      }
+    }
+
     .dash-gold {
       stroke-dasharray: 14 9;
       animation: dash-flow 1.8s linear infinite;
     }
-    .dash-gray { stroke-dasharray: 14 9; }
 
-    /* ─── Узел (иконка + текст) ─── */
+    .dash-gray {
+      stroke-dasharray: 14 9;
+    }
+
     .map-node {
-      position: absolute;   /* ← абсолют, единая СК */
+      position: absolute;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 10px;
       text-align: center;
       z-index: 20;
-      /* left + bottom + transform задаются JS */
       width: 160px;
       pointer-events: none;
+      transform: translateX(-50%);
     }
 
     .node-icon {
@@ -127,22 +224,26 @@
       justify-content: center;
       flex-shrink: 0;
     }
+
     .node-icon.completed {
       border-color: #34d399;
-      background: rgba(13,35,24,0.88);
-      box-shadow: 0 0 18px rgba(52,211,153,0.5), 0 0 40px rgba(52,211,153,0.2);
+      background: rgba(13, 35, 24, 0.88);
       color: #34d399;
+      box-shadow: 0 0 18px rgba(52, 211, 153, 0.5), 0 0 40px rgba(52, 211, 153, 0.2);
     }
+
     .node-icon.active {
       border-color: #fbbf24;
-      background: rgba(26,20,8,0.88);
-      box-shadow: 0 0 18px rgba(251,191,36,0.5), 0 0 40px rgba(251,191,36,0.2);
+      background: rgba(26, 20, 8, 0.88);
       color: #fbbf24;
+      box-shadow: 0 0 18px rgba(251, 191, 36, 0.5), 0 0 40px rgba(251, 191, 36, 0.2);
     }
+
     .node-icon.locked {
-      border-color: #374151;
-      background: rgba(17,17,24,0.7);
-      color: #6b7280;
+      border-color: #6b7280;
+      background: rgba(20, 24, 26, 0.65);
+      color: #b6bcc2;
+      backdrop-filter: blur(2px);
     }
 
     .node-title {
@@ -151,12 +252,12 @@
       font-weight: 600;
       line-height: 1.35;
     }
+
     .node-status {
       font-size: 11px;
       margin-top: 4px;
     }
 
-    /* ─── Стрелки навигации ─── */
     .nav-btn {
       position: absolute;
       top: 50%;
@@ -165,29 +266,39 @@
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      border: 1px solid rgba(52,211,153,0.35);
-      background: rgba(8,20,16,0.75);
+      border: 1px solid rgba(52, 211, 153, 0.35);
+      background: rgba(8, 20, 16, 0.75);
       color: #34d399;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       backdrop-filter: blur(6px);
-      transition: background 0.2s, opacity 0.2s;
+      transition: background .2s, opacity .2s;
       opacity: 0;
       pointer-events: none;
     }
+
     .nav-btn.visible {
       opacity: 1;
       pointer-events: auto;
     }
-    .nav-btn:hover { background: rgba(52,211,153,0.15); }
-    .nav-btn.left  { left: 12px; }
-    .nav-btn.right { right: 12px; }
+
+    .nav-btn:hover {
+      background: rgba(52, 211, 153, 0.15);
+    }
+
+    .nav-btn.left {
+      left: 12px;
+    }
+
+    .nav-btn.right {
+      right: 12px;
+    }
 
     .quote-box {
-      border: 1px solid rgba(52,211,153,0.3);
-      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      background: rgba(0, 0, 0, 0.3);
       backdrop-filter: blur(8px);
     }
 
@@ -196,15 +307,24 @@
     }
 
     @media (max-width: 640px) {
-      .map-node { width: 120px; }
-      .node-icon { width: 42px; height: 42px; }
-      .node-title { font-size: 11px; }
+      .map-node {
+        width: 120px;
+      }
+
+      .node-icon {
+        width: 42px;
+        height: 42px;
+      }
+
+      .node-title {
+        font-size: 11px;
+      }
     }
   </style>
 </head>
+
 <body>
 
-  <!-- ШАПКА -->
   <div class="w-full text-center pt-12 pb-10 px-4">
     <p class="text-[#4ade80] tracking-[0.4em] text-xs uppercase mb-4 title-font">Путь ведьмака</p>
     <h1 class="text-4xl sm:text-6xl font-bold mb-6 leading-tight">
@@ -212,22 +332,20 @@
       <span class="text-[#d4a843] title-font">карта</span>
     </h1>
     <p class="text-gray-400 text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
-      Путь к мастерству долог и полон испытаний. Следи за этапами развития<br class="hidden sm:block"/>
+      Путь к мастерству долог и полон испытаний. Следи за этапами развития<br class="hidden sm:block" />
       Академии и будь частью великого наследия.
     </p>
   </div>
 
-  <!-- КАРТА -->
   <div class="map-section-wrap">
-    <!-- Стрелки -->
-    <button class="nav-btn left"  id="btnLeft"  aria-label="Влево">
+    <button class="nav-btn left" id="btnLeft" aria-label="Влево">
       <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
       </svg>
     </button>
     <button class="nav-btn right" id="btnRight" aria-label="Вправо">
       <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
       </svg>
     </button>
 
@@ -236,295 +354,249 @@
         <div class="map-bg"></div>
         <div id="imagesLayer"></div>
         <div class="map-fade"></div>
+        <div class="fog-layer" id="fogLayer" hidden></div>
         <svg class="path-svg" id="pathSvg" xmlns="http://www.w3.org/2000/svg"></svg>
         <div id="nodesLayer"></div>
       </div>
     </div>
   </div>
 
-  <!-- ЦИТАТА -->
   <div class="w-full flex justify-center px-4 py-14">
     <div class="quote-box rounded-lg px-6 sm:px-16 py-4 max-w-2xl w-full flex items-center justify-center gap-4">
       <p class="text-gray-300 text-xs sm:text-sm text-center italic leading-relaxed">
         «Каждая страница приближает к истине, каждый шаг — к себе настоящему»
       </p>
       <svg class="w-5 h-5 text-[#34d399] flex-shrink-0 opacity-50" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+        <path
+          d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
       </svg>
     </div>
   </div>
 
-<script>
-/* ════════════════════════════════════════════════════════════
-   ДАННЫЕ — чтобы добавить узел, добавь объект сюда
-════════════════════════════════════════════════════════════ */
-const NODES = [
-  {
-    title: 'Долина\nПервых Строк',
-    status: 'completed',       // completed | active | locked
-    statusLabel: 'Пройдено',
-    image: './images/dolina.png',
-    wave: 0.85,                // 0 = высоко, 1 = низко (волна пути)
-  },
-  {
-    title: 'Замок\nСпящего Дракона',
-    status: 'completed',
-    statusLabel: 'Пройдено',
-    image: './images/dragon.png',
-    wave: 0.25,
-  },
-  {
-    title: 'Лес\nШёпота и Теней',
-    status: 'completed',
-    statusLabel: 'Пройдено',
-    image: './images/forest.png',
-    wave: 0.55,
-  },
-  {
-    title: 'Океан\nНескончаемых Историй',
-    status: 'active',
-    statusLabel: 'В процессе',
-    image: './images/ocean.png',
-    wave: 0.20,
-  },
-  {
-    title: 'Город\nЖивых Зеркал',
-    status: 'locked',
-    statusLabel: 'Скоро',
-    image: './images/mirrors.png',
-    wave: 0.50,
-  },
-  {
-    title: 'Библиотека\nВечности',
-    status: 'locked',
-    statusLabel: 'Скоро',
-    image: './images/library.png',
-    wave: 0.45,
-  },
-];
+  <script>
+    /* ═══════════ ДАННЫЕ ═══════════ */
+    const NODES = [
+      { title: 'Долина\nПервых Строк', status: 'completed', statusLabel: 'Пройдено', image: './images/dolina.png', wave: 0.85 },
+      { title: 'Замок\nСпящего Дракона', status: 'completed', statusLabel: 'Пройдено', image: './images/dragon.png', wave: 0.25 },
+      { title: 'Лес\nШёпота и Теней', status: 'completed', statusLabel: 'Пройдено', image: './images/forest.png', wave: 0.55 },
+      { title: 'Океан\nНескончаемых Историй', status: 'active', statusLabel: 'В процессе', image: './images/ocean.png', wave: 0.20 },
+      { title: 'Город\nЖивых Зеркал', status: 'locked', statusLabel: 'Скоро', image: './images/mirrors.png', wave: 0.50 },
+      { title: 'Библиотека\nВечности', status: 'locked', statusLabel: 'Скоро', image: './images/library.png', wave: 0.45 },
+    ];
 
-/* ════════════════════════════════════════════════════════════
-   НАСТРОЙКИ
-════════════════════════════════════════════════════════════ */
-const CFG = {
-  // Желаемый шаг между центрами узлов (px).
-  // Если узлы не влезают в экран — используется он (появится скролл).
-  // Если влезают — шаг увеличивается, чтобы заполнить ширину.
-  nodeStep: 500,
+    const CFG = {
+      nodeStep: 350, minStep: 180, sidePad: 130, imgRatio: 1.85,
+      iconBottomMin: 0.14, iconBottomMax: 0.42,
+      fogLeadIn: 0.7,        // насколько туман заходит влево от первого locked (в долях step)
+    };
 
-  // Минимальный шаг (не сжимать сильнее)
-  minStep: 180,
+    /* Раскладка спрайтов тумана.
+       x/y/w/h — доли от размера fog-зоны. Спрайты перекрываются → сплошная пелена. */
+    const FOG_SPRITES = [
+      // Нижний ярус — самый плотный, покрывает весь низ
+      { x: -0.15, y: 0.55, w: 0.70, h: 0.80, op: 0.75, anim: 'fog-drift-a', dur: 38, delay: 0, flip: false },
+      { x: 0.25, y: 0.50, w: 0.75, h: 0.75, op: 0.70, anim: 'fog-drift-b', dur: 44, delay: -10, flip: true },
+      { x: 0.55, y: 0.52, w: 0.65, h: 0.72, op: 0.68, anim: 'fog-drift-c', dur: 40, delay: -20, flip: false },
 
-  // Боковые поля от края холста до центра крайнего узла
-  sidePad: 130,
+      // Средний ярус
+      { x: -0.10, y: 0.25, w: 0.80, h: 0.75, op: 0.60, anim: 'fog-drift-b', dur: 50, delay: -5, flip: true },
+      { x: 0.20, y: 0.20, w: 0.85, h: 0.70, op: 0.55, anim: 'fog-drift-c', dur: 35, delay: -18, flip: false },
+      { x: 0.50, y: 0.28, w: 0.75, h: 0.68, op: 0.52, anim: 'fog-drift-a', dur: 55, delay: -28, flip: true },
 
-  // Ширина картинки = step * imgRatio
-  imgRatio: 1.85,
+      // Верхний ярус — чуть прозрачнее
+      { x: 0.00, y: -0.10, w: 0.85, h: 0.65, op: 0.45, anim: 'fog-drift-a', dur: 60, delay: -8, flip: false },
+      { x: 0.30, y: -0.05, w: 0.80, h: 0.60, op: 0.40, anim: 'fog-drift-c', dur: 48, delay: -35, flip: true },
+      { x: 0.60, y: -0.08, w: 0.70, h: 0.58, op: 0.38, anim: 'fog-drift-b', dur: 42, delay: -15, flip: false },
 
-  // Вертикаль иконки: доля высоты холста от низа
-  // iconBottomMin — когда wave=1 (низко)
-  // iconBottomMax — когда wave=0 (высоко)
-  iconBottomMin: 0.08,  // 8% высоты от низа
-  iconBottomMax: 0.38,  // 38% высоты от низа
+      // Перекрывающие «заплатки» — закрывают дыры
+      { x: 0.10, y: 0.38, w: 0.90, h: 0.55, op: 0.50, anim: 'fog-drift-b', dur: 45, delay: -25, flip: false },
+      { x: 0.40, y: 0.42, w: 0.80, h: 0.60, op: 0.48, anim: 'fog-drift-a', dur: 36, delay: -12, flip: true },
+      { x: 0.70, y: 0.35, w: 0.75, h: 0.65, op: 0.45, anim: 'fog-drift-c', dur: 52, delay: -40, flip: false },
+    ];
 
-  // Размер иконки (для расчёта центра пути)
-  iconSize: 52,
-};
+    /* ═══════════ DOM ═══════════ */
+    const scrollEl = document.getElementById('mapScroll');
+    const canvasEl = document.getElementById('mapCanvas');
+    const imgsLayer = document.getElementById('imagesLayer');
+    const nodesLayer = document.getElementById('nodesLayer');
+    const pathSvg = document.getElementById('pathSvg');
+    const fogLayer = document.getElementById('fogLayer');
+    const btnLeft = document.getElementById('btnLeft');
+    const btnRight = document.getElementById('btnRight');
 
-/* ════════════════════════════════════════════════════════════
-   РЕНДЕР
-════════════════════════════════════════════════════════════ */
-const scrollEl  = document.getElementById('mapScroll');
-const canvasEl  = document.getElementById('mapCanvas');
-const imgsLayer = document.getElementById('imagesLayer');
-const nodesLayer= document.getElementById('nodesLayer');
-const pathSvg   = document.getElementById('pathSvg');
-const btnLeft   = document.getElementById('btnLeft');
-const btnRight  = document.getElementById('btnRight');
+    const ICONS = {
+      check: `<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`,
+      lock: `<svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1C8.676 1 6 3.676 6 7v1H4v15h16V8h-2V7c0-3.324-2.676-6-6-6zm0 2c2.276 0 4 1.724 4 4v1H8V7c0-2.276 1.724-4 4-4zm0 9a2 2 0 110 4 2 2 0 010-4z"/></svg>`,
+    };
+    const statusColor = s => ({ completed: '#34d399', active: '#fbbf24', locked: '#a8b0b6' }[s]);
+    const getIconSize = () => window.matchMedia('(max-width:640px)').matches ? 42 : 52;
 
-const ICONS = {
-  check: `<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`,
-  lock:  `<svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1C8.676 1 6 3.676 6 7v1H4v15h16V8h-2V7c0-3.324-2.676-6-6-6zm0 2c2.276 0 4 1.724 4 4v1H8V7c0-2.276 1.724-4 4-4zm0 9a2 2 0 110 4 2 2 0 010-4z"/></svg>`,
-};
+    /* ═══════════ ТУМАН ═══════════ */
+    function buildFog(fogLeft, fogW, fogH) {
+      fogLayer.hidden = false;
+      fogLayer.style.left = fogLeft + 'px';
+      fogLayer.style.width = (fogW + 200) + 'px'; /* +200px запас справа */
+      fogLayer.innerHTML = '';
 
-function statusColor(s) {
-  return { completed: '#34d399', active: '#fbbf24', locked: '#6b7280' }[s];
-}
-
-function render() {
-  const n = NODES.length;
-  if (!n) return;
-
-  const viewW  = scrollEl.clientWidth;
-  const mapH   = canvasEl.clientHeight;
-
-  /* ── 1. Адаптивный шаг ── */
-  // Сколько места нужно при желаемом step
-  const neededAtStep = CFG.sidePad * 2 + CFG.nodeStep * (n - 1);
-
-  let step;
-  if (neededAtStep <= viewW) {
-    // Всё влезает — растягиваем, чтобы заполнить экран
-    step = Math.max(CFG.minStep, (viewW - CFG.sidePad * 2) / Math.max(n - 1, 1));
-  } else {
-    // Не влезает — фиксированный step, будет скролл
-    step = CFG.nodeStep;
-  }
-
-  const totalW = CFG.sidePad * 2 + step * (n - 1);
-  canvasEl.style.width = totalW + 'px';
-
-  /* ── 2. Координаты центров ── */
-  // Единая функция: X-центр i-го узла
-  const cx = (i) => CFG.sidePad + i * step;
-
-  // Y-центр иконки (от верха холста)
-  // bottom_px = mapH * lerp(iconBottomMax, iconBottomMin, wave)
-  // icon center from top = mapH - bottom_px - iconSize/2
-  const iconCY = (wave) => {
-    const bottomFrac = CFG.iconBottomMax + (CFG.iconBottomMin - CFG.iconBottomMax) * wave;
-    // wait: wave=0 → high → large bottom offset
-    // wave=1 → low  → small bottom offset
-    const bottomPx = mapH * (CFG.iconBottomMax * (1 - wave) + CFG.iconBottomMin * wave);
-    return mapH - bottomPx - CFG.iconSize / 2;
-  };
-
-  const iconBottom = (wave) => {
-    return mapH * (CFG.iconBottomMax * (1 - wave) + CFG.iconBottomMin * wave);
-  };
-
-  /* ── 3. Картинки ── */
-  imgsLayer.innerHTML = '';
-  const imgW = Math.round(step * CFG.imgRatio);
-
-  NODES.forEach((node, i) => {
-    const el = document.createElement('div');
-    el.className = 'node-img'
-      + (i === 0     ? ' is-first' : '')
-      + (i === n - 1 ? ' is-last'  : '');
-    el.style.left = (cx(i) - imgW / 2) + 'px';
-    el.style.width = imgW + 'px';
-    el.style.backgroundImage = `url('${node.image}')`;
-    imgsLayer.appendChild(el);
-  });
-
-  /* ── 4. SVG путь — через центры иконок ── */
-  // viewBox = реальные пиксели холста → path совпадает 1:1
-  pathSvg.setAttribute('viewBox', `0 0 ${totalW} ${mapH}`);
-  pathSvg.setAttribute('width', totalW);
-  pathSvg.setAttribute('height', mapH);
-
-  // Точки пути = центры иконок
-  const pts = NODES.map((node, i) => ({
-    x: cx(i),
-    y: iconCY(node.wave),
-    status: node.status,
-  }));
-
-  // Индекс, с которого начинается locked-сегмент
-  let lockStart = NODES.findIndex(nd => nd.status === 'locked');
-  if (lockStart === -1) lockStart = n; // все открыты
-
-  function makePath(from, to) {
-    if (from >= to) return '';
-    let d = `M ${pts[from].x} ${pts[from].y}`;
-    for (let i = from; i < to; i++) {
-      const a = pts[i], b = pts[i + 1];
-      const cpx = (a.x + b.x) / 2;
-      d += ` C ${cpx} ${a.y}, ${cpx} ${b.y}, ${b.x} ${b.y}`;
+      FOG_SPRITES.forEach(s => {
+        const el = document.createElement('div');
+        el.className = 'fog-sprite';
+        el.style.left = (s.x * fogW) + 'px';
+        el.style.top = (s.y * fogH) + 'px';
+        el.style.width = (s.w * fogW) + 'px';
+        el.style.height = (s.h * fogH) + 'px';
+        el.style.opacity = s.op;
+        el.style.animation = `${s.anim} ${s.dur}s ease-in-out ${s.delay}s infinite`;
+        if (s.flip) el.style.scale = '-1 1';
+        fogLayer.appendChild(el);
+      });
     }
-    return d;
-  }
 
-  // Золотой: от 0 до lockStart (включительно соединяем с первым locked, если есть)
-  const goldEnd = lockStart > 0 ? lockStart : 0;
-  // Серый: от (lockStart-1) или lockStart до конца
-  const grayStart = lockStart > 0 ? lockStart - 1 : lockStart;
+    function hideFog() {
+      fogLayer.hidden = true;
+      fogLayer.innerHTML = '';
+    }
 
-  let svgHTML = '';
-  if (goldEnd > 0) {
-    svgHTML += `<path d="${makePath(0, goldEnd)}" fill="none" stroke="#d4a843" stroke-width="2.5" stroke-linecap="round" class="dash-gold"/>`;
-  }
-  if (grayStart < n - 1) {
-    svgHTML += `<path d="${makePath(grayStart, n - 1)}" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" class="dash-gray"/>`;
-  }
-  pathSvg.innerHTML = svgHTML;
+    /* ═══════════ РЕНДЕР ═══════════ */
+    function render() {
+      const n = NODES.length;
+      if (!n) return;
 
-  /* ── 5. Узлы (иконка + текст) — absolute, та же СК ── */
-  nodesLayer.innerHTML = '';
+      const viewW = scrollEl.clientWidth;
+      const mapH = canvasEl.clientHeight;
+      const iconSize = getIconSize();
 
-  NODES.forEach((node, i) => {
-    const el = document.createElement('div');
-    el.className = 'map-node';
-    if (node.status === 'locked') el.style.opacity = '0.55';
+      const needed = CFG.sidePad * 2 + CFG.nodeStep * (n - 1);
+      const step = needed <= viewW
+        ? Math.max(CFG.minStep, (viewW - CFG.sidePad * 2) / Math.max(n - 1, 1))
+        : CFG.nodeStep;
 
-    // Центрируем по X через left + translateX(-50%)
-    el.style.left   = cx(i) + 'px';
-    el.style.bottom = iconBottom(node.wave) + 'px';
-    el.style.transform = 'translateX(-50%)';
+      const totalW = CFG.sidePad * 2 + step * (n - 1);
+      canvasEl.style.width = totalW + 'px';
 
-    const color = statusColor(node.status);
-    const icon  = node.status === 'locked' ? ICONS.lock : ICONS.check;
-    const title = node.title.replace(/\n/g, '<br>');
-    const weight = node.status === 'active' ? '600' : '400';
+      const cx = i => CFG.sidePad + i * step;
+      const iconTop = wave => {
+        const b = mapH * (CFG.iconBottomMax * (1 - wave) + CFG.iconBottomMin * wave);
+        return mapH - b - iconSize;
+      };
 
-    el.innerHTML = `
+      /* картинки */
+      imgsLayer.innerHTML = '';
+      const imgW = Math.round(step * CFG.imgRatio);
+      NODES.forEach((node, i) => {
+        const el = document.createElement('div');
+        el.className = 'node-img'
+          + (i === 0 ? ' is-first' : '')
+          + (i === n - 1 ? ' is-last' : '')
+          + (node.status === 'locked' ? ' is-locked' : '');
+        el.style.left = (cx(i) - imgW / 2) + 'px';
+        el.style.width = imgW + 'px';
+        el.style.backgroundImage = `url('${node.image}')`;
+        imgsLayer.appendChild(el);
+      });
+
+      /* туман */
+      const lockStart = NODES.findIndex(nd => nd.status === 'locked');
+      if (lockStart < 0) {
+        hideFog();
+      } else {
+        const fogLeft = Math.max(0, cx(lockStart) - step * CFG.fogLeadIn);
+        buildFog(fogLeft, totalW - fogLeft, mapH);
+      }
+
+      /* ноды */
+      nodesLayer.innerHTML = '';
+      NODES.forEach((node, i) => {
+        const el = document.createElement('div');
+        el.className = 'map-node';
+        el.style.left = cx(i) + 'px';
+        el.style.top = iconTop(node.wave) + 'px';
+
+        const color = statusColor(node.status);
+        const icon = node.status === 'locked' ? ICONS.lock : ICONS.check;
+        const title = node.title.replace(/\n/g, '<br>');
+        const weight = node.status === 'active' ? '600' : '400';
+        const titleColor = node.status === 'locked' ? '#dfe3e6' : '#fff';
+
+        el.innerHTML = `
       <div class="node-icon ${node.status}">${icon}</div>
       <div>
-        <p class="node-title">${title}</p>
+        <p class="node-title" style="color:${titleColor}">${title}</p>
         <p class="node-status" style="color:${color};font-weight:${weight}">${node.statusLabel}</p>
-      </div>
-    `;
-    nodesLayer.appendChild(el);
-  });
+      </div>`;
+        nodesLayer.appendChild(el);
+      });
 
-  updateNavButtons();
-}
+      requestAnimationFrame(() => { drawPath(totalW, mapH); updateNavButtons(); });
+    }
 
-/* ════════════════════════════════════════════════════════════
-   СКРОЛЛ / DRAG / СТРЕЛКИ
-════════════════════════════════════════════════════════════ */
-function updateNavButtons() {
-  const maxScroll = scrollEl.scrollWidth - scrollEl.clientWidth;
-  const hasScroll = maxScroll > 4;
-  btnLeft.classList.toggle('visible',  hasScroll && scrollEl.scrollLeft > 4);
-  btnRight.classList.toggle('visible', hasScroll && scrollEl.scrollLeft < maxScroll - 4);
-}
+    /* ═══════════ ПУТЬ ═══════════ */
+    function drawPath(totalW, mapH) {
+      const cr = canvasEl.getBoundingClientRect();
+      const pts = Array.from(nodesLayer.querySelectorAll('.node-icon')).map(ic => {
+        const r = ic.getBoundingClientRect();
+        return { x: r.left - cr.left + r.width / 2, y: r.top - cr.top + r.height / 2 };
+      });
 
-scrollEl.addEventListener('scroll', updateNavButtons, { passive: true });
+      pathSvg.setAttribute('viewBox', `0 0 ${totalW} ${mapH}`);
+      pathSvg.setAttribute('width', totalW);
+      pathSvg.setAttribute('height', mapH);
+      pathSvg.style.width = totalW + 'px';
+      pathSvg.style.height = mapH + 'px';
 
-btnLeft.addEventListener('click',  () => scrollEl.scrollBy({ left: -CFG.nodeStep, behavior: 'smooth' }));
-btnRight.addEventListener('click', () => scrollEl.scrollBy({ left:  CFG.nodeStep, behavior: 'smooth' }));
+      const n = pts.length;
+      if (n < 2) { pathSvg.innerHTML = ''; return; }
 
-/* Drag-to-scroll */
-let dragging = false, dragStartX = 0, scrollStart = 0;
+      let ls = NODES.findIndex(nd => nd.status === 'locked');
+      if (ls < 0) ls = n;
 
-scrollEl.addEventListener('mousedown', e => {
-  dragging = true;
-  dragStartX = e.pageX;
-  scrollStart = scrollEl.scrollLeft;
-  scrollEl.style.cursor = 'grabbing';
-});
-window.addEventListener('mousemove', e => {
-  if (!dragging) return;
-  e.preventDefault();
-  scrollEl.scrollLeft = scrollStart - (e.pageX - dragStartX);
-});
-window.addEventListener('mouseup', () => {
-  dragging = false;
-  scrollEl.style.cursor = 'grab';
-});
+      const mk = (from, to) => {
+        if (from >= to) return '';
+        let d = `M ${pts[from].x} ${pts[from].y}`;
+        for (let i = from; i < to; i++) {
+          const a = pts[i], b = pts[i + 1], cpx = (a.x + b.x) / 2;
+          d += ` C ${cpx} ${a.y}, ${cpx} ${b.y}, ${b.x} ${b.y}`;
+        }
+        return d;
+      };
 
-/* ════════════════════════════════════════════════════════════
-   INIT + RESIZE
-════════════════════════════════════════════════════════════ */
-render();
+      let svg = '';
+      if (ls > 0)
+        svg += `<path d="${mk(0, ls)}" fill="none" stroke="#d4a843" stroke-width="2.5" stroke-linecap="round" class="dash-gold"/>`;
+      if (ls < n - 1)
+        svg += `<path d="${mk(Math.max(ls - 1, 0), n - 1)}" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" class="dash-gray"/>`;
 
-let resizeTimer;
-window.addEventListener('resize', () => {
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(render, 120);
-});
-</script>
+      pathSvg.innerHTML = svg;
+    }
+
+    /* ═══════════ НАВИГАЦИЯ ═══════════ */
+    function updateNavButtons() {
+      const max = scrollEl.scrollWidth - scrollEl.clientWidth;
+      const has = max > 4;
+      btnLeft.classList.toggle('visible', has && scrollEl.scrollLeft > 4);
+      btnRight.classList.toggle('visible', has && scrollEl.scrollLeft < max - 4);
+    }
+
+    scrollEl.addEventListener('scroll', updateNavButtons, { passive: true });
+    btnLeft.addEventListener('click', () => scrollEl.scrollBy({ left: -CFG.nodeStep, behavior: 'smooth' }));
+    btnRight.addEventListener('click', () => scrollEl.scrollBy({ left: CFG.nodeStep, behavior: 'smooth' }));
+
+    let dragging = false, dragStartX = 0, scrollStart = 0;
+    scrollEl.addEventListener('mousedown', e => {
+      dragging = true; dragStartX = e.pageX; scrollStart = scrollEl.scrollLeft;
+      scrollEl.style.cursor = 'grabbing';
+    });
+    window.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      e.preventDefault();
+      scrollEl.scrollLeft = scrollStart - (e.pageX - dragStartX);
+    });
+    window.addEventListener('mouseup', () => { dragging = false; scrollEl.style.cursor = 'grab'; });
+
+    render();
+    let rt;
+    window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(render, 120); });
+  </script>
 </body>
+
 </html>
