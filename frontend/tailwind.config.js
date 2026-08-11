@@ -26,6 +26,12 @@ export default {
       backgroundImage: {
         hero: "url('/images/hero-bg.jpg')",
       },
+      colors: {
+        'gold': '#c5a67c',
+        'gold-bright': '#d4b483',
+        'gold-muted': 'rgba(197, 166, 124, 0.12)',
+        'dark': '#050a0a',
+      },
     },
   },
   plugins: [],
