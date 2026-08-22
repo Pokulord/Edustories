@@ -25,7 +25,6 @@
         radial-gradient(ellipse at 80% 50%, rgba(40, 30, 15, 0.5) 0%, transparent 60%),
         linear-gradient(180deg, rgba(5, 10, 10, 0.92) 0%, rgba(8, 16, 14, 0.85) 40%, rgba(5, 10, 10, 0.95) 100%),
         url('./images/roadmap_page_background.jpg') center / cover no-repeat fixed;
-
       background-color: #050a0a;
     }
 
@@ -33,13 +32,14 @@
       font-family: 'Cinzel', serif;
     }
 
+    /* ─── Карта ─── */
     .map-scroll {
       width: 100%;
       overflow-x: auto;
       overflow-y: hidden;
       cursor: grab;
       scrollbar-width: thin;
-      scrollbar-color: rgba(197, 166, 124, 0.45) rgba(5, 10, 10, 0.5);
+      scrollbar-color: rgba(197, 166, 124, .45) rgba(5, 10, 10, .5);
       -webkit-overflow-scrolling: touch;
     }
 
@@ -52,16 +52,16 @@
     }
 
     .map-scroll::-webkit-scrollbar-track {
-      background: rgba(5, 10, 10, 0.5);
+      background: rgba(5, 10, 10, .5);
     }
 
     .map-scroll::-webkit-scrollbar-thumb {
-      background: rgba(197, 166, 124, 0.45);
+      background: rgba(197, 166, 124, .45);
       border-radius: 3px;
     }
 
     .map-scroll::-webkit-scrollbar-thumb:hover {
-      background: rgba(197, 166, 124, 0.75);
+      background: rgba(197, 166, 124, .75);
     }
 
     .map-canvas {
@@ -107,9 +107,7 @@
       inset: 0;
       z-index: 2;
       pointer-events: none;
-      background: linear-gradient(to bottom,
-          rgba(5, 10, 10, 0.82) 0%, transparent 16%,
-          transparent 78%, rgba(5, 10, 10, 0.92) 100%);
+      background: linear-gradient(to bottom, rgba(5, 10, 10, .82) 0%, transparent 16%, transparent 78%, rgba(5, 10, 10, .92) 100%);
     }
 
     .fog-layer {
@@ -119,10 +117,8 @@
       z-index: 25;
       pointer-events: none;
       overflow: hidden;
-      -webkit-mask-image: linear-gradient(to right,
-          transparent 0%, rgba(0, 0, 0, .2) 5%, rgba(0, 0, 0, .65) 15%, #000 28%, #000 100%);
-      mask-image: linear-gradient(to right,
-          transparent 0%, rgba(0, 0, 0, .2) 5%, rgba(0, 0, 0, .65) 15%, #000 28%, #000 100%);
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, .2) 5%, rgba(0, 0, 0, .65) 15%, #000 28%, #000 100%);
+      mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, .2) 5%, rgba(0, 0, 0, .65) 15%, #000 28%, #000 100%);
     }
 
     .fog-sprite {
@@ -130,50 +126,50 @@
       background-image: url('./images/fog.png');
       background-repeat: no-repeat;
       background-size: 100% 100%;
-      filter: invert(1) brightness(1.1) contrast(0.95);
+      filter: invert(1) brightness(1.1) contrast(.95);
       mix-blend-mode: screen;
       will-change: transform;
     }
 
     @keyframes fog-drift-a {
       0% {
-        transform: translate3d(0, 0, 0) scaleX(1);
+        transform: translate3d(0, 0, 0) scaleX(1)
       }
 
       50% {
-        transform: translate3d(-3%, -8px, 0) scaleX(1.05);
+        transform: translate3d(-3%, -8px, 0) scaleX(1.05)
       }
 
       100% {
-        transform: translate3d(0, 0, 0) scaleX(1);
+        transform: translate3d(0, 0, 0) scaleX(1)
       }
     }
 
     @keyframes fog-drift-b {
       0% {
-        transform: translate3d(0, 0, 0) scaleX(1.04);
+        transform: translate3d(0, 0, 0) scaleX(1.04)
       }
 
       50% {
-        transform: translate3d(4%, 10px, 0) scaleX(1);
+        transform: translate3d(4%, 10px, 0) scaleX(1)
       }
 
       100% {
-        transform: translate3d(0, 0, 0) scaleX(1.04);
+        transform: translate3d(0, 0, 0) scaleX(1.04)
       }
     }
 
     @keyframes fog-drift-c {
       0% {
-        transform: translate3d(-2%, 4px, 0) scaleX(1);
+        transform: translate3d(-2%, 4px, 0) scaleX(1)
       }
 
       50% {
-        transform: translate3d(3%, -6px, 0) scaleX(1.07);
+        transform: translate3d(3%, -6px, 0) scaleX(1.07)
       }
 
       100% {
-        transform: translate3d(-2%, 4px, 0) scaleX(1);
+        transform: translate3d(-2%, 4px, 0) scaleX(1)
       }
     }
 
@@ -227,21 +223,21 @@
 
     .node-icon.completed {
       border-color: #c5a67c;
-      background: rgba(10, 18, 14, 0.88);
+      background: rgba(10, 18, 14, .88);
       color: #c5a67c;
-      box-shadow: 0 0 18px rgba(197, 166, 124, 0.45), 0 0 40px rgba(197, 166, 124, 0.2);
+      box-shadow: 0 0 18px rgba(197, 166, 124, .45), 0 0 40px rgba(197, 166, 124, .2);
     }
 
     .node-icon.active {
       border-color: #d4a843;
-      background: rgba(30, 22, 8, 0.9);
+      background: rgba(30, 22, 8, .9);
       color: #d4a843;
-      box-shadow: 0 0 25px rgba(212, 168, 67, 0.6), 0 0 50px rgba(212, 168, 67, 0.25);
+      box-shadow: 0 0 25px rgba(212, 168, 67, .6), 0 0 50px rgba(212, 168, 67, .25);
     }
 
     .node-icon.locked {
       border-color: #6b7280;
-      background: rgba(16, 20, 20, 0.65);
+      background: rgba(16, 20, 20, .65);
       color: #b6bcc2;
       backdrop-filter: blur(2px);
     }
@@ -266,8 +262,8 @@
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      border: 1px solid rgba(197, 166, 124, 0.35);
-      background: rgba(5, 10, 10, 0.75);
+      border: 1px solid rgba(197, 166, 124, .35);
+      background: rgba(5, 10, 10, .75);
       color: #c5a67c;
       display: flex;
       align-items: center;
@@ -285,7 +281,7 @@
     }
 
     .nav-btn:hover {
-      background: rgba(197, 166, 124, 0.15);
+      background: rgba(197, 166, 124, .15);
     }
 
     .nav-btn.left {
@@ -297,13 +293,180 @@
     }
 
     .quote-box {
-      border: 1px solid rgba(197, 166, 124, 0.3);
-      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(197, 166, 124, .3);
+      background: rgba(0, 0, 0, .3);
       backdrop-filter: blur(8px);
     }
 
     .map-section-wrap {
       position: relative;
+    }
+
+    /* ─── Кнопка «Как играть» ─── */
+    .how-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(197, 166, 124, .45);
+      background: rgba(10, 18, 14, .7);
+      color: #c5a67c;
+      font-family: 'Raleway', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: background .2s, border-color .2s, box-shadow .2s;
+    }
+
+    .how-btn:hover {
+      background: rgba(197, 166, 124, .12);
+      border-color: rgba(197, 166, 124, .75);
+      box-shadow: 0 0 18px rgba(197, 166, 124, .2);
+    }
+
+    /* ─── Модальное окно ─── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0, 0, 0, .75);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s;
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-box {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      background: linear-gradient(160deg,
+          #080e1f 0%,
+          #0b1228 50%,
+          #090f20 100%);
+      border: 1px solid rgba(100, 140, 220, 0.25);
+      border-radius: 16px;
+      padding: 36px 36px 32px;
+      box-shadow:
+        0 24px 80px rgba(0, 0, 0, .8),
+        0 0 60px rgba(60, 90, 200, 0.08) inset,
+        0 0 0 1px rgba(80, 120, 220, 0.06) inset;
+      transform: translateY(18px);
+      transition: transform .28s;
+    }
+
+    .modal-backdrop.open .modal-box {
+      transform: translateY(0);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(100, 140, 220, 0.3);
+      background: rgba(255, 255, 255, .04);
+      color: #7aa0e0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s, border-color .2s;
+    }
+
+    .modal-close:hover {
+      background: rgba(100, 140, 220, 0.15);
+      border-color: rgba(100, 140, 220, 0.6);
+    }
+
+    .modal-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .18em;
+      color: #5a80c0;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .modal-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(22px, 5vw, 30px);
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 28px;
+    }
+
+    .modal-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .modal-step {
+      display: grid;
+      grid-template-columns: 28px 48px 1fr;
+      align-items: center;
+      gap: 0 14px;
+    }
+
+    .modal-step-num {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      color: #3a5a9a;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .modal-step-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(100, 140, 220, 0.35);
+      background: rgba(80, 120, 220, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #7aa0e0;
+      flex-shrink: 0;
+      box-shadow: 0 0 14px rgba(80, 120, 220, 0.15);
+    }
+
+    .modal-step-body strong {
+      display: block;
+      color: #e8eeff;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .modal-step-body span {
+      color: #6a80aa;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .modal-divider {
+      height: 1px;
+      background: rgba(80, 120, 220, 0.15);
+      margin: 26px 0 0;
     }
 
     @media (max-width: 640px) {
@@ -319,24 +482,526 @@
       .node-title {
         font-size: 11px;
       }
+
+      .modal-box {
+        padding: 28px 20px 24px;
+      }
+    }
+
+    /* ─── Модалка узла ─── */
+    .node-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 1100;
+      background: rgba(0, 0, 0, .82);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .28s;
+    }
+
+    .node-modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .node-modal-box {
+      position: relative;
+      width: 100%;
+      max-width: 820px;
+      min-height: 380px;
+      background: linear-gradient(135deg, #07101e 0%, #0c1830 55%, #080f1c 100%);
+      border: 1px solid rgba(80, 130, 230, .2);
+      border-radius: 20px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      box-shadow: 0 40px 100px rgba(0, 0, 0, .9), 0 0 0 1px rgba(60, 100, 220, .06) inset;
+      transform: scale(.96) translateY(16px);
+      transition: transform .3s cubic-bezier(.22, .68, 0, 1.15);
+    }
+
+    .node-modal-backdrop.open .node-modal-box {
+      transform: scale(1) translateY(0);
+    }
+
+    /* Левая часть — иллюстрация */
+    .nm-left {
+      position: relative;
+      overflow: hidden;
+      min-height: 380px;
+    }
+
+    .nm-left-img {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center top;
+      transition: background-image .3s;
+    }
+
+    /* Затемнение справа чтобы сливалось с правой частью */
+    .nm-left-fade {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right,
+          rgba(7, 16, 30, 0) 50%,
+          rgba(7, 16, 30, .85) 85%,
+          rgba(7, 16, 30, 1) 100%);
+    }
+
+    /* Нарратор внизу слева */
+    .nm-narrator {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      z-index: 2;
+    }
+
+    .nm-narrator-name {
+      font-family: 'Cinzel', serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #e8d8a0;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, .8);
+    }
+
+    .nm-narrator-role {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: #7a90a0;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, .8);
+      margin-top: 2px;
+    }
+
+    /* Правая часть — текст */
+    .nm-right {
+      padding: 36px 36px 30px 28px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .nm-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: #5a80c0;
+      margin-bottom: 4px;
+    }
+
+    .nm-tag svg {
+      opacity: .7;
+    }
+
+    .nm-chapter {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #c5a67c;
+      margin-bottom: 10px;
+    }
+
+    .nm-heading {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(24px, 3.5vw, 38px);
+      font-weight: 700;
+      line-height: 1.1;
+      color: #e8d8b0;
+      white-space: pre-line;
+      text-transform: uppercase;
+      text-shadow: 0 0 40px rgba(197, 166, 124, .15);
+      margin-bottom: 22px;
+      flex-shrink: 0;
+    }
+
+    .nm-text {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #8a9ab8;
+      font-style: italic;
+      flex: 1;
+      transition: opacity .25s, transform .25s;
+    }
+
+    .nm-text.fade-out {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+
+    /* Пагинация-точки */
+    .nm-dots {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 22px;
+      margin-bottom: 20px;
+    }
+
+    .nm-dot {
+      height: 3px;
+      border-radius: 2px;
+      background: rgba(197, 166, 124, .25);
+      cursor: pointer;
+      transition: width .25s, background .25s;
+    }
+
+    .nm-dot.active {
+      background: #c5a67c;
+    }
+
+    /* Кнопка «Слушать дальше» */
+    .nm-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 24px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #c5a040, #d4b060);
+      color: #1a1000;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      align-self: flex-start;
+      transition: opacity .2s, transform .15s;
+      box-shadow: 0 4px 20px rgba(197, 160, 64, .3);
+    }
+
+    .nm-btn:hover {
+      opacity: .88;
+      transform: translateX(3px);
+    }
+
+    .nm-btn:disabled {
+      opacity: .4;
+      transform: none;
+      cursor: default;
+    }
+
+    .nm-btn svg {
+      transition: transform .2s;
+    }
+
+    .nm-btn:not(:disabled):hover svg {
+      transform: translateX(4px);
+    }
+
+    /* Кнопка закрытия */
+    .nm-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 10;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(80, 130, 230, .3);
+      background: rgba(255, 255, 255, .04);
+      color: #6a90d0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s;
+    }
+
+    .nm-close:hover {
+      background: rgba(80, 130, 230, .18);
+    }
+
+    /* Адаптив */
+    @media (max-width: 640px) {
+      .node-modal-box {
+        grid-template-columns: 1fr;
+        grid-template-rows: 200px 1fr;
+        max-width: 100%;
+      }
+
+      .nm-left {
+        min-height: 200px;
+      }
+
+      .nm-right {
+        padding: 22px 18px 20px;
+      }
+
+      .nm-heading {
+        font-size: 22px;
+        margin-bottom: 14px;
+      }
+    }
+
+    /* ─── Форма ответов ─── */
+    #answerFormSection {
+      display: none;
+      width: 100%;
+      padding: 0 16px 48px;
+    }
+
+    #answerFormSection.visible {
+      display: block;
+    }
+
+    .answer-form-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: linear-gradient(160deg, #07101e 0%, #0b1628 60%, #080f1c 100%);
+      border: 1px solid rgba(80, 130, 230, .18);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .answer-form-header {
+      padding: 24px 28px 20px;
+      border-bottom: 1px solid rgba(80, 130, 230, .12);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .answer-form-header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .answer-form-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .answer-form-chapter-tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: #5a80c0;
+    }
+
+    .answer-form-mode-tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: #7a6040;
+    }
+
+    .answer-form-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(20px, 4vw, 30px);
+      font-weight: 700;
+      color: #e8d8b0;
+      line-height: 1.15;
+      text-transform: uppercase;
+    }
+
+    .answer-form-book {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #6a80aa;
+      margin-top: 4px;
+    }
+
+    .answer-form-xp {
+      font-family: 'Cinzel', serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #c5a030;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .answer-form-task {
+      padding: 16px 28px;
+      border-bottom: 1px solid rgba(80, 130, 230, .1);
+    }
+
+    .answer-form-task p {
+      font-size: 13px;
+      color: #7a9ab0;
+      font-style: italic;
+      line-height: 1.6;
+    }
+
+    .answer-form-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+
+    .answer-form-field {
+      padding: 24px 28px;
+      border-right: 1px solid rgba(80, 130, 230, .1);
+      border-bottom: 1px solid rgba(80, 130, 230, .1);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .answer-form-field:last-child,
+    .answer-form-field:nth-child(2n) {
+      border-right: none;
+    }
+
+    .answer-form-field-num {
+      font-size: 10px;
+      font-weight: 700;
+      color: #3a5a9a;
+      letter-spacing: .12em;
+    }
+
+    .answer-form-field-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #c8d8f0;
+      line-height: 1.3;
+    }
+
+    .answer-form-field-hint {
+      font-size: 12px;
+      color: #4a6080;
+      line-height: 1.5;
+    }
+
+    .answer-form-textarea {
+      width: 100%;
+      min-height: 110px;
+      background: rgba(5, 10, 20, .6);
+      border: 1px solid rgba(80, 130, 230, .2);
+      border-radius: 8px;
+      color: #c8d8f0;
+      font-family: 'Raleway', sans-serif;
+      font-size: 13px;
+      line-height: 1.6;
+      padding: 12px 14px;
+      resize: vertical;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+
+    .answer-form-textarea::placeholder {
+      color: #2a3a50;
+    }
+
+    .answer-form-textarea:focus {
+      border-color: rgba(80, 130, 230, .5);
+      box-shadow: 0 0 0 3px rgba(80, 130, 230, .08);
+    }
+
+    .answer-form-input {
+      width: 100%;
+      background: rgba(5, 10, 20, .6);
+      border: 1px solid rgba(80, 130, 230, .2);
+      border-radius: 8px;
+      color: #c8d8f0;
+      font-family: 'Raleway', sans-serif;
+      font-size: 13px;
+      padding: 11px 14px;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+
+    .answer-form-input::placeholder {
+      color: #2a3a50;
+    }
+
+    .answer-form-input:focus {
+      border-color: rgba(80, 130, 230, .5);
+      box-shadow: 0 0 0 3px rgba(80, 130, 230, .08);
+    }
+
+    .answer-form-autosave {
+      font-size: 11px;
+      color: #2a4060;
+    }
+
+    .answer-form-footer {
+      padding: 0;
+    }
+
+    .answer-form-submit {
+      width: 100%;
+      padding: 18px 24px;
+      background: linear-gradient(135deg, #7a6020, #a08030);
+      border: none;
+      color: #f0e0a0;
+      font-family: 'Raleway', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      cursor: pointer;
+      transition: opacity .2s, filter .2s;
+      text-align: center;
+    }
+
+    .answer-form-submit:hover {
+      opacity: .88;
+      filter: brightness(1.1);
+    }
+
+    @media (max-width: 700px) {
+      .answer-form-fields {
+        grid-template-columns: 1fr;
+      }
+
+      .answer-form-field {
+        border-right: none;
+      }
+
+      .answer-form-header,
+      .answer-form-task,
+      .answer-form-field {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <div class="w-full text-center pt-12 pb-10 px-4">
+  <!-- Шапка -->
+  <div class="w-full text-center pt-12 pb-6 px-4">
     <p class="text-[#c5a67c] tracking-[0.4em] text-xs uppercase mb-4 title-font">Путь Книгочея</p>
     <h1 class="text-4xl sm:text-6xl font-bold mb-6 leading-tight">
       <span class="text-white title-font">Дорожная </span>
       <span class="text-[#d4b483] title-font">карта</span>
     </h1>
-    <p class="text-gray-400 text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
+    <p class="text-gray-400 text-sm sm:text-base max-w-lg mx-auto leading-relaxed mb-8">
       Путь к мастерству долог и полон испытаний. Следи за этапами развития<br class="hidden sm:block" />
       Академии и будь частью великого наследия.
     </p>
+
+    <!-- Кнопка «Как играть» -->
+    <button class="how-btn" id="howBtn">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" />
+        <path stroke-linecap="round" d="M12 8v4m0 4h.01" />
+      </svg>
+      Как играть
+    </button>
   </div>
 
+  <!-- Карта -->
   <div class="map-section-wrap">
     <button class="nav-btn left" id="btnLeft" aria-label="Влево">
       <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -360,7 +1025,45 @@
       </div>
     </div>
   </div>
+  <!-- ─── Форма ответов ─── -->
+  <section id="answerFormSection">
+    <div class="answer-form-wrap">
 
+      <div class="answer-form-header">
+        <div class="answer-form-header-left">
+          <div class="answer-form-meta">
+            <span class="answer-form-chapter-tag" id="afChapterTag">Глава I</span>
+            <span class="answer-form-mode-tag" id="afModeTag">Самостоятельно</span>
+          </div>
+          <div class="answer-form-title" id="afTitle">Долина Первых Строк</div>
+          <div class="answer-form-book">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+            <span id="afBook">Маленький принц</span>
+          </div>
+        </div>
+        <div class="answer-form-xp" id="afXp">+80 XP</div>
+      </div>
+
+      <div class="answer-form-task">
+        <p id="afTask">Прочитайте первую главу и составьте карту планет, которые посетил герой.</p>
+      </div>
+
+      <div class="answer-form-fields" id="afFields">
+        <!-- поля генерируются JS -->
+      </div>
+
+      <div class="answer-form-footer">
+        <button class="answer-form-submit" id="afSubmit">
+          Завершить точку и получить карточку
+        </button>
+      </div>
+
+    </div>
+  </section>
+  <!-- Цитата -->
   <div class="w-full flex justify-center px-4 py-14">
     <div class="quote-box rounded-lg px-6 sm:px-16 py-4 max-w-2xl w-full flex items-center justify-center gap-4">
       <p class="text-gray-300 text-xs sm:text-sm text-center italic leading-relaxed">
@@ -373,20 +1076,322 @@
     </div>
   </div>
 
+  <!-- ─── Модальное окно «Как играть» ─── -->
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-box">
+
+      <button class="modal-close" id="modalClose" aria-label="Закрыть">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div class="modal-tag">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+        Памятка
+      </div>
+
+      <h2 class="modal-title" id="modalTitle">Как устроен путь</h2>
+
+      <div class="modal-steps">
+
+        <div class="modal-step">
+          <span class="modal-step-num">01</span>
+          <div class="modal-step-icon">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+          <div class="modal-step-body">
+            <strong>Читайте</strong>
+            <span>В каждой точке указана книга и цель чтения.</span>
+          </div>
+        </div>
+
+        <div class="modal-step">
+          <span class="modal-step-num">02</span>
+          <div class="modal-step-icon">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+            </svg>
+          </div>
+          <div class="modal-step-body">
+            <strong>Растите</strong>
+            <span>Получайте XP, открывайте главы и поднимайтесь в рейтинге.</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-divider"></div>
+    </div>
+
+  </div>
+  <!-- ─── Модалка узла ─── -->
+  <div class="node-modal-backdrop" id="nodeModalBackdrop">
+    <div class="node-modal-box" id="nodeModalBox">
+
+      <!-- Левая часть -->
+      <div class="nm-left">
+        <div class="nm-left-img" id="nmImg"></div>
+        <div class="nm-left-fade"></div>
+        <div class="nm-narrator">
+          <div class="nm-narrator-name" id="nmNarratorName"></div>
+          <div class="nm-narrator-role" id="nmNarratorRole"></div>
+        </div>
+      </div>
+
+      <!-- Правая часть -->
+      <div class="nm-right">
+        <button class="nm-close" id="nmClose" aria-label="Закрыть">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        <div class="nm-tag" id="nmTag">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span id="nmTagText"></span>
+        </div>
+        <div class="nm-chapter" id="nmChapter"></div>
+        <div class="nm-heading" id="nmHeading"></div>
+        <div class="nm-text" id="nmText"></div>
+
+        <div class="nm-dots" id="nmDots"></div>
+
+        <button class="nm-btn" id="nmBtn">
+          Слушать дальше
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </div>
   <script>
+    /* ─── Модалка ─── */
+    const backdrop = document.getElementById('modalBackdrop');
+    const modalClose = document.getElementById('modalClose');
+    const howBtn = document.getElementById('howBtn');
+
+    function openModal() { backdrop.classList.add('open'); document.body.style.overflow = 'hidden'; }
+    function closeModal() { backdrop.classList.remove('open'); document.body.style.overflow = ''; }
+
+    howBtn.addEventListener('click', openModal);
+    modalClose.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', e => { if (e.target === backdrop) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+    /* ─── Форма ответов ─── */
+
+    // Данные для формы — можно расширять под каждый узел
+    const NODE_FORM_DATA = [
+      {
+        chapter: 'Глава I', mode: 'Самостоятельно',
+        title: 'Долина Первых Строк', book: 'Маленький принц',
+        xp: '+80 XP',
+        task: 'Прочитайте первую главу и составьте карту планет, которые посетил герой.',
+        fields: [
+          { num: '01', label: 'След наблюдателя', hint: 'Какая встреча Маленького принца показалась тебе самой важной и почему?', type: 'textarea', placeholder: 'Запиши свой ответ здесь…' },
+          { num: '02', label: 'Символ главы', hint: 'Выбери один предмет-символ этой части истории.', type: 'input', placeholder: 'Короткий ответ…' },
+        ]
+      },
+      {
+        chapter: 'Глава II', mode: 'Самостоятельно',
+        title: 'Замок Спящего Дракона', book: 'Хоббит',
+        xp: '+100 XP',
+        task: 'Опишите главный конфликт этой главы и как герой его преодолевает.',
+        fields: [
+          { num: '01', label: 'Главный конфликт', hint: 'Что стоит на пути героя?', type: 'textarea', placeholder: 'Запиши свой ответ здесь…' },
+          { num: '02', label: 'Ключевое решение', hint: 'Какое решение принял герой и почему?', type: 'textarea', placeholder: 'Запиши свой ответ здесь…' },
+        ]
+      },
+      {
+        chapter: 'Глава III', mode: 'Самостоятельно',
+        title: 'Лес Шёпота и Теней', book: 'Мастер и Маргарита',
+        xp: '+90 XP',
+        task: 'Найдите три символа в этой части и объясните их значение.',
+        fields: [
+          { num: '01', label: 'Символы', hint: 'Назовите три символа и их смысл.', type: 'textarea', placeholder: 'Запиши свой ответ здесь…' },
+          { num: '02', label: 'Личный отклик', hint: 'Что из этой главы отозвалось лично в тебе?', type: 'input', placeholder: 'Короткий ответ…' },
+        ]
+      },
+    ];
+
+    const answerFormSection = document.getElementById('answerFormSection');
+    const afChapterTag = document.getElementById('afChapterTag');
+    const afModeTag = document.getElementById('afModeTag');
+    const afTitle = document.getElementById('afTitle');
+    const afBook = document.getElementById('afBook');
+    const afXp = document.getElementById('afXp');
+    const afTask = document.getElementById('afTask');
+    const afFields = document.getElementById('afFields');
+    const afSubmit = document.getElementById('afSubmit');
+
+    let currentFormNodeIdx = -1;
+
+    function buildAnswerForm(nodeIdx) {
+      const data = NODE_FORM_DATA[nodeIdx];
+      if (!data) return;
+
+      afChapterTag.textContent = data.chapter;
+      afModeTag.textContent = data.mode;
+      afTitle.textContent = data.title;
+      afBook.textContent = data.book;
+      afXp.textContent = data.xp;
+      afTask.textContent = data.task;
+
+      afFields.innerHTML = '';
+      data.fields.forEach(f => {
+        const div = document.createElement('div');
+        div.className = 'answer-form-field';
+
+        const fieldEl = f.type === 'textarea'
+          ? `<textarea class="answer-form-textarea" placeholder="${f.placeholder}"></textarea>`
+          : `<input type="text" class="answer-form-input" placeholder="${f.placeholder}">`;
+
+        div.innerHTML = `
+      <span class="answer-form-field-num">${f.num}</span>
+      <strong class="answer-form-field-label">${f.label}</strong>
+      <p class="answer-form-field-hint">${f.hint}</p>
+      ${fieldEl}
+      <span class="answer-form-autosave">Сохраняется автоматически</span>
+    `;
+        afFields.appendChild(div);
+      });
+    }
+
+    function showAnswerForm(nodeIdx) {
+      // Если та же нода — скрываем (toggle)
+      if (currentFormNodeIdx === nodeIdx && answerFormSection.classList.contains('visible')) {
+        answerFormSection.classList.remove('visible');
+        currentFormNodeIdx = -1;
+        return;
+      }
+
+      currentFormNodeIdx = nodeIdx;
+      buildAnswerForm(nodeIdx);
+      answerFormSection.classList.add('visible');
+
+      // Плавный скролл к форме
+      setTimeout(() => {
+        answerFormSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 60);
+    }
+
+    // Вызываем showAnswerForm при клике на узел (заменяем только вызов в render())
+    // Находим в render() строку:
+    //   el.addEventListener('click', () => openNodeModal(i));
+    // и заменяем на:
+    //   el.addEventListener('click', () => { openNodeModal(i); showAnswerForm(i); });
+
+    afSubmit.addEventListener('click', () => {
+      // Здесь можно добавить логику отправки
+      afSubmit.textContent = '✓ Ответы сохранены!';
+      afSubmit.style.background = 'linear-gradient(135deg, #1a4030, #2a6040)';
+      afSubmit.style.color = '#80d0a0';
+      setTimeout(() => {
+        answerFormSection.classList.remove('visible');
+        currentFormNodeIdx = -1;
+        afSubmit.textContent = 'Завершить точку и получить карточку';
+        afSubmit.style.background = '';
+        afSubmit.style.color = '';
+      }, 1800);
+    });
+    /* ─── Карта (оригинальный код без изменений) ─── */
     const NODES = [
-      { title: 'Долина\nПервых Строк', status: 'completed', statusLabel: 'Пройдено', image: './images/dolina.png', wave: 0.85 },
-      { title: 'Замок\nСпящего Дракона', status: 'completed', statusLabel: 'Пройдено', image: './images/dragon.png', wave: 0.25 },
-      { title: 'Лес\nШёпота и Теней', status: 'completed', statusLabel: 'Пройдено', image: './images/forest.png', wave: 0.55 },
-      { title: 'Океан\nНескончаемых Историй', status: 'active', statusLabel: 'В процессе', image: './images/ocean.png', wave: 0.20 },
-      { title: 'Город\nЖивых Зеркал', status: 'locked', statusLabel: 'Скоро', image: './images/mirrors.png', wave: 0.50 },
-      { title: 'Библиотека\nВечности', status: 'locked', statusLabel: 'Скоро', image: './images/library.png', wave: 0.45 },
+      {
+        title: 'Долина\nПервых Строк', status: 'completed', statusLabel: 'Пройдено',
+        image: './images/dolina.png', wave: 0.85,
+        modal: {
+          tag: 'Начало региона', chapter: 'Глава I',
+          heading: 'Долина\nПервых Строк',
+          narrator: { name: 'Кси', role: 'Голос Библиотеки Вечности', image: './images/dolina.png' },
+          pages: [
+            '«Ты здесь. Наконец-то. Прости, что не встретила сразу — я не всегда чувствую, когда кто-то новый переступает границу Книжных Земель.»',
+            '«Долина Первых Строк — место, где каждый читатель оставляет след. Здесь рождаются слова, которые потом живут вечно.»',
+            '«Твой путь только начинается. Впереди — замки, леса и океаны историй. Но сначала — сделай первый шаг.»',
+          ]
+        }
+      },
+      {
+        title: 'Замок\nСпящего Дракона', status: 'completed', statusLabel: 'Пройдено',
+        image: './images/dragon.png', wave: 0.25,
+        modal: {
+          tag: 'Второй рубеж', chapter: 'Глава II',
+          heading: 'Замок\nСпящего Дракона',
+          narrator: { name: 'Аш', role: 'Страж Древних Врат', image: './images/dragon.png' },
+          pages: [
+            '«Дракон спит уже три столетия. Но его сны пропитали каждый камень этого замка — войди тихо.»',
+            '«Здесь хранятся свитки, которые нельзя прочесть дважды. Каждое прочтение открывает новый смысл.»',
+          ]
+        }
+      },
+      {
+        title: 'Лес\nШёпота и Теней', status: 'completed', statusLabel: 'Пройдено',
+        image: './images/forest.png', wave: 0.55,
+        modal: {
+          tag: 'Тёмный регион', chapter: 'Глава III',
+          heading: 'Лес\nШёпота и Теней',
+          narrator: { name: 'Сильва', role: 'Дух Чернолесья', image: './images/forest.png' },
+          pages: [
+            '«Не верь тишине. В этом лесу молчание говорит громче слов.»',
+            '«Тени здесь — не враги. Они хранят секреты тех, кто боялся читать вслух.»',
+            '«Найди три руны на древесной коре — и лес откроет тебе путь дальше.»',
+          ]
+        }
+      },
+      {
+        title: 'Океан\nНескончаемых Историй', status: 'active', statusLabel: 'В процессе',
+        image: './images/ocean.png', wave: 0.20,
+        modal: {
+          tag: 'Текущий этап', chapter: 'Глава IV',
+          heading: 'Океан\nНескончаемых Историй',
+          narrator: { name: 'Марин', role: 'Капитан Флота Слов', image: './images/ocean.png' },
+          pages: [
+            '«Океан не имеет дна — как и хорошая книга. Каждая волна — это новая глава.»',
+            '«Твой корабль уже в пути. Следуй за созвездием Открытой Страницы.»',
+          ]
+        }
+      },
+      {
+        title: 'Город\nЖивых Зеркал', status: 'locked', statusLabel: 'Скоро',
+        image: './images/mirrors.png', wave: 0.50,
+        modal: {
+          tag: 'Закрытый регион', chapter: 'Глава V',
+          heading: 'Город\nЖивых Зеркал',
+          narrator: { name: '???', role: 'Неизвестный голос', image: './images/mirrors.png' },
+          pages: [
+            '«Этот город откроется, когда ты будешь готов увидеть себя в каждой истории.»',
+          ]
+        }
+      },
+      {
+        title: 'Библиотека\nВечности', status: 'locked', statusLabel: 'Скоро',
+        image: './images/library.png', wave: 0.45,
+        modal: {
+          tag: 'Финальный регион', chapter: 'Глава VI',
+          heading: 'Библиотека\nВечности',
+          narrator: { name: '???', role: 'Голос из глубины', image: './images/library.png' },
+          pages: [
+            '«Говорят, здесь хранятся все книги, которые когда-либо были написаны — и те, что ещё только будут.»',
+          ]
+        }
+      },
     ];
 
     const CFG = {
       nodeStep: 550, minStep: 180, sidePad: 130, imgRatio: 1.9,
-      iconBottomMin: 0.14, iconBottomMax: 0.42,
-      fogLeadIn: 0.7,
+      iconBottomMin: 0.14, iconBottomMax: 0.42, fogLeadIn: 0.7,
     };
 
     const FOG_SPRITES = [
@@ -417,6 +1422,7 @@
       check: `<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`,
       lock: `<svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1C8.676 1 6 3.676 6 7v1H4v15h16V8h-2V7c0-3.324-2.676-6-6-6zm0 2c2.276 0 4 1.724 4 4v1H8V7c0-2.276 1.724-4 4-4zm0 9a2 2 0 110 4 2 2 0 010-4z"/></svg>`,
     };
+
     const statusColor = s => ({ completed: '#c5a67c', active: '#d4b483', locked: '#a8b0b6' }[s]);
     const getIconSize = () => window.matchMedia('(max-width:640px)').matches ? 42 : 52;
 
@@ -425,7 +1431,6 @@
       fogLayer.style.left = fogLeft + 'px';
       fogLayer.style.width = (fogW + 200) + 'px';
       fogLayer.innerHTML = '';
-
       FOG_SPRITES.forEach(s => {
         const el = document.createElement('div');
         el.className = 'fog-sprite';
@@ -439,20 +1444,14 @@
         fogLayer.appendChild(el);
       });
     }
-
-    function hideFog() {
-      fogLayer.hidden = true;
-      fogLayer.innerHTML = '';
-    }
+    function hideFog() { fogLayer.hidden = true; fogLayer.innerHTML = ''; }
 
     function render() {
       const n = NODES.length;
       if (!n) return;
-
       const viewW = scrollEl.clientWidth;
       const mapH = canvasEl.clientHeight;
       const iconSize = getIconSize();
-
       const needed = CFG.sidePad * 2 + CFG.nodeStep * (n - 1);
       const step = needed <= viewW
         ? Math.max(CFG.minStep, (viewW - CFG.sidePad * 2) / Math.max(n - 1, 1))
@@ -482,9 +1481,8 @@
       });
 
       const lockStart = NODES.findIndex(nd => nd.status === 'locked');
-      if (lockStart < 0) {
-        hideFog();
-      } else {
+      if (lockStart < 0) hideFog();
+      else {
         const fogLeft = Math.max(0, cx(lockStart) - step * CFG.fogLeadIn);
         buildFog(fogLeft, totalW - fogLeft, mapH);
       }
@@ -495,6 +1493,9 @@
         el.className = 'map-node';
         el.style.left = cx(i) + 'px';
         el.style.top = iconTop(node.wave) + 'px';
+        // Разрешаем клики на узел
+        el.style.pointerEvents = 'auto';
+        el.style.cursor = 'pointer';
 
         const color = statusColor(node.status);
         const icon = node.status === 'locked' ? ICONS.lock : ICONS.check;
@@ -503,11 +1504,18 @@
         const titleColor = node.status === 'locked' ? '#dfe3e6' : '#fff';
 
         el.innerHTML = `
-      <div class="node-icon ${node.status}">${icon}</div>
+      <div class="node-icon ${node.status}" style="transition:transform .18s,box-shadow .18s">${icon}</div>
       <div>
-        <p class="node-title" style="color:${titleColor}">${title}</p>
+        <p class="node-title"  style="color:${titleColor}">${title}</p>
         <p class="node-status" style="color:${color};font-weight:${weight}">${node.statusLabel}</p>
       </div>`;
+
+        // Hover-эффект на иконке
+        const iconEl = el.querySelector('.node-icon');
+        el.addEventListener('mouseenter', () => { iconEl.style.transform = 'scale(1.12)'; iconEl.style.boxShadow = iconEl.style.boxShadow + ', 0 0 0 4px rgba(197,166,124,.15)'; });
+        el.addEventListener('mouseleave', () => { iconEl.style.transform = ''; iconEl.style.boxShadow = ''; });
+        el.addEventListener('click', () => { openNodeModal(i); showAnswerForm(i); });
+
         nodesLayer.appendChild(el);
       });
 
@@ -520,19 +1528,15 @@
         const r = ic.getBoundingClientRect();
         return { x: r.left - cr.left + r.width / 2, y: r.top - cr.top + r.height / 2 };
       });
-
       pathSvg.setAttribute('viewBox', `0 0 ${totalW} ${mapH}`);
       pathSvg.setAttribute('width', totalW);
       pathSvg.setAttribute('height', mapH);
       pathSvg.style.width = totalW + 'px';
       pathSvg.style.height = mapH + 'px';
-
       const n = pts.length;
       if (n < 2) { pathSvg.innerHTML = ''; return; }
-
       let ls = NODES.findIndex(nd => nd.status === 'locked');
       if (ls < 0) ls = n;
-
       const mk = (from, to) => {
         if (from >= to) return '';
         let d = `M ${pts[from].x} ${pts[from].y}`;
@@ -542,19 +1546,14 @@
         }
         return d;
       };
-
       let svg = '';
-      if (ls > 0)
-        svg += `<path d="${mk(0, ls)}" fill="none" stroke="#d4b483" stroke-width="2.5" stroke-linecap="round" class="dash-gold"/>`;
-      if (ls < n - 1)
-        svg += `<path d="${mk(Math.max(ls - 1, 0), n - 1)}" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" class="dash-gray"/>`;
-
+      if (ls > 0) svg += `<path d="${mk(0, ls)}" fill="none" stroke="#d4b483" stroke-width="2.5" stroke-linecap="round" class="dash-gold"/>`;
+      if (ls < n - 1) svg += `<path d="${mk(Math.max(ls - 1, 0), n - 1)}" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" class="dash-gray"/>`;
       pathSvg.innerHTML = svg;
     }
 
     function updateNavButtons() {
-      const max = scrollEl.scrollWidth - scrollEl.clientWidth;
-      const has = max > 4;
+      const max = scrollEl.scrollWidth - scrollEl.clientWidth, has = max > 4;
       btnLeft.classList.toggle('visible', has && scrollEl.scrollLeft > 4);
       btnRight.classList.toggle('visible', has && scrollEl.scrollLeft < max - 4);
     }
@@ -574,12 +1573,97 @@
       scrollEl.scrollLeft = scrollStart - (e.pageX - dragStartX);
     });
     window.addEventListener('mouseup', () => { dragging = false; scrollEl.style.cursor = 'grab'; });
+    /* ─── Модалка узла ─── */
+    const nodeBackdrop = document.getElementById('nodeModalBackdrop');
+    const nmImg = document.getElementById('nmImg');
+    const nmNarratorName = document.getElementById('nmNarratorName');
+    const nmNarratorRole = document.getElementById('nmNarratorRole');
+    const nmTagText = document.getElementById('nmTagText');
+    const nmChapter = document.getElementById('nmChapter');
+    const nmHeading = document.getElementById('nmHeading');
+    const nmText = document.getElementById('nmText');
+    const nmDots = document.getElementById('nmDots');
+    const nmBtn = document.getElementById('nmBtn');
+    const nmClose = document.getElementById('nmClose');
 
+    let nmCurrentPage = 0;
+    let nmPages = [];
+
+    function nmRenderDots() {
+      nmDots.innerHTML = '';
+      nmPages.forEach((_, idx) => {
+        const d = document.createElement('div');
+        d.className = 'nm-dot' + (idx === nmCurrentPage ? ' active' : '');
+        // Активная точка шире
+        d.style.width = idx === nmCurrentPage ? '22px' : '10px';
+        d.addEventListener('click', () => nmGoTo(idx));
+        nmDots.appendChild(d);
+      });
+    }
+
+    function nmGoTo(idx) {
+      if (idx < 0 || idx >= nmPages.length) return;
+      // Fade out
+      nmText.classList.add('fade-out');
+      setTimeout(() => {
+        nmCurrentPage = idx;
+        nmText.textContent = nmPages[nmCurrentPage];
+        nmText.classList.remove('fade-out');
+        nmRenderDots();
+        nmBtn.textContent = nmCurrentPage < nmPages.length - 1 ? 'Слушать дальше' : 'Закрыть';
+        // Перерисовываем svg стрелки на кнопке
+        if (nmCurrentPage < nmPages.length - 1) {
+          nmBtn.innerHTML = `Слушать дальше <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>`;
+        } else {
+          nmBtn.innerHTML = `Завершить`;
+        }
+      }, 220);
+    }
+
+    function openNodeModal(nodeIdx) {
+      const nd = NODES[nodeIdx];
+      if (!nd || !nd.modal) return;
+      const m = nd.modal;
+
+      nmPages = m.pages;
+      nmCurrentPage = 0;
+
+      nmImg.style.backgroundImage = `url('${m.narrator.image}')`;
+      nmNarratorName.textContent = m.narrator.name;
+      nmNarratorRole.textContent = m.narrator.role;
+      nmTagText.textContent = m.tag;
+      nmChapter.textContent = m.chapter;
+      nmHeading.textContent = m.heading;
+      nmText.textContent = nmPages[0];
+      nmText.classList.remove('fade-out');
+
+      nmBtn.innerHTML = `Слушать дальше <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>`;
+
+      nmRenderDots();
+      nodeBackdrop.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeNodeModal() {
+      nodeBackdrop.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    nmBtn.addEventListener('click', () => {
+      if (nmCurrentPage < nmPages.length - 1) nmGoTo(nmCurrentPage + 1);
+      else closeNodeModal();
+    });
+    nmClose.addEventListener('click', closeNodeModal);
+    nodeBackdrop.addEventListener('click', e => { if (e.target === nodeBackdrop) closeNodeModal(); });
+    document.addEventListener('keydown', e => {
+      if (!nodeBackdrop.classList.contains('open')) return;
+      if (e.key === 'Escape') closeNodeModal();
+      if (e.key === 'ArrowRight') nmGoTo(nmCurrentPage + 1);
+      if (e.key === 'ArrowLeft') nmGoTo(nmCurrentPage - 1);
+    });
     render();
     let rt;
     window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(render, 120); });
-
-    
   </script>
 </body>
 
