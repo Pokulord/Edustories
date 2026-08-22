@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Дорожная карта — Путь Ведьмака</title>
+  <title>Дорожная карта</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link
     href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Raleway:wght@300;400;500;600&display=swap"
@@ -18,15 +18,15 @@
 
     body {
       font-family: 'Raleway', sans-serif;
-      background-color: #081410;
+      background-color: #050a0a;
       overflow-x: hidden;
       background:
-        linear-gradient(rgba(8, 20, 16, 0.85),
-          rgba(8, 20, 16, 0.95)),
+        radial-gradient(ellipse at 20% 50%, rgba(20, 40, 30, 0.6) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 50%, rgba(40, 30, 15, 0.5) 0%, transparent 60%),
+        linear-gradient(180deg, rgba(5, 10, 10, 0.92) 0%, rgba(8, 16, 14, 0.85) 40%, rgba(5, 10, 10, 0.95) 100%),
         url('./images/roadmap_page_background.jpg') center / cover no-repeat fixed;
 
-      background-color: #081410;
-      /* fallback */
+      background-color: #050a0a;
     }
 
     .title-font {
@@ -39,7 +39,7 @@
       overflow-y: hidden;
       cursor: grab;
       scrollbar-width: thin;
-      scrollbar-color: rgba(52, 211, 153, 0.45) rgba(8, 20, 16, 0.5);
+      scrollbar-color: rgba(197, 166, 124, 0.45) rgba(5, 10, 10, 0.5);
       -webkit-overflow-scrolling: touch;
     }
 
@@ -52,16 +52,16 @@
     }
 
     .map-scroll::-webkit-scrollbar-track {
-      background: rgba(8, 20, 16, 0.5);
+      background: rgba(5, 10, 10, 0.5);
     }
 
     .map-scroll::-webkit-scrollbar-thumb {
-      background: rgba(52, 211, 153, 0.45);
+      background: rgba(197, 166, 124, 0.45);
       border-radius: 3px;
     }
 
     .map-scroll::-webkit-scrollbar-thumb:hover {
-      background: rgba(52, 211, 153, 0.75);
+      background: rgba(197, 166, 124, 0.75);
     }
 
     .map-canvas {
@@ -73,7 +73,7 @@
       position: absolute;
       inset: 0;
       z-index: 0;
-      background: #081410 url('./images/roadmap_back.png') center / cover no-repeat;
+      background: #050a0a url('./images/roadmap_back.png') center / cover no-repeat;
     }
 
     .node-img {
@@ -108,13 +108,10 @@
       z-index: 2;
       pointer-events: none;
       background: linear-gradient(to bottom,
-          rgba(8, 20, 16, 0.78) 0%, transparent 16%,
-          transparent 78%, rgba(8, 20, 16, 0.88) 100%);
+          rgba(5, 10, 10, 0.82) 0%, transparent 16%,
+          transparent 78%, rgba(5, 10, 10, 0.92) 100%);
     }
 
-    /* ══════════════════════════════════════
-       ТУМАН — накладываем PNG-спрайты
-    ══════════════════════════════════════ */
     .fog-layer {
       position: absolute;
       top: 0;
@@ -122,7 +119,6 @@
       z-index: 25;
       pointer-events: none;
       overflow: hidden;
-      /* Мягкое появление слева */
       -webkit-mask-image: linear-gradient(to right,
           transparent 0%, rgba(0, 0, 0, .2) 5%, rgba(0, 0, 0, .65) 15%, #000 28%, #000 100%);
       mask-image: linear-gradient(to right,
@@ -132,16 +128,13 @@
     .fog-sprite {
       position: absolute;
       background-image: url('./images/fog.png');
-      /* ← твой PNG */
       background-repeat: no-repeat;
       background-size: 100% 100%;
-      /* Белый фон → чёрный, дым → светлый; screen убирает чёрное */
       filter: invert(1) brightness(1.1) contrast(0.95);
       mix-blend-mode: screen;
       will-change: transform;
     }
 
-    /* Плавный дрейф */
     @keyframes fog-drift-a {
       0% {
         transform: translate3d(0, 0, 0) scaleX(1);
@@ -233,22 +226,22 @@
     }
 
     .node-icon.completed {
-      border-color: #34d399;
-      background: rgba(13, 35, 24, 0.88);
-      color: #34d399;
-      box-shadow: 0 0 18px rgba(52, 211, 153, 0.5), 0 0 40px rgba(52, 211, 153, 0.2);
+      border-color: #c5a67c;
+      background: rgba(10, 18, 14, 0.88);
+      color: #c5a67c;
+      box-shadow: 0 0 18px rgba(197, 166, 124, 0.45), 0 0 40px rgba(197, 166, 124, 0.2);
     }
 
     .node-icon.active {
-      border-color: #fbbf24;
-      background: rgba(26, 20, 8, 0.88);
-      color: #fbbf24;
-      box-shadow: 0 0 18px rgba(251, 191, 36, 0.5), 0 0 40px rgba(251, 191, 36, 0.2);
+      border-color: #d4a843;
+      background: rgba(30, 22, 8, 0.9);
+      color: #d4a843;
+      box-shadow: 0 0 25px rgba(212, 168, 67, 0.6), 0 0 50px rgba(212, 168, 67, 0.25);
     }
 
     .node-icon.locked {
       border-color: #6b7280;
-      background: rgba(20, 24, 26, 0.65);
+      background: rgba(16, 20, 20, 0.65);
       color: #b6bcc2;
       backdrop-filter: blur(2px);
     }
@@ -273,9 +266,9 @@
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      border: 1px solid rgba(52, 211, 153, 0.35);
-      background: rgba(8, 20, 16, 0.75);
-      color: #34d399;
+      border: 1px solid rgba(197, 166, 124, 0.35);
+      background: rgba(5, 10, 10, 0.75);
+      color: #c5a67c;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -292,7 +285,7 @@
     }
 
     .nav-btn:hover {
-      background: rgba(52, 211, 153, 0.15);
+      background: rgba(197, 166, 124, 0.15);
     }
 
     .nav-btn.left {
@@ -304,7 +297,7 @@
     }
 
     .quote-box {
-      border: 1px solid rgba(52, 211, 153, 0.3);
+      border: 1px solid rgba(197, 166, 124, 0.3);
       background: rgba(0, 0, 0, 0.3);
       backdrop-filter: blur(8px);
     }
@@ -333,10 +326,10 @@
 <body>
 
   <div class="w-full text-center pt-12 pb-10 px-4">
-    <p class="text-[#4ade80] tracking-[0.4em] text-xs uppercase mb-4 title-font">Путь Книгочея</p>
+    <p class="text-[#c5a67c] tracking-[0.4em] text-xs uppercase mb-4 title-font">Путь Книгочея</p>
     <h1 class="text-4xl sm:text-6xl font-bold mb-6 leading-tight">
       <span class="text-white title-font">Дорожная </span>
-      <span class="text-[#d4a843] title-font">карта</span>
+      <span class="text-[#d4b483] title-font">карта</span>
     </h1>
     <p class="text-gray-400 text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
       Путь к мастерству долог и полон испытаний. Следи за этапами развития<br class="hidden sm:block" />
@@ -373,7 +366,7 @@
       <p class="text-gray-300 text-xs sm:text-sm text-center italic leading-relaxed">
         «Каждая страница приближает к истине, каждый шаг — к себе настоящему»
       </p>
-      <svg class="w-5 h-5 text-[#34d399] flex-shrink-0 opacity-50" fill="currentColor" viewBox="0 0 24 24">
+      <svg class="w-5 h-5 text-[#c5a67c] flex-shrink-0 opacity-50" fill="currentColor" viewBox="0 0 24 24">
         <path
           d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
       </svg>
@@ -381,7 +374,6 @@
   </div>
 
   <script>
-    /* ═══════════ ДАННЫЕ ═══════════ */
     const NODES = [
       { title: 'Долина\nПервых Строк', status: 'completed', statusLabel: 'Пройдено', image: './images/dolina.png', wave: 0.85 },
       { title: 'Замок\nСпящего Дракона', status: 'completed', statusLabel: 'Пройдено', image: './images/dragon.png', wave: 0.25 },
@@ -392,36 +384,26 @@
     ];
 
     const CFG = {
-      nodeStep: 350, minStep: 180, sidePad: 130, imgRatio: 1.85,
+      nodeStep: 550, minStep: 180, sidePad: 130, imgRatio: 1.9,
       iconBottomMin: 0.14, iconBottomMax: 0.42,
-      fogLeadIn: 0.7,        // насколько туман заходит влево от первого locked (в долях step)
+      fogLeadIn: 0.7,
     };
 
-    /* Раскладка спрайтов тумана.
-       x/y/w/h — доли от размера fog-зоны. Спрайты перекрываются → сплошная пелена. */
     const FOG_SPRITES = [
-      // Нижний ярус — самый плотный, покрывает весь низ
       { x: -0.15, y: 0.55, w: 0.70, h: 0.80, op: 0.75, anim: 'fog-drift-a', dur: 38, delay: 0, flip: false },
       { x: 0.25, y: 0.50, w: 0.75, h: 0.75, op: 0.70, anim: 'fog-drift-b', dur: 44, delay: -10, flip: true },
       { x: 0.55, y: 0.52, w: 0.65, h: 0.72, op: 0.68, anim: 'fog-drift-c', dur: 40, delay: -20, flip: false },
-
-      // Средний ярус
       { x: -0.10, y: 0.25, w: 0.80, h: 0.75, op: 0.60, anim: 'fog-drift-b', dur: 50, delay: -5, flip: true },
       { x: 0.20, y: 0.20, w: 0.85, h: 0.70, op: 0.55, anim: 'fog-drift-c', dur: 35, delay: -18, flip: false },
       { x: 0.50, y: 0.28, w: 0.75, h: 0.68, op: 0.52, anim: 'fog-drift-a', dur: 55, delay: -28, flip: true },
-
-      // Верхний ярус — чуть прозрачнее
       { x: 0.00, y: -0.10, w: 0.85, h: 0.65, op: 0.45, anim: 'fog-drift-a', dur: 60, delay: -8, flip: false },
       { x: 0.30, y: -0.05, w: 0.80, h: 0.60, op: 0.40, anim: 'fog-drift-c', dur: 48, delay: -35, flip: true },
       { x: 0.60, y: -0.08, w: 0.70, h: 0.58, op: 0.38, anim: 'fog-drift-b', dur: 42, delay: -15, flip: false },
-
-      // Перекрывающие «заплатки» — закрывают дыры
       { x: 0.10, y: 0.38, w: 0.90, h: 0.55, op: 0.50, anim: 'fog-drift-b', dur: 45, delay: -25, flip: false },
       { x: 0.40, y: 0.42, w: 0.80, h: 0.60, op: 0.48, anim: 'fog-drift-a', dur: 36, delay: -12, flip: true },
       { x: 0.70, y: 0.35, w: 0.75, h: 0.65, op: 0.45, anim: 'fog-drift-c', dur: 52, delay: -40, flip: false },
     ];
 
-    /* ═══════════ DOM ═══════════ */
     const scrollEl = document.getElementById('mapScroll');
     const canvasEl = document.getElementById('mapCanvas');
     const imgsLayer = document.getElementById('imagesLayer');
@@ -435,14 +417,13 @@
       check: `<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`,
       lock: `<svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1C8.676 1 6 3.676 6 7v1H4v15h16V8h-2V7c0-3.324-2.676-6-6-6zm0 2c2.276 0 4 1.724 4 4v1H8V7c0-2.276 1.724-4 4-4zm0 9a2 2 0 110 4 2 2 0 010-4z"/></svg>`,
     };
-    const statusColor = s => ({ completed: '#34d399', active: '#fbbf24', locked: '#a8b0b6' }[s]);
+    const statusColor = s => ({ completed: '#c5a67c', active: '#d4b483', locked: '#a8b0b6' }[s]);
     const getIconSize = () => window.matchMedia('(max-width:640px)').matches ? 42 : 52;
 
-    /* ═══════════ ТУМАН ═══════════ */
     function buildFog(fogLeft, fogW, fogH) {
       fogLayer.hidden = false;
       fogLayer.style.left = fogLeft + 'px';
-      fogLayer.style.width = (fogW + 200) + 'px'; /* +200px запас справа */
+      fogLayer.style.width = (fogW + 200) + 'px';
       fogLayer.innerHTML = '';
 
       FOG_SPRITES.forEach(s => {
@@ -464,7 +445,6 @@
       fogLayer.innerHTML = '';
     }
 
-    /* ═══════════ РЕНДЕР ═══════════ */
     function render() {
       const n = NODES.length;
       if (!n) return;
@@ -487,7 +467,6 @@
         return mapH - b - iconSize;
       };
 
-      /* картинки */
       imgsLayer.innerHTML = '';
       const imgW = Math.round(step * CFG.imgRatio);
       NODES.forEach((node, i) => {
@@ -502,7 +481,6 @@
         imgsLayer.appendChild(el);
       });
 
-      /* туман */
       const lockStart = NODES.findIndex(nd => nd.status === 'locked');
       if (lockStart < 0) {
         hideFog();
@@ -511,7 +489,6 @@
         buildFog(fogLeft, totalW - fogLeft, mapH);
       }
 
-      /* ноды */
       nodesLayer.innerHTML = '';
       NODES.forEach((node, i) => {
         const el = document.createElement('div');
@@ -537,7 +514,6 @@
       requestAnimationFrame(() => { drawPath(totalW, mapH); updateNavButtons(); });
     }
 
-    /* ═══════════ ПУТЬ ═══════════ */
     function drawPath(totalW, mapH) {
       const cr = canvasEl.getBoundingClientRect();
       const pts = Array.from(nodesLayer.querySelectorAll('.node-icon')).map(ic => {
@@ -569,14 +545,13 @@
 
       let svg = '';
       if (ls > 0)
-        svg += `<path d="${mk(0, ls)}" fill="none" stroke="#d4a843" stroke-width="2.5" stroke-linecap="round" class="dash-gold"/>`;
+        svg += `<path d="${mk(0, ls)}" fill="none" stroke="#d4b483" stroke-width="2.5" stroke-linecap="round" class="dash-gold"/>`;
       if (ls < n - 1)
         svg += `<path d="${mk(Math.max(ls - 1, 0), n - 1)}" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" class="dash-gray"/>`;
 
       pathSvg.innerHTML = svg;
     }
 
-    /* ═══════════ НАВИГАЦИЯ ═══════════ */
     function updateNavButtons() {
       const max = scrollEl.scrollWidth - scrollEl.clientWidth;
       const has = max > 4;
@@ -603,6 +578,8 @@
     render();
     let rt;
     window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(render, 120); });
+
+    
   </script>
 </body>
 
