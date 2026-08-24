@@ -1026,7 +1026,7 @@
     </div>
   </div>
   <!-- ─── Форма ответов ─── -->
-  <section id="answerFormSection">
+  <form id="answerFormSection" method="POST" action="#" novalidate>
     <div class="answer-form-wrap">
 
       <div class="answer-form-header">
@@ -1062,7 +1062,7 @@
       </div>
 
     </div>
-  </section>
+  </form>
   <!-- Цитата -->
   <div class="w-full flex justify-center px-4 py-14">
     <div class="quote-box rounded-lg px-6 sm:px-16 py-4 max-w-2xl w-full flex items-center justify-center gap-4">
@@ -1294,20 +1294,79 @@
     // и заменяем на:
     //   el.addEventListener('click', () => { openNodeModal(i); showAnswerForm(i); });
 
-    afSubmit.addEventListener('click', () => {
-      // Здесь можно добавить логику отправки
-      afSubmit.textContent = '✓ Ответы сохранены!';
-      afSubmit.style.background = 'linear-gradient(135deg, #1a4030, #2a6040)';
-      afSubmit.style.color = '#80d0a0';
+    // Валидация формы при отправке
+    answerFormSection.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      // Находим все поля ввода внутри формы
+      const fields = answerFormSection.querySelectorAll('.answer-form-textarea, .answer-form-input');
+      let hasEmpty = false;
+      let firstEmpty = null;
+      let errorMessages = [];
+
+      // Удаляем старые ошибки
+      fields.forEach(el => {
+        el.classList.remove('af-field-error');
+        const parent = el.closest('.answer-form-field');
+        const existingError = parent?.querySelector('.af-error-message');
+        if (existingError) existingError.remove();
+      });
+
+      // Проверяем каждое поле
+      fields.forEach(el => {
+        const isEmpty = el.value.trim() === '';
+        if (isEmpty) {
+          el.classList.add('af-field-error');
+          hasEmpty = true;
+          if (!firstEmpty) firstEmpty = el;
+
+          // Добавляем сообщение об ошибке под полем
+          const parent = el.closest('.answer-form-field');
+          if (parent && !parent.querySelector('.af-error-message')) {
+            const errorMsg = document.createElement('p');
+            errorMsg.className = 'af-error-message';
+            errorMsg.style.cssText = 'color: #ff6b6b; font-size: 12px; margin-top: 4px;';
+            errorMsg.textContent = '⚠️ Это поле обязательно для заполнения';
+            parent.appendChild(errorMsg);
+          }
+        }
+      });
+
+      if (hasEmpty) {
+        // Скроллим к первому незаполненному полю
+        if (firstEmpty) {
+          firstEmpty.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          firstEmpty.focus();
+        }
+        return;
+      }
+
+      // Если все поля заполнены - собираем данные
+      const formData = {};
+      fields.forEach((el, index) => {
+        const label = el.closest('.answer-form-field')?.querySelector('.answer-form-field-label')?.textContent || `Поле ${index + 1}`;
+        formData[label] = el.value.trim();
+      });
+
+      console.log('📝 Данные формы:', formData);
+
+      // Показываем успешное сохранение
+      const submitBtn = afSubmit;
+      submitBtn.textContent = '✓ Ответы сохранены!';
+      submitBtn.style.background = 'linear-gradient(135deg, #1a4030, #2a6040)';
+      submitBtn.style.color = '#80d0a0';
+
       setTimeout(() => {
         answerFormSection.classList.remove('visible');
         currentFormNodeIdx = -1;
-        afSubmit.textContent = 'Завершить точку и получить карточку';
-        afSubmit.style.background = '';
-        afSubmit.style.color = '';
-      }, 1800);
+        submitBtn.textContent = 'Завершить точку и получить карточку';
+        submitBtn.style.background = '';
+        submitBtn.style.color = '';
+        // Очищаем поля
+        fields.forEach(el => el.value = '');
+      }, 2000);
     });
-    /* ─── Карта (оригинальный код без изменений) ─── */
+
     const NODES = [
       {
         title: 'Долина\nПервых Строк', status: 'completed', statusLabel: 'Пройдено',
