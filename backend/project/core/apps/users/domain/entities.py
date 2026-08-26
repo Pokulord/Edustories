@@ -14,7 +14,7 @@ class User:
     uid: UUID = field(default_factory=uuid4)
     password: str | None = None
     is_email_confirmed: bool = False
-    _roles: set[UserRoles] = field(default_factory= lambda: {UserRoles.STUDENT})
+    _roles: set[UserRoles] = field(default_factory= lambda: {UserRoles.BOOKREADER})
     status: UserStatuses = UserStatuses.PENDING
 
     @property

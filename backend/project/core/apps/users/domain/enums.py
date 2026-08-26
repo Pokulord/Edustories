@@ -7,6 +7,7 @@ class UserRoles(str, Enum):
     STUDENT = "Студент"
     INSTRUCTOR = "Педагог"
     ADMIN = "Админ"
+    BOOKREADER = "Книгочей"
 
 
 class UserStatuses(str, Enum):

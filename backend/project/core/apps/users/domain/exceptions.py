@@ -35,7 +35,7 @@ class CannotCreateUserError(BaseUserError):
     error_slug: str = "user_was_not_created"
 
     def __init__(self, user_id: UUID):
-        message = f"Пользователь {user_id} заблокирован"
+        message = f"Произошла ошибка в процессе создания пользователя {user_id}"
         super().__init__(message, metadata={"user_id": user_id})
 
 class UserBlockedError(BaseUserError):

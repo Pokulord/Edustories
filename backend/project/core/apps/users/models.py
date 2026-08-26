@@ -57,6 +57,7 @@ class CustomUser(AbstractUser):
         ADMIN = "ADMIN", _("Администратор")
         INSTRUCTOR = "INSTRUCTOR", _("Наставник")
         STUDENT = "STUDENT", _("Студент")
+        BOOKREADER = "BOOKREADER", _("Книгочей")
 
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     username = models.CharField(
@@ -72,7 +73,7 @@ class CustomUser(AbstractUser):
     role = models.CharField(
         max_length=20,
         choices=Role.choices,
-        default=Role.STUDENT
+        default=Role.BOOKREADER
     )
 
     USERNAME_FIELD = "email"
