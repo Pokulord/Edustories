@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'tailwind',
     'theme',
     'core.apps.users',
+    'core.apps.roadmap',
 ]
 
 MIDDLEWARE = [
