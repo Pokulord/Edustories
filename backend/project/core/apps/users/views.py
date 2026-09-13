@@ -35,7 +35,7 @@ class RegisterView(View):
         form = UserRegistrationForm()
         return render(request, 'register.html', {'form': form})
     
-    def post(self,request):
+    def post(self, request):
         form = UserRegistrationForm(request.POST)
 
         if not form.is_valid():

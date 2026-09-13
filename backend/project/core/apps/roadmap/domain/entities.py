@@ -1,9 +1,15 @@
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
+import unicodedata
 
 from .enums import NodeStatuses
 
+
+def _normalize_answer(s: str) -> str:
+    """Приводит ответ к каноническому виду для сравнения."""
+    s = unicodedata.normalize("NFKC", s)
+    return " ".join(s.strip().lower().split())
 
 @dataclass(frozen=True)
 class QuestionRevision:
@@ -16,8 +22,19 @@ class QuestionRevision:
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     def is_answer_correct(self, user_answer: str) -> bool:
-        """Занимается проверкой ответа"""
-        return self.correct_answer.strip().lower() == user_answer.strip().lower()
+        """Проверяет ответ пользователя"""
+        return _normalize_answer(self.correct_answer) == _normalize_answer(user_answer)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, QuestionRevision):
+            return NotImplemented
+        return self.uid == other.uid
+
+    def __hash__(self) -> int:
+        return hash(self.uid)
+
+    def __repr__(self) -> str:
+        return f"QuestionRevision(uid={self.uid}, question_id={self.question_id})"
 
 
 @dataclass(frozen=True)
@@ -30,8 +47,8 @@ class NodeRevision:
     uid: UUID
     node_id: UUID
     title: str
-    task_text: str
-    questions: list[QuestionRevision] = field(default_factory=list)
+    questions_order: list[UUID] | None = None
+    xp_per_node: int = 0
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -59,14 +76,16 @@ class Question:
 @dataclass
 class Node:
     """Сущность для узла дорожной карты"""
-
-    uid: UUID = field(default_factory=uuid4)
-    title: str
     order: int
+    uid: UUID = field(default_factory=uuid4)
+    roadmap_id: UUID = None
+    title: str = ""
     current_revision: NodeRevision | None = None
     status: NodeStatuses = NodeStatuses.DRAFT
     available_from: datetime | None = None
+    wave: float = 1.0
     questions: list[Question] = field(default_factory=list)
+    background_image: str = ""
 
     @property
     def is_published(self) -> bool:
@@ -121,7 +140,7 @@ class Roadmap:
     """Сущность для дорожной карты"""
 
     uid: UUID = field(default_factory=uuid4)
-    title: str
+    title: str = ""
     points: list[Node] = field(default_factory=list)
 
     def add_node(self, title: str) -> Node:

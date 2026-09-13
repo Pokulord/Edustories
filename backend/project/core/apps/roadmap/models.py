@@ -2,7 +2,9 @@ import uuid
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.core.validators import FileExtensionValidator
 
+from .uploaders import node_background_upload_to
 # Create your models here.
 
 
@@ -51,6 +53,14 @@ class Node(models.Model):
         verbose_name=_("Текущая ревизия"),
     )
 
+    wave = models.FloatField(
+        default=0.5,
+        verbose_name=_("Высота на карте"),
+        help_text=_("Позиция по вертикали: 0.0 — низ, 1.0 — верх"),
+    )
+
+    background_image = models.ImageField(upload_to=node_background_upload_to, null=True, blank=True)
+
     class Meta:
         ordering = ("order",)
         unique_together = ("roadmap", "order")
@@ -70,11 +80,11 @@ class NodeRevision(models.Model):
         Node,
         on_delete=models.CASCADE,
         related_name="revisions",
-        verbose_name=_("Ревизия"),
+        verbose_name=_("Узел"),
     )
     title = models.CharField(max_length=255)
     question_order = models.JSONField(
-        default=list, help_text="Список UUID вопросов в порядке на момент ревизии"
+        default=list, help_text="Список UUID вопросов в порядке на момент ревизии", blank=True
     )
     created_at = models.DateTimeField(auto_now_add=True)
 

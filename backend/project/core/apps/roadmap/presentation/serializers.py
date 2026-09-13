@@ -1,0 +1,105 @@
+# presentation/serializers/roadmap_serializers.py
+
+from ..domain.entities import Node, Question, Roadmap
+
+
+def roadmap_to_page_data(roadmap: Roadmap) -> dict:
+    """
+    Превращает доменную карту в структуру для JS-шаблона.
+
+    Возвращает:
+        {
+            "uid": "...",
+            "title": "...",
+            "nodes": [ ... ]
+        }
+    """
+    return {
+        "uid": str(roadmap.uid),
+        "title": roadmap.title,
+        "nodes": [node_to_js(n) for n in roadmap.points],
+    }
+
+
+def node_to_js(node: Node) -> dict:
+    """Один узел в формате JS-объекта NODES[i]."""
+    revision = node.current_revision
+
+    return {
+        "uid": str(node.uid),
+        "title": _split_title(revision.title if revision else ""),
+        "status": _status_to_js(node.status),
+        "statusLabel": _status_label(node.status),
+        "image": _image_url(node.background_image),
+        "wave": node.wave,
+        "modal": {
+            "tag": revision.tag if revision else "",
+            "chapter": revision.chapter if revision else "",
+            "heading": _split_title(revision.title if revision else ""),
+            "narrator": {
+                "name": revision.narrator_name if revision else "",
+                "role": revision.narrator_role if revision else "",
+                "image": _image_url(node.background_image),
+            },
+            "pages": [
+                q.current_revision.text
+                for q in node.questions
+                if q.current_revision
+            ],
+        },
+        "form": {
+            "chapter": revision.chapter if revision else "",
+            "mode": revision.mode if revision else "Самостоятельно",
+            "title": revision.title if revision else "",
+            "book": revision.book if revision else "",
+            "xp": f"+{revision.xp} XP" if revision else "+0 XP",
+            "task": revision.task if revision else "",
+            "fields": [
+                _question_to_field(q, i)
+                for i, q in enumerate(node.questions, start=1)
+            ],
+        },
+    }
+
+
+# ─────────────────────────────────────────────────────
+# Хелперы
+# ─────────────────────────────────────────────────────
+
+def _split_title(title: str) -> str:
+    """«Долина Первых Строк» → «Долина\\nПервых Строк» для JS."""
+    parts = title.split(maxsplit=1)
+    return "\n".join(parts) if len(parts) == 2 else title
+
+
+def _status_to_js(status) -> str:
+    return {
+        "published": "completed",
+        "draft": "active",
+        "archived": "locked",
+    }.get(str(status), "locked")
+
+
+def _status_label(status) -> str:
+    return {
+        "published": "Пройдено",
+        "draft": "В процессе",
+        "archived": "Скоро",
+    }.get(str(status), "—")
+
+
+def _image_url(image_field) -> str:
+    if not image_field:
+        return ""
+    return image_field.url
+
+
+def _question_to_field(question: Question, num: int) -> dict:
+    revision = question.current_revision
+    return {
+        "num": f"{num:02d}",
+        "label": revision.text[:60] if revision else f"Вопрос {num}",
+        "hint": revision.text if revision else "",
+        "type": "textarea",
+        "placeholder": "Запиши свой ответ здесь…",
+    }
