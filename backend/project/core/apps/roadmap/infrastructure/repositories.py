@@ -10,6 +10,7 @@ from ..domain.entities import (
     Roadmap,
 )
 from ..domain.enums import NodeStatuses
+from ..domain.services import split_lore_into_pages
 from ..domain.exceptions import RoadmapNotFoundError
 from ..models import (
     Node as NodeM,
@@ -67,6 +68,7 @@ class RoadmapRepository:
                 if orm_obj.current_revision
                 else None
             ),
+            pages=split_lore_into_pages(orm_obj.lore),
             questions=[self._build_question(q) for q in orm_obj.questions.all()],
         )
 
@@ -77,6 +79,13 @@ class RoadmapRepository:
             node_id=orm_obj.node_id,
             title=orm_obj.title,
             questions_order=orm_obj.question_order,
+            chapter=orm_obj.chapter,
+            tag=orm_obj.tag,
+            book=orm_obj.book,
+            task=orm_obj.task,
+            xp=orm_obj.xp,
+            narrator_name=orm_obj.narrator_name,
+            narrator_role=orm_obj.narrator_role,
         )
 
     def _build_question(self, orm_obj: QuestionM) -> Question:

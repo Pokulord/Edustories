@@ -41,11 +41,7 @@ def node_to_js(node: Node) -> dict:
                 "role": revision.narrator_role if revision else "",
                 "image": _image_url(node.background_image),
             },
-            "pages": [
-                q.current_revision.text
-                for q in node.questions
-                if q.current_revision
-            ],
+            "pages": node.pages
         },
         "form": {
             "chapter": revision.chapter if revision else "",

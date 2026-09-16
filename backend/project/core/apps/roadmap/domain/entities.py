@@ -49,6 +49,14 @@ class NodeRevision:
     title: str
     questions_order: list[UUID] | None = None
     xp_per_node: int = 0
+    chapter: str = ""
+    tag: str = ""
+    book: str = ""
+    task: str = ""
+    xp: int = 0
+    mode: str = "Самостоятельно"
+    narrator_name: str = ""
+    narrator_role: str = ""
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -84,6 +92,7 @@ class Node:
     status: NodeStatuses = NodeStatuses.DRAFT
     available_from: datetime | None = None
     wave: float = 1.0
+    pages: list[str] = field(default_factory=list)
     questions: list[Question] = field(default_factory=list)
     background_image: str = ""
 

@@ -58,8 +58,14 @@ class Node(models.Model):
         verbose_name=_("Высота на карте"),
         help_text=_("Позиция по вертикали: 0.0 — низ, 1.0 — верх"),
     )
-
-    background_image = models.ImageField(upload_to=node_background_upload_to, null=True, blank=True)
+    lore = models.TextField(
+        _("Лор узла"),
+        blank=True,
+        help_text=_("Лор для узла. Каждая новая страница-отдельный абзац"),
+    )
+    background_image = models.ImageField(
+        upload_to=node_background_upload_to, null=True, blank=True
+    )
 
     class Meta:
         ordering = ("order",)
@@ -84,8 +90,18 @@ class NodeRevision(models.Model):
     )
     title = models.CharField(max_length=255)
     question_order = models.JSONField(
-        default=list, help_text="Список UUID вопросов в порядке на момент ревизии", blank=True
+        default=list,
+        help_text="Список UUID вопросов в порядке на момент ревизии",
+        blank=True,
     )
+    chapter = models.CharField(max_length=50, blank=True)
+    tag = models.CharField(max_length=100, blank=True)
+    book = models.CharField(max_length=255, blank=True)
+    task = models.TextField(blank=True)
+    xp = models.PositiveIntegerField(default=0)
+    narrator_name = models.CharField(max_length=100, blank=True)
+    narrator_role = models.CharField(max_length=150, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
