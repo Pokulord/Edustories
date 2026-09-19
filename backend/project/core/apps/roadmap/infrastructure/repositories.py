@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Sum
 
 from ..domain.entities import (
     Node,
@@ -8,6 +9,7 @@ from ..domain.entities import (
     Question,
     QuestionRevision,
     Roadmap,
+    UserNodeProgress,
 )
 from ..domain.enums import NodeStatuses
 from ..domain.services import split_lore_into_pages
@@ -26,6 +28,10 @@ from ..models import (
 )
 from ..models import (
     Roadmap as RoadmapM,
+)
+
+from ..models import (
+    UserNodeProgress as UserNodeProgressM
 )
 
 
@@ -68,6 +74,8 @@ class RoadmapRepository:
                 if orm_obj.current_revision
                 else None
             ),
+            wave=orm_obj.wave,
+            background_image=orm_obj.background_image,
             pages=split_lore_into_pages(orm_obj.lore),
             questions=[self._build_question(q) for q in orm_obj.questions.all()],
         )
@@ -157,4 +165,52 @@ class QuestionRepository:
             text=orm_obj.text,
             correct_answer=orm_obj.correct_answer,
             created_at=orm_obj.created_at,
+        )
+
+
+class UserNodeProgressRepository:
+    """Репозиторий прогресса пользователя."""
+
+    def get_by_user_and_roadmap(
+        self,
+        user_id: UUID,
+        roadmap_id: UUID,
+    ) -> dict[UUID, UserNodeProgress]:
+        """Прогресс по узлам карты."""
+        orm_qs = (
+            UserNodeProgressM.objects
+            .filter(
+                user_id=user_id,
+                node__roadmap_id=roadmap_id,
+            )
+            .only(
+                "node_id", "is_passed", "attempts_count",
+                "xp_earned", "correct_count", "total_count",
+            )
+        )
+        return {
+            orm.node_id: self._to_domain(orm)
+            for orm in orm_qs
+        }
+
+    def get_total_xp(self, user_id: UUID) -> int:
+        """Общий XP пользователя по всем пройденным узлам."""
+        result = (
+            UserNodeProgressM.objects
+            .filter(user_id=user_id, is_passed=True)
+            .aggregate(total=Sum("xp_earned"))
+        )
+        return result["total"] or 0
+
+    def _to_domain(self, orm) -> UserNodeProgress:
+        return UserNodeProgress(
+            uid=orm.id,
+            user_id=orm.user_id,
+            node_id=orm.node_id,
+            is_passed=orm.is_passed,
+            correct_count=orm.correct_count,
+            total_count=orm.total_count,
+            attempts_count=orm.attempts_count,
+            xp_earned=orm.xp_earned,
+            first_passed_at=orm.first_passed_at,
         )

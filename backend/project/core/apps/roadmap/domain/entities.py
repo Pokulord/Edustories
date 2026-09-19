@@ -23,6 +23,7 @@ class QuestionRevision:
 
     def is_answer_correct(self, user_answer: str) -> bool:
         """Проверяет ответ пользователя"""
+        print(f"Корректный: {self.correct_answer} -> {user_answer}")
         return _normalize_answer(self.correct_answer) == _normalize_answer(user_answer)
 
     def __eq__(self, other: object) -> bool:
@@ -163,3 +164,17 @@ class Roadmap:
         )
         self.points.append(new_node)
         return new_node
+
+
+@dataclass(frozen=True)
+class UserNodeProgress:
+    """Прогресс пользователя по узлу (домен)."""
+    uid: UUID
+    user_id: UUID
+    node_id: UUID
+    is_passed: bool
+    correct_count: int
+    total_count: int
+    attempts_count: int
+    xp_earned: int
+    first_passed_at: datetime | None

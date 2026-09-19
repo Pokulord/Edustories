@@ -125,7 +125,7 @@
 
     .fog-sprite {
       position: absolute;
-      background-image: url('./images/fog.png');
+      {% comment %} background-image: url('{% static "/images/fog.png" %}'); {% endcomment %}
       background-repeat: no-repeat;
       background-size: 100% 100%;
       filter: invert(1) brightness(1.1) contrast(.95);
@@ -985,6 +985,14 @@
   <div class="w-full text-center pt-12 pb-6 px-4">
     <p class="text-[#c5a67c] tracking-[0.4em] text-xs uppercase mb-4 title-font">Путь Книгочея</p>
     <h1 class="text-4xl sm:text-6xl font-bold mb-6 leading-tight">
+      {# ─── XP пользователя ─── #}
+  <div id="user-xp"
+       data-xp="{{ total_xp }}"
+       class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full
+              border border-[#c5a67c]/40 bg-black/30 backdrop-blur
+              text-[#c5a67c] font-semibold text-sm mb-4">
+    ★ {{ total_xp }} XP
+  </div>
       <span class="text-white title-font">Дорожная </span>
       <span class="text-[#d4b483] title-font">карта</span>
     </h1>
@@ -1029,6 +1037,7 @@
   </div>
   <!-- ─── Форма ответов ─── -->
   <form id="answerFormSection" method="POST" action="#" novalidate>
+    {% csrf_token %}
     <div class="answer-form-wrap">
 
       <div class="answer-form-header">
@@ -1245,35 +1254,40 @@
     let currentFormNodeIdx = -1;
 
     function buildAnswerForm(nodeIdx) {
-      const data = NODE_FORM_DATA[nodeIdx];
-      if (!data) return;
+    const data = NODE_FORM_DATA[nodeIdx];
+    if (!data) return;
 
-      afChapterTag.textContent = data.chapter;
-      afModeTag.textContent = data.mode;
-      afTitle.textContent = data.title;
-      afBook.textContent = data.book;
-      afXp.textContent = data.xp;
-      afTask.textContent = data.task;
+    afChapterTag.textContent = data.chapter;
+    afModeTag.textContent = data.mode;
+    afTitle.textContent = data.title;
+    afBook.textContent = data.book;
+    afXp.textContent = data.xp;
+    afTask.textContent = data.task;
 
-      afFields.innerHTML = '';
-      data.fields.forEach(f => {
+    afFields.innerHTML = '';
+    data.fields.forEach(f => {
         const div = document.createElement('div');
         div.className = 'answer-form-field';
 
+        // ← добавить data-question-id
         const fieldEl = f.type === 'textarea'
-          ? `<textarea class="answer-form-textarea" placeholder="${f.placeholder}"></textarea>`
-          : `<input type="text" class="answer-form-input" placeholder="${f.placeholder}">`;
+            ? `<textarea class="answer-form-textarea"
+                         data-question-id="${f.question_id}"
+                         placeholder="${f.placeholder}"></textarea>`
+            : `<input type="text" class="answer-form-input"
+                     data-question-id="${f.question_id}"
+                     placeholder="${f.placeholder}">`;
 
         div.innerHTML = `
-      <span class="answer-form-field-num">${f.num}</span>
-      <strong class="answer-form-field-label">${f.label}</strong>
-      <p class="answer-form-field-hint">${f.hint}</p>
-      ${fieldEl}
-      <span class="answer-form-autosave">Сохраняется автоматически</span>
-    `;
+            <span class="answer-form-field-num">${f.num}</span>
+            <strong class="answer-form-field-label">${f.label}</strong>
+            <p class="answer-form-field-hint">${f.hint}</p>
+            ${fieldEl}
+            <span class="answer-form-autosave">Сохраняется автоматически</span>
+        `;
         afFields.appendChild(div);
-      });
-    }
+    });
+}
 
     function showAnswerForm(nodeIdx) {
       // Если та же нода — скрываем (toggle)
@@ -1300,77 +1314,243 @@
     //   el.addEventListener('click', () => { openNodeModal(i); showAnswerForm(i); });
 
     // Валидация формы при отправке
-    answerFormSection.addEventListener('submit', function (e) {
-      e.preventDefault();
+    answerFormSection.addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-      // Находим все поля ввода внутри формы
-      const fields = answerFormSection.querySelectorAll('.answer-form-textarea, .answer-form-input');
-      let hasEmpty = false;
-      let firstEmpty = null;
-      let errorMessages = [];
+    const fields = answerFormSection.querySelectorAll(
+        '.answer-form-textarea, .answer-form-input'
+    );
 
-      // Удаляем старые ошибки
-      fields.forEach(el => {
+    // ─────────────────────────────────────────────────────
+    // 1. Валидация полей
+    // ─────────────────────────────────────────────────────
+
+    let hasEmpty = false;
+    let firstEmpty = null;
+
+    fields.forEach(el => {
         el.classList.remove('af-field-error');
         const parent = el.closest('.answer-form-field');
-        const existingError = parent?.querySelector('.af-error-message');
-        if (existingError) existingError.remove();
-      });
+        parent?.querySelector('.af-error-message')?.remove();
 
-      // Проверяем каждое поле
-      fields.forEach(el => {
-        const isEmpty = el.value.trim() === '';
-        if (isEmpty) {
-          el.classList.add('af-field-error');
-          hasEmpty = true;
-          if (!firstEmpty) firstEmpty = el;
+        if (el.value.trim() === '') {
+            el.classList.add('af-field-error');
+            hasEmpty = true;
+            if (!firstEmpty) firstEmpty = el;
 
-          // Добавляем сообщение об ошибке под полем
-          const parent = el.closest('.answer-form-field');
-          if (parent && !parent.querySelector('.af-error-message')) {
-            const errorMsg = document.createElement('p');
-            errorMsg.className = 'af-error-message';
-            errorMsg.style.cssText = 'color: #ff6b6b; font-size: 12px; margin-top: 4px;';
-            errorMsg.textContent = '⚠️ Это поле обязательно для заполнения';
-            parent.appendChild(errorMsg);
-          }
+            const parent = el.closest('.answer-form-field');
+            if (parent && !parent.querySelector('.af-error-message')) {
+                const errorMsg = document.createElement('p');
+                errorMsg.className = 'af-error-message';
+                errorMsg.style.cssText = 'color: #ff6b6b; font-size: 12px; margin-top: 4px;';
+                errorMsg.textContent = '⚠️ Это поле обязательно для заполнения';
+                parent.appendChild(errorMsg);
+            }
         }
-      });
-
-      if (hasEmpty) {
-        // Скроллим к первому незаполненному полю
-        if (firstEmpty) {
-          firstEmpty.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          firstEmpty.focus();
-        }
-        return;
-      }
-
-      // Если все поля заполнены - собираем данные
-      const formData = {};
-      fields.forEach((el, index) => {
-        const label = el.closest('.answer-form-field')?.querySelector('.answer-form-field-label')?.textContent || `Поле ${index + 1}`;
-        formData[label] = el.value.trim();
-      });
-
-      console.log('📝 Данные формы:', formData);
-
-      // Показываем успешное сохранение
-      const submitBtn = afSubmit;
-      submitBtn.textContent = '✓ Ответы сохранены!';
-      submitBtn.style.background = 'linear-gradient(135deg, #1a4030, #2a6040)';
-      submitBtn.style.color = '#80d0a0';
-
-      setTimeout(() => {
-        answerFormSection.classList.remove('visible');
-        currentFormNodeIdx = -1;
-        submitBtn.textContent = 'Завершить точку и получить карточку';
-        submitBtn.style.background = '';
-        submitBtn.style.color = '';
-        // Очищаем поля
-        fields.forEach(el => el.value = '');
-      }, 2000);
     });
+
+    if (hasEmpty) {
+        firstEmpty?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        firstEmpty?.focus();
+        return;
+    }
+
+    // ─────────────────────────────────────────────────────
+    // 2. Сбор ответов
+    // ─────────────────────────────────────────────────────
+
+    const answers = {};
+    fields.forEach(el => {
+        const qid = el.dataset.questionId;
+        if (qid) answers[qid] = el.value.trim();
+    });
+
+    if (Object.keys(answers).length === 0) {
+        console.warn('Нет ответов для отправки');
+        return;
+    }
+
+    // ─────────────────────────────────────────────────────
+    // 3. Отправка на сервер
+    // ─────────────────────────────────────────────────────
+
+    const submitBtn = afSubmit;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Проверяем...';
+
+    try {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+        if (!csrfToken) {
+            throw new Error('CSRF-токен не найден');
+        }
+
+        const nodeId = NODES[currentFormNodeIdx]?.uid;
+        if (!nodeId) {
+            throw new Error('Не удалось определить узел');
+        }
+
+        const response = await fetch(`/roadmap/nodes/${nodeId}/check/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ answers }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        const { summary, results } = data;
+
+        // ─────────────────────────────────────────────────────
+        // 4. Подсветка полей по результатам
+        // ─────────────────────────────────────────────────────
+
+        fields.forEach(el => {
+            const qid = el.dataset.questionId;
+            const r = results?.[qid];
+            if (!r) return;
+
+            if (r.is_correct) {
+                el.style.borderColor = '#2a6040';
+                el.style.background = 'rgba(42, 96, 64, .15)';
+            } else {
+                el.style.borderColor = '#8a2a2a';
+                el.style.background = 'rgba(138, 42, 42, .15)';
+            }
+        });
+
+        // ─────────────────────────────────────────────────────
+        // 5. Обновление UI из ответа сервера
+        // ─────────────────────────────────────────────────────
+
+        const isPassed = Boolean(summary?.is_passed);
+
+        if (isPassed) {
+            // Узел пройден
+            updateNodeStatus(currentFormNodeIdx, 'completed', STATUS_LABELS['completed']);
+            unlockNextNode(currentFormNodeIdx);
+
+            submitBtn.textContent = `✓ Пройдено! ${summary.correct}/${summary.total}`;
+            submitBtn.style.background = 'linear-gradient(135deg, #1a4030, #2a6040)';
+            submitBtn.style.color = '#80d0a0';
+        } else {
+            // Не пройден — узел в процессе
+            updateNodeStatus(currentFormNodeIdx, 'active', STATUS_LABELS['active']);
+
+            submitBtn.textContent = `⚠ ${summary.correct}/${summary.total}. Попробуйте снова`;
+            submitBtn.style.background = 'linear-gradient(135deg, #602020, #803030)';
+            submitBtn.style.color = '#f0a0a0';
+        }
+
+        // XP — только из ответа сервера
+        if (Number.isFinite(summary?.total_xp)) {
+            showXp(summary.total_xp);
+        }
+
+        // Перерисовать карту
+        render();
+
+        // ─────────────────────────────────────────────────────
+        // 6. Скрыть форму через 2.5 сек
+        // ─────────────────────────────────────────────────────
+
+        setTimeout(() => {
+            answerFormSection.classList.remove('visible');
+            currentFormNodeIdx = -1;
+            submitBtn.textContent = 'Завершить точку и получить карточку';
+            submitBtn.style.background = '';
+            submitBtn.style.color = '';
+            submitBtn.disabled = false;
+
+            fields.forEach(el => {
+                el.value = '';
+                el.style.borderColor = '';
+                el.style.background = '';
+            });
+        }, 2500);
+
+    } catch (err) {
+        console.error('Ошибка отправки:', err);
+
+        submitBtn.textContent = '⚠ Ошибка, попробуйте снова';
+        submitBtn.style.background = 'linear-gradient(135deg, #602020, #803030)';
+        submitBtn.style.color = '#f0a0a0';
+        submitBtn.disabled = false;
+    }
+});
+
+// ─────────────────────────────────────────────────────
+// Константы и валидация
+// ─────────────────────────────────────────────────────
+
+const VALID_STATUSES = ['completed', 'active', 'locked'];
+
+const STATUS_LABELS = {
+    'completed': 'Пройдено',
+    'active': 'В процессе',
+    'locked': 'Скоро',
+};
+
+// ─────────────────────────────────────────────────────
+// Обновление статуса узла
+// ─────────────────────────────────────────────────────
+
+function updateNodeStatus(nodeIdx, status, statusLabel) {
+    if (!Number.isInteger(nodeIdx) || nodeIdx < 0 || nodeIdx >= NODES.length) {
+        console.warn('updateNodeStatus: некорректный индекс', nodeIdx);
+        return;
+    }
+
+    if (!VALID_STATUSES.includes(status)) {
+        console.warn('updateNodeStatus: некорректный статус', status);
+        return;
+    }
+
+    NODES[nodeIdx].status = status;
+    NODES[nodeIdx].statusLabel = statusLabel || STATUS_LABELS[status] || '';
+}
+
+// ─────────────────────────────────────────────────────
+// Разблокировка следующего узла
+// ─────────────────────────────────────────────────────
+
+function unlockNextNode(nodeIdx) {
+    if (!Number.isInteger(nodeIdx) || nodeIdx < 0 || nodeIdx >= NODES.length) {
+        return;
+    }
+
+    // Разблокируем только если текущий узел ПРОЙДЕН
+    const current = NODES[nodeIdx];
+    if (!current || current.status !== 'completed') {
+        return;
+    }
+
+    const nextIdx = nodeIdx + 1;
+    if (nextIdx >= NODES.length) return;
+
+    const next = NODES[nextIdx];
+    if (next.status === 'locked') {
+        next.status = 'active';
+        next.statusLabel = STATUS_LABELS['active'];
+    }
+}
+
+// ─────────────────────────────────────────────────────
+// Отображение XP (из ответа сервера)
+// ─────────────────────────────────────────────────────
+
+function showXp(totalXp) {
+    const xpEl = document.getElementById('user-xp');
+    if (!xpEl) return;
+
+    const value = Number.isFinite(totalXp) ? Math.max(0, totalXp) : 0;
+    xpEl.dataset.xp = String(value);
+    xpEl.textContent = `★ ${value} XP`;
+}
 
     {% comment %} const NODES = [
       {

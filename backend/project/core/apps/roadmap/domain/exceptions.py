@@ -55,3 +55,14 @@ class RoadmapAccessDeniedError(BaseRoadmapError):
         super().__init__(
             message, metadata={"roadmap_id": roadmap_id, "user_id": user_id}
         )
+
+class QuestionNotFoundError(BaseRoadmapError):
+    """Ошибка, которая вызывается в случае, если  вопрос не найден"""
+
+    error_slug = "question_not_found"
+    
+    def __init__(self, question_id: UUID):
+        message = f"Карта с id {question_id} не найдена"
+        super().__init__(
+            message, metadata={"question_id": question_id}
+        )
