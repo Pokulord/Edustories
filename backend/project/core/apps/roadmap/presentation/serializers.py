@@ -147,6 +147,7 @@ def _question_to_field(question: Question, num: int) -> dict:
     revision = question.current_revision
     return {
         "question_id": str(question.uid),
+        "revision_id": str(revision.uid) if revision else None, 
         "num": f"{num:02d}",
         "label": revision.text[:60] if revision else f"Вопрос {num}",
         "hint": revision.text if revision else "",

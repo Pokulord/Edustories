@@ -84,27 +84,33 @@ class AnswerService:
     # Проверка ответов
     # ─────────────────────────────────────────────────────
 
-    def _check_all(
-        self,
-        answers: dict[str, str],
-    ) -> tuple[dict, int, int]:
-        """Проверяет все ответы. Возвращает (results, correct, total)."""
+    def _check_all(self, answers: dict) -> tuple[dict, int, int]:
         results = {}
         correct = 0
         total = 0
 
-        for qid_str, user_answer in answers.items():
+        for qid_str, payload in answers.items():
             try:
                 qid = UUID(qid_str)
-                question = self.question_repo.get_by_id(qid)
+                user_answer = payload.get("answer", "").strip()
+                revision_id = payload.get("revision_id")
 
-                if not question.current_revision:
-                    results[qid_str] = {"error": "no_revision"}
+                if not revision_id:
+                    results[qid_str] = {"error": "no_revision_id"}
                     continue
 
-                is_correct = question.current_revision.is_answer_correct(
-                    user_answer
+                # ─── Загружаем ИМЕННО ту ревизию ───
+                revision = self.question_repo.get_revision_by_id(
+                    UUID(revision_id)
                 )
+
+                # ─── Проверка: ревизия принадлежит вопросу ───
+                print(revision.question_id, qid, "<-")
+                if revision.question_id != qid:
+                    results[qid_str] = {"error": "revision_mismatch"}
+                    continue
+
+                is_correct = revision.is_answer_correct(user_answer)
                 results[qid_str] = {"is_correct": is_correct}
 
                 total += 1

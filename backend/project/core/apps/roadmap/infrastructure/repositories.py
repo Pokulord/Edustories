@@ -143,6 +143,14 @@ class QuestionRepository:
         )
 
         return [self._to_domain(orm_object) for orm_object in orm_qs]
+    
+    def get_revision_by_id(self, revision_id: UUID) -> QuestionRevision:
+        try:
+            orm = QuestionRevisionM.objects.get(id=revision_id)
+        except QuestionRevisionM.DoesNotExist as e:
+            # raise QuestionRevisionNotFoundError(...) from e
+            ...
+        return self._revision_to_domain(orm)
 
     def _to_domain(self, orm_obj: QuestionM) -> Question:
         """Маппер для преобразования вопроса в доменный объект"""
@@ -161,7 +169,7 @@ class QuestionRepository:
         """Маппер для преобразования ревизии в доменный объект"""
         return QuestionRevision(
             uid=orm_obj.id,
-            question_id=orm_obj.question,
+            question_id=orm_obj.question_id,
             text=orm_obj.text,
             correct_answer=orm_obj.correct_answer,
             created_at=orm_obj.created_at,

@@ -1268,15 +1268,17 @@
     data.fields.forEach(f => {
         const div = document.createElement('div');
         div.className = 'answer-form-field';
-
+        
         // ← добавить data-question-id
         const fieldEl = f.type === 'textarea'
-            ? `<textarea class="answer-form-textarea"
-                         data-question-id="${f.question_id}"
-                         placeholder="${f.placeholder}"></textarea>`
-            : `<input type="text" class="answer-form-input"
-                     data-question-id="${f.question_id}"
-                     placeholder="${f.placeholder}">`;
+    ? `<textarea class="answer-form-textarea"
+                 data-question-id="${f.question_id}"
+                 data-revision-id="${f.revision_id}"   ← добавить
+                 placeholder="${f.placeholder}"></textarea>`
+    : `<input type="text" class="answer-form-input"
+             data-question-id="${f.question_id}"
+             data-revision-id="${f.revision_id}"
+             placeholder="${f.placeholder}">`;
 
         div.innerHTML = `
             <span class="answer-form-field-num">${f.num}</span>
@@ -1360,10 +1362,16 @@
     // ─────────────────────────────────────────────────────
 
     const answers = {};
-    fields.forEach(el => {
-        const qid = el.dataset.questionId;
-        if (qid) answers[qid] = el.value.trim();
-    });
+fields.forEach(el => {
+    const qid = el.dataset.questionId;
+    const rid = el.dataset.revisionId;
+    if (qid && rid) {
+        answers[qid] = {
+            answer: el.value.trim(),
+            revision_id: rid,
+        };
+    }
+});
 
     if (Object.keys(answers).length === 0) {
         console.warn('Нет ответов для отправки');
