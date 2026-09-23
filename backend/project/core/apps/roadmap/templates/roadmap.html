@@ -1677,7 +1677,16 @@ function showXp(totalXp) {
     const ICONS = {
       check: `<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`,
       lock: `<svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1C8.676 1 6 3.676 6 7v1H4v15h16V8h-2V7c0-3.324-2.676-6-6-6zm0 2c2.276 0 4 1.724 4 4v1H8V7c0-2.276 1.724-4 4-4zm0 9a2 2 0 110 4 2 2 0 010-4z"/></svg>`,
+      progress: `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 7v5l3 2"/></svg>`,
     };
+
+    function formatDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (isNaN(d)) return '';
+    const pad = n => String(n).padStart(2, '0');
+    return `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}`;
+  }
 
     const statusColor = s => ({ completed: '#c5a67c', active: '#d4b483', locked: '#a8b0b6' }[s]);
     const getIconSize = () => window.matchMedia('(max-width:640px)').matches ? 42 : 52;
@@ -1736,7 +1745,7 @@ function showXp(totalXp) {
         imgsLayer.appendChild(el);
       });
 
-      const lockStart = NODES.findIndex(nd => nd.status === 'locked');
+      const lockStart = NODES.findIndex(nd => nd.status === 'locked' || nd.is_available === false);
       if (lockStart < 0) hideFog();
       else {
         const fogLeft = Math.max(0, cx(lockStart) - step * CFG.fogLeadIn);
@@ -1745,35 +1754,70 @@ function showXp(totalXp) {
 
       nodesLayer.innerHTML = '';
       NODES.forEach((node, i) => {
-        const el = document.createElement('div');
-        el.className = 'map-node';
-        el.style.left = cx(i) + 'px';
-        el.style.top = iconTop(node.wave) + 'px';
-        // Разрешаем клики на узел
-        el.style.pointerEvents = 'auto';
-        el.style.cursor = 'pointer';
+      const el = document.createElement('div');
+      el.className = 'map-node';
+      el.style.left = cx(i) + 'px';
+      el.style.top = iconTop(node.wave) + 'px';
 
-        const color = statusColor(node.status);
-        const icon = node.status === 'locked' ? ICONS.lock : ICONS.check;
-        const title = node.title.replace(/\n/g, '<br>');
-        const weight = node.status === 'active' ? '600' : '400';
-        const titleColor = node.status === 'locked' ? '#dfe3e6' : '#fff';
+      const isAvailable = node.is_available !== false;
+      const isCompleted = node.status === 'completed';
+      const locked = !isAvailable || node.status === 'locked';
+      const clickable = isAvailable && !isCompleted;
 
-        el.innerHTML = `
-      <div class="node-icon ${node.status}" style="transition:transform .18s,box-shadow .18s">${icon}</div>
-      <div>
-        <p class="node-title"  style="color:${titleColor}">${title}</p>
-        <p class="node-status" style="color:${color};font-weight:${weight}">${node.statusLabel}</p>
-      </div>`;
+      el.style.pointerEvents = clickable ? 'auto' : 'none';
+      el.style.cursor = clickable ? 'pointer' : 'not-allowed';
+      if (!isAvailable) el.style.opacity = '0.85';
 
-        // Hover-эффект на иконке
-        const iconEl = el.querySelector('.node-icon');
-        el.addEventListener('mouseenter', () => { iconEl.style.transform = 'scale(1.12)'; iconEl.style.boxShadow = iconEl.style.boxShadow + ', 0 0 0 4px rgba(197,166,124,.15)'; });
-        el.addEventListener('mouseleave', () => { iconEl.style.transform = ''; iconEl.style.boxShadow = ''; });
-        el.addEventListener('click', () => { openNodeModal(i); showAnswerForm(i); });
+      const color = statusColor(node.status);
+      const icon = locked
+        ? ICONS.lock
+        : (isCompleted ? ICONS.check : ICONS.progress);
+      const title = node.title.replace(/\n/g, '<br>');
+      const weight = node.status === 'active' ? '600' : '400';
+      const titleColor = locked ? '#dfe3e6' : '#fff';
 
-        nodesLayer.appendChild(el);
-      });
+      let statusLabel = node.statusLabel;
+      if (!isAvailable && node.available_from) {
+        statusLabel = `Будет доступен с ${formatDate(node.available_from)}`;
+      } else if (!isAvailable) {
+        statusLabel = 'Недоступен';
+      }
+
+      el.innerHTML = `
+        <div class="node-icon ${node.status} ${!isAvailable ? 'locked' : ''}"
+            style="transition:transform .18s,box-shadow .18s">${icon}</div>
+        <div>
+          <p class="node-title" style="color:${titleColor}">${title}</p>
+          <p class="node-status" style="color:${!isAvailable ? '#b6bcc2' : color};font-weight:${weight}">
+            ${statusLabel}
+          </p>
+        </div>`;
+
+      const iconEl = el.querySelector('.node-icon');
+
+      if (clickable) {
+        el.addEventListener('mouseenter', () => {
+          iconEl.style.transform = 'scale(1.12)';
+          iconEl.style.boxShadow += ', 0 0 0 4px rgba(197,166,124,.15)';
+        });
+        el.addEventListener('mouseleave', () => {
+          iconEl.style.transform = '';
+          iconEl.style.boxShadow = '';
+        });
+        el.addEventListener('click', () => {
+          openNodeModal(i);
+          showAnswerForm(i);
+        });
+      } else if (isCompleted) {
+        el.title = 'Узел уже пройден';
+      } else if (!isAvailable) {
+        el.title = node.available_from
+          ? `Узел откроется ${formatDate(node.available_from)}`
+          : 'Узел пока недоступен';
+      }
+
+      nodesLayer.appendChild(el);
+    });
 
       requestAnimationFrame(() => { drawPath(totalW, mapH); updateNavButtons(); });
     }
@@ -1791,7 +1835,7 @@ function showXp(totalXp) {
       pathSvg.style.height = mapH + 'px';
       const n = pts.length;
       if (n < 2) { pathSvg.innerHTML = ''; return; }
-      let ls = NODES.findIndex(nd => nd.status === 'locked');
+      let ls = NODES.findIndex(nd => nd.status === 'locked' || nd.is_available === false);
       if (ls < 0) ls = n;
       const mk = (from, to) => {
         if (from >= to) return '';

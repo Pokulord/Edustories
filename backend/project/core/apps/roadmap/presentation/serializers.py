@@ -1,6 +1,7 @@
 # presentation/serializers/roadmap_serializers.py
 
 from ..domain.entities import Node, Question, Roadmap
+from django.utils import timezone
 
 
 def roadmap_to_page_data(
@@ -44,6 +45,8 @@ def node_to_js(
       - locked    — недоступен (предыдущий не пройден)
     """
     revision = node.current_revision
+    now = timezone.now()
+    is_node_available = node.available_from is None or node.available_from <= now
 
     # ─── Статус и label ───
     status, status_label = _resolve_status(node, user_progress, prev_passed)
@@ -55,6 +58,8 @@ def node_to_js(
         "statusLabel": status_label,
         "image": _image_url(node.background_image),
         "wave": node.wave,
+        "available_from": node.available_from.isoformat() if node.available_from else None,
+        "is_available": is_node_available,
         "modal": {
             "tag": revision.tag if revision else "",
             "chapter": revision.chapter if revision else "",
@@ -105,7 +110,7 @@ def _resolve_status(
         return "active", "В процессе"
 
     if prev_passed or node.order == 1:
-        return "active", "Доступно"
+        return "active", "Активно"
 
     return "locked", "Скоро"
 
