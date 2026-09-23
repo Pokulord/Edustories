@@ -1,6 +1,8 @@
 from django.urls import path
 from ..views import RoadmapView, CheckAnswersView
 
+app_name = "roadmap"
+
 urlpatterns = [
     path(
         "roadmaps/<uuid:roadmap_id>/",

@@ -1,540 +1,420 @@
-<!doctype html>
-<html lang="ru" class="dark">
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script>
-    (function () {
-      var theme = localStorage.getItem("witcherAcademyTheme");
-      if (theme !== "light") {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
-    })();
-  </script>
-  {% load static %}
-  {% load tailwind_tags %}
-  {% tailwind_css %}
-  <title>Академия Ведьмаков</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&display=swap&subset=cyrillic"
-    rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'css/src/fonts.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduStories - Знания оживают</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        "heading-noble": ['"Playfair Display"', 'serif'],
+                        "body-noble": ['"Lora"', 'serif'],
+                    },
+                    boxShadow: {
+                        gold: "0 0 25px rgba(212,175,55,0.35)",
+                    },
+                    colors: {
+                        'gold': '#c5a67c',
+                        'gold-bright': '#d4b483',
+                        'gold-muted': 'rgba(197, 166, 124, 0.12)',
+                        'dark': '#050a0a',
+                    },
+                    spacing: {
+                        'header': '72px',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --gold: #c5a67c;
+            --gold-bright: #d4b483;
+            --header-h: 72px;
+        }
+
+        body.menu-open {
+            overflow: hidden;
+        }
+
+        .bg-edu {
+            background-image: url('{% static 'images/main_edu.jpg'%}');
+        }
+
+        .bg-biblio {
+            background-image: url('{% static 'images/main_biblio.jpg'%}');
+        }
+
+        .overlay-edu {
+            background: linear-gradient(135deg,
+                    rgba(0, 28, 12, 0.88) 0%,
+                    rgba(0, 22, 9, 0.72) 50%,
+                    rgba(0, 16, 6, 0.82) 100%);
+        }
+
+        .overlay-biblio {
+            background: linear-gradient(225deg,
+                    rgba(3, 8, 28, 0.88) 0%,
+                    rgba(4, 7, 22, 0.72) 50%,
+                    rgba(3, 5, 18, 0.82) 100%);
+        }
+
+        .btn-disabled {
+            opacity: 0.45;
+            pointer-events: none;
+            cursor: not-allowed;
+            user-select: none;
+        }
+
+        /* ─── Декоративные линии категории ─── */
+        .cat-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cat-line::before,
+        .cat-line::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            opacity: 0.45;
+        }
+
+        .cat-line::before {
+            background: linear-gradient(to right, transparent, var(--gold));
+        }
+
+        .cat-line::after {
+            background: linear-gradient(to left, transparent, var(--gold));
+        }
+
+        /* ─── Кнопки действий ─── */
+        .action-btn {
+            position: relative;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(197, 166, 124, 0.10);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.35s ease;
+            z-index: -1;
+        }
+
+        .action-btn:hover::before {
+            transform: scaleX(1);
+        }
+
+        /* ─── Кнопка «Регистрация» в хедере ─── */
+        .btn-logout {
+            background: linear-gradient(to bottom,
+                    rgba(197, 166, 124, 0.18),
+                    rgba(197, 166, 124, 0.30));
+            border: 1.2px solid var(--gold-bright);
+            transition: box-shadow 0.3s ease, background 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            box-shadow: 0 0 22px rgba(212, 175, 55, 0.40);
+            background: linear-gradient(to bottom,
+                    rgba(197, 166, 124, 0.28),
+                    rgba(197, 166, 124, 0.42));
+        }
+
+        /* ─── Кнопка «Войти» ─── */
+        .btn-login {
+            border: 1.2px solid var(--gold);
+            transition: box-shadow 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        .btn-login:hover {
+            border-color: var(--gold-bright);
+            box-shadow: 0 0 18px rgba(212, 175, 55, 0.28);
+            color: #fff;
+        }
+
+        /* ─── Футер-линия ─── */
+        .footer-line {
+            background: linear-gradient(90deg,
+                    transparent 0%,
+                    rgba(197, 166, 124, 0.30) 20%,
+                    rgba(197, 166, 124, 0.65) 50%,
+                    rgba(197, 166, 124, 0.30) 80%,
+                    transparent 100%);
+        }
+
+        @media (min-width: 768px) {
+            .footer-gradient {
+                background: linear-gradient(to top,
+                        rgba(5, 10, 10, 0.98) 0%,
+                        rgba(5, 10, 10, 0.80) 55%,
+                        transparent 100%);
+            }
+        }
+
+        /* ─── Молния (десктоп) ─── */
+        .lightning-line {
+            background: linear-gradient(to bottom,
+                    transparent 0%,
+                    rgba(255, 255, 255, 0.75) 15%,
+                    #fff 38%,
+                    var(--gold) 52%,
+                    #fff 68%,
+                    rgba(255, 255, 255, 0.75) 84%,
+                    transparent 100%);
+            box-shadow:
+                0 0 8px 2px rgba(255, 255, 255, 0.90),
+                0 0 25px 5px var(--gold),
+                0 0 55px 12px rgba(197, 166, 124, 0.28);
+            animation: flicker 4s infinite;
+        }
+
+        @keyframes flicker {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            92% {
+                opacity: 0.35;
+            }
+
+            95% {
+                opacity: 0.7;
+            }
+        }
+
+        /* ─── Бургер → крестик ─── */
+        .burger-btn span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--gold-bright);
+            border-radius: 2px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform-origin: center;
+        }
+
+        .burger-btn span+span {
+            margin-top: 6px;
+        }
+
+        body.menu-open .burger-btn span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        body.menu-open .burger-btn span:nth-child(2) {
+            opacity: 0;
+            transform: translateX(-16px);
+        }
+
+        body.menu-open .burger-btn span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        /* ─── Мобильное меню ─── */
+        #mobile-nav {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        #mobile-nav.nav-open {
+            opacity: 1 !important;
+            transform: scale(1) !important;
+            pointer-events: auto !important;
+        }
+
+        /* ─── pt-header утилита ─── */
+        .pt-header {
+            padding-top: var(--header-h);
+        }
+
+        /* ─── Мобильный разделитель ─── */
+        .mobile-sep {
+            height: 2px;
+            background: linear-gradient(to right,
+                    transparent 8%,
+                    rgba(255, 255, 255, 0.45) 28%,
+                    var(--gold) 50%,
+                    rgba(255, 255, 255, 0.45) 72%,
+                    transparent 92%);
+            box-shadow:
+                0 0 14px 3px var(--gold),
+                0 0 30px 8px rgba(255, 255, 255, 0.07);
+        }
+
+        /* ─── Размер хедера ─── */
+        .h-header {
+            height: var(--header-h);
+        }
+    </style>
 </head>
 
-<body class="scroll-smooth transition-colors duration-500
-             bg-black text-amber-100
-             dark:bg-black dark:text-amber-100">
+<body class="bg-dark text-gray-200 font-body-noble">
 
-  <!-- HEADER -->
-  <header class="fixed top-0 left-0 w-full z-50">
+    <!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
+    <header class="fixed top-0 w-full z-50 h-header bg-[rgba(5,10,10,0.96)] border-b border-[rgba(197,166,124,0.15)] backdrop-blur-lg flex items-center justify-between px-5 md:px-11 relative">
 
-    <div class="absolute inset-0 
-      dark:bg-[#071312]/70 bg-white/80
-      backdrop-blur-xl 
-      dark:border-b dark:border-emerald-400/10
-      border-b border-emerald-800/20
-      transition-colors duration-500">
+    <!-- Логотип — всегда по центру -->
+    <div class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center gap-0.5 select-none">
+        <div class="flex items-center gap-3">
+            <svg width="26" height="26" viewBox="0 0 36 36" fill="none" class="opacity-90 shrink-0">
+                <path d="M5 8C5 8 11 6 18 8C25 6 31 8 31 8V30C31 30 25 28 18 30C11 28 5 30 5 30V8Z"
+                      stroke="#c5a67c" stroke-width="1.5" fill="rgba(197,166,124,0.07)" />
+                <line x1="18" y1="8" x2="18" y2="30" stroke="#c5a67c" stroke-width="1.2" />
+            </svg>
+            <span class="font-heading-noble text-white text-xl md:text-[22px] tracking-wide font-bold leading-none">
+                EduStories
+            </span>
+        </div>
+        <span class="font-body-noble text-[9px] tracking-[0.55em] text-gold uppercase font-light opacity-80 mt-0.5">
+            Знания оживают
+        </span>
     </div>
 
-    <div class="relative max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <!-- Пустышка слева -->
+    <div class="flex-1"></div>
 
-      <!-- Logo -->
-      <div class="flex items-center gap-4">
-        <img src="{% static 'images/logo.png' %}" alt="Логотип Академии Ведьмаков"
-          class="w-20 h-20 md:w-14 md:h-14 object-contain scale-150" />
-        <div class="leading-tight">
-          <p class="text-lg sm:text-xl font-semibold 
-            dark:text-emerald-200 text-emerald-900 tracking-wide transition-colors duration-500">
-            Академия Ведьмаков
-          </p>
-          <p class="text-[9px] tracking-[3px] 
-            dark:text-emerald-400/60 text-emerald-700/70 uppercase transition-colors duration-500">
-            Знание есть оружие
-          </p>
-        </div>
-      </div>
+</header>
 
-      <!-- Desktop nav -->
-      <nav class="hidden md:flex items-center gap-10 
-        text-sm tracking-widest 
-        dark:text-emerald-200/70 text-emerald-800/80 transition-colors duration-500">
-        <a href="#contracts" class="dark:hover:text-emerald-300 hover:text-emerald-600 transition">Контракты</a>
-        <a href="#" class="dark:hover:text-emerald-300 hover:text-emerald-600 transition">Бестиарий</a>
-        <a href="#" class="dark:hover:text-emerald-300 hover:text-emerald-600 transition">Алхимия</a>Выйт
-        <a href="#" class="dark:hover:text-emerald-300 hover:text-emerald-600 transition">Гильдия</a>
-        <a href="#" class="dark:hover:text-emerald-300 hover:text-emerald-600 transition">Таверна</a>
-      </nav>
 
-      <!-- Right controls -->
-      <div class="flex items-center gap-4">
+    <!-- ═══════════════════════════ MAIN CONTENT ═══════════════════════════ -->
+    <div class="flex flex-col w-full min-h-full pt-header md:relative md:flex-row md:min-h-screen">
 
-        <!-- Кнопка Авторизация -->
-        <a href="{% url 'users:login' %}"
-           id="authActionBtn"
-           class="hidden md:inline-flex items-center px-6 py-2.5 
-                  font-medium text-sm tracking-wider rounded-2xl border-2 transition-all duration-300
-                  dark:border-emerald-400/70 dark:text-emerald-100 dark:hover:bg-emerald-400/10 dark:hover:border-emerald-300
-                  border-emerald-700 text-emerald-800 hover:bg-emerald-50 hover:border-emerald-800 hover:shadow-md">
-          Авторизация
-        </a>
+        <!-- ─── LEFT PANEL: Образование ─── -->
+        <section
+            class="bg-edu relative flex-1 flex items-center justify-center min-h-[calc(50vh-36px)] overflow-hidden bg-cover bg-center md:w-1/2 md:flex-none md:min-h-0 md:items-start">
+            <div class="overlay-edu absolute inset-0 z-10"></div>
 
-        <!-- Theme Toggle -->
-        <button id="themeToggle"
-          class="relative w-16 h-8 rounded-full transition-colors duration-500 focus:outline-none flex-shrink-0
-            dark:bg-emerald-900/80 bg-emerald-100 
-            border dark:border-emerald-700/40 border-emerald-300/60">
-          <span class="absolute left-2 top-1/2 -translate-y-1/2 text-sm pointer-events-none select-none leading-none">🌙</span>
-          <span class="absolute right-2 top-1/2 -translate-y-1/2 text-sm pointer-events-none select-none leading-none">☀️</span>
-          <span id="themeThumb" class="absolute top-1 left-1 w-6 h-6 rounded-full shadow-md 
-            transition-transform duration-500
-            dark:bg-emerald-400 bg-white border dark:border-transparent border-emerald-300
-            dark:translate-x-0 translate-x-8">
-          </span>
-        </button>
+            <div class="relative z-20 flex flex-col items-start w-full max-w-xl p-6 md:p-14 md:pt-14 lg:p-20 lg:pt-16">
 
-        <!-- Burger -->
-        <button id="burger" class="md:hidden flex flex-col gap-1.5 relative z-50 p-1" aria-label="Меню">
-          <span class="w-6 h-0.5 dark:bg-emerald-300 bg-emerald-800 rounded transition-all duration-300"></span>
-          <span class="w-6 h-0.5 dark:bg-emerald-300 bg-emerald-800 rounded transition-all duration-300"></span>
-          <span class="w-6 h-0.5 dark:bg-emerald-300 bg-emerald-800 rounded transition-all duration-300"></span>
-        </button>
-
-      </div>
-    </div>
-
-    <!-- MOBILE MENU -->
-    <div id="mobileMenu" class="fixed inset-0 
-        dark:bg-[#071312]/95 bg-white/95 backdrop-blur-2xl
-        flex flex-col items-center justify-center
-        gap-8 text-xl dark:text-emerald-200 text-emerald-800
-        opacity-0 pointer-events-none
-        transition-all duration-500">
-
-      <a href="#contracts" class="dark:hover:text-emerald-400 hover:text-emerald-600 transition">Контракты</a>
-      <a href="#" class="dark:hover:text-emerald-400 hover:text-emerald-600 transition">Бестиарий</a>
-      <a href="#" class="dark:hover:text-emerald-400 hover:text-emerald-600 transition">Алхимия</a>
-      <a href="#" class="dark:hover:text-emerald-400 hover:text-emerald-600 transition">Гильдия</a>
-      <a href="#" class="dark:hover:text-emerald-400 hover:text-emerald-600 transition">Таверна</a>
-
-      <!-- Авторизация в бургере -->
-      <a href="./register.html"
-         id="mobileAuthAction"
-         class="text-xl dark:text-emerald-200 text-emerald-800
-                dark:hover:text-emerald-400 hover:text-emerald-600 transition">
-        Авторизация
-      </a>
-
-      <button id="mobileLogoutAction"
-        class="is-hidden text-xl dark:text-amber-300 text-amber-700
-               dark:hover:text-amber-200 hover:text-amber-600 transition"
-        type="button">
-        Выйти
-      </button>
-    </div>
-
-  </header>
-
-  <!-- HERO SECTION -->
-  <section class="relative min-h-screen flex items-center justify-center overflow-hidden text-center pt-24 md:pt-0">
-
-    <div class="absolute inset-0 z-0 dark:block hidden bg-cover bg-center" style="background-image: url('{% static 'images/hero-bg.png' %}')"></div>
-
-    <div class="absolute inset-0 z-0 dark:hidden block bg-cover bg-center" style="background-image: url('{% static 'images/hero-bg-light.png' %}')"></div>
-
-    <div class="absolute inset-0 z-10 dark:block hidden
-      bg-gradient-to-b from-[#071312]/80 via-[#071312]/70 to-black"></div>
-
-    <div class="absolute inset-0 z-10 dark:hidden block
-      bg-gradient-to-b from-white/30 via-white/10 to-white/60"></div>
-
-    <div id="fireflies" class="absolute inset-0 z-20 pointer-events-none dark:block hidden"></div>
-
-    <div class="absolute inset-0 z-10 dark:block hidden
-      bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.25),transparent_60%)]"></div>
-
-    <div class="absolute inset-0 z-10 dark:hidden block
-      bg-[radial-gradient(ellipse_at_top,rgba(200,230,210,0.4),transparent_70%)]"></div>
-
-    <div class="absolute inset-0 z-10 pointer-events-none dark:block hidden
-      bg-[radial-gradient(circle_at_20%_30%,rgba(255,255,255,0.4)_1px,transparent_1px),
-          radial-gradient(circle_at_70%_60%,rgba(255,255,255,0.3)_1px,transparent_1px),
-          radial-gradient(circle_at_40%_80%,rgba(255,255,255,0.25)_1px,transparent_1px)] 
-      bg-[length:600px_600px] opacity-40"></div>
-
-    <!-- Content -->
-    <div class="relative z-20 px-6 max-w-4xl mx-auto">
-
-      <p class="tracking-[0.6em] text-sm mb-4
-        dark:text-emerald-300/70 text-emerald-700/60 transition-colors duration-500">
-        ᚢ ᛈ ᚦ ᚱ ᛟ ᚾ ᛉ
-      </p>
-
-      <p class="mb-10 italic
-        dark:text-emerald-200/60 text-emerald-800/70 transition-colors duration-500">
-        — Знание есть оружие —
-      </p>
-
-      <h1 class="text-3xl sm:text-5xl md:text-6xl mb-4 font-semibold leading-tight
-        dark:text-emerald-100 text-emerald-900 transition-colors duration-500">
-        Академия Ведьмаков
-      </h1>
-
-      <h2 class="text-lg sm:text-2xl md:text-3xl mb-8
-        dark:text-emerald-200/80 text-emerald-700 transition-colors duration-500">
-        Путь к Мастерству
-      </h2>
-
-      <p class="max-w-2xl mx-auto mb-12 
-        text-sm md:text-lg leading-relaxed italic
-        dark:text-emerald-100/60 text-emerald-900/70 transition-colors duration-500">
-        Ведьмаками не рождаются — ими становятся. Пройди Испытания трав,
-        освой боевые знаки, постигни искусство алхимии и займи своё место
-        среди легенд Континента.
-      </p>
-
-      <div class="flex flex-col sm:flex-row justify-center gap-6 mb-20">
-        <a href="./cabinet.html" class="px-10 py-3 font-semibold rounded-md transition duration-300
-          dark:bg-gradient-to-r dark:from-amber-700 dark:to-amber-500 dark:text-black
-          dark:shadow-[0_0_25px_rgba(251,191,36,0.4)] dark:hover:shadow-[0_0_45px_rgba(251,191,36,0.7)]
-          bg-emerald-700 text-white
-          shadow-[0_0_20px_rgba(6,95,70,0.3)] hover:shadow-[0_0_35px_rgba(6,95,70,0.5)]
-          hover:scale-105">
-          ⚔ Начать Путь Ведьмака
-        </a>
-        <a href="#" class="px-10 py-3 rounded-md transition duration-300
-          dark:border dark:border-emerald-400/60 dark:text-emerald-200 dark:hover:bg-emerald-400/10
-          border border-emerald-700/50 text-emerald-800 hover:bg-emerald-100/60
-          backdrop-blur-sm">
-          📜 Изучить Бестиарий
-        </a>
-      </div>
-
-      <!-- Stats -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-10 text-center">
-        <div>
-          <p class="text-3xl font-semibold dark:text-emerald-300 text-emerald-800
-            dark:drop-shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-colors duration-500">12 847</p>
-          <p class="text-xs mt-2 uppercase tracking-widest
-            dark:text-emerald-200/60 text-emerald-700/70 transition-colors duration-500">Учеников на Тропе</p>
-        </div>
-        <div>
-          <p class="text-3xl font-semibold dark:text-emerald-300 text-emerald-800
-            dark:drop-shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-colors duration-500">48</p>
-          <p class="text-xs mt-2 uppercase tracking-widest
-            dark:text-emerald-200/60 text-emerald-700/70 transition-colors duration-500">Контрактов в Гильдии</p>
-        </div>
-        <div>
-          <p class="text-3xl font-semibold dark:text-emerald-300 text-emerald-800
-            dark:drop-shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-colors duration-500">6</p>
-          <p class="text-xs mt-2 uppercase tracking-widest
-            dark:text-emerald-200/60 text-emerald-700/70 transition-colors duration-500">Школ Ведьмаков</p>
-        </div>
-        <div>
-          <p class="text-3xl font-semibold dark:text-emerald-300 text-emerald-800
-            dark:drop-shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-colors duration-500">∞</p>
-          <p class="text-xs mt-2 uppercase tracking-widest
-            dark:text-emerald-200/60 text-emerald-700/70 transition-colors duration-500">Путь Мастера</p>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- GUILD CONTRACTS -->
-  <section id="contracts" class="scroll-mt-24 relative py-24 overflow-hidden
-    dark:bg-[#061311] bg-[#f0f7f2] transition-colors duration-500">
-
-    <div class="absolute inset-0 opacity-10 
-      bg-[radial-gradient(rgba(16,185,129,0.3)_1px,transparent_1px)]
-      bg-[size:40px_40px]">
-    </div>
-
-    <div class="relative max-w-7xl mx-auto px-6">
-
-      <div class="text-center mb-16">
-        <h2 class="text-3xl md:text-4xl font-semibold 
-          dark:text-emerald-200 text-emerald-900
-          dark:drop-shadow-[0_0_20px_rgba(16,185,129,0.4)]
-          transition-colors duration-500">
-          Контракты Гильдии
-        </h2>
-        <p class="mt-3 italic
-          dark:text-emerald-400/60 text-emerald-700/70 transition-colors duration-500">
-          6 контрактов доступно
-        </p>
-        <div class="mt-8 flex justify-center">
-          <!-- Тоже ведёт на register.html если не авторизован -->
-          <button id="openContractFormBtn"
-            class="px-8 py-3 bg-gradient-to-r from-amber-700 to-amber-500 text-black font-semibold rounded-md 
-              transition duration-300 
-              shadow-[0_0_25px_rgba(251,191,36,0.4)] hover:shadow-[0_0_45px_rgba(251,191,36,0.7)] 
-              hover:scale-105 text-sm tracking-widest uppercase">
-            ✦ Разместить Контракт
-          </button>
-        </div>
-      </div>
-
-      <!-- MAIN GRID -->
-      <div class="grid lg:grid-cols-4 gap-10">
-
-        <div class="lg:col-span-3">
-          <div class="grid md:grid-cols-2 xl:grid-cols-3 sm:grid-cols-2 gap-10">
-
-            <!-- Card 1 -->
-            <div class="group border rounded-xl overflow-hidden transition duration-500
-              dark:bg-[#0b1f1c] dark:border-emerald-900/40 dark:hover:border-emerald-400/50
-              dark:shadow-[0_0_25px_rgba(0,0,0,0.6)]
-              bg-white border-emerald-200/60 hover:border-emerald-500/50
-              shadow-[0_4px_20px_rgba(6,95,70,0.08)] hover:shadow-[0_4px_30px_rgba(6,95,70,0.15)]">
-              <div class="h-48 bg-[url('/images/wedya.jpg')] bg-cover bg-center opacity-80"></div>
-              <div class="p-6">
-                <h3 class="text-lg mb-3 dark:text-emerald-200 text-emerald-900 transition-colors duration-500">
-                  Знаки и Заклинания: Путь Ведьмака
-                </h3>
-                <p class="text-sm mb-6 leading-relaxed dark:text-emerald-200/60 text-emerald-800/70 transition-colors duration-500">
-                  Освой путь боевых знаков: Аард, Игни, Аксий, Ирден и Квен.
-                  Познай древнюю магию охотников на чудовищ.
+                <!-- Категория -->
+                <p
+                    class="font-body-noble text-gold opacity-90 text-[10px] tracking-[0.7em] uppercase font-light mb-1.5">
+                    Образование
                 </p>
-                <button class="w-full py-2 mt-4 text-sm font-semibold rounded-md transition duration-300
-                  dark:bg-gradient-to-r dark:from-amber-700 dark:to-amber-500 dark:text-black
-                  dark:shadow-[0_0_15px_rgba(251,191,36,0.4)] dark:hover:shadow-[0_0_30px_rgba(251,191,36,0.7)]
-                  bg-emerald-700 text-white hover:bg-emerald-800
-                  shadow-[0_0_10px_rgba(6,95,70,0.2)] hover:shadow-[0_0_20px_rgba(6,95,70,0.3)]">
-                  Продолжить Испытание
-                </button>
-              </div>
-            </div>
+                <div class="cat-line mb-6 w-44">
+                    <div class="w-1.5 h-1.5 bg-gold rotate-45 shrink-0"></div>
+                </div>
 
-            <!-- Card 2 -->
-            <div class="group border rounded-xl overflow-hidden transition duration-500
-              dark:bg-[#0b1f1c] dark:border-emerald-900/40 dark:hover:border-emerald-400/50
-              bg-white border-emerald-200/60 hover:border-emerald-500/50
-              shadow-[0_4px_20px_rgba(6,95,70,0.08)] hover:shadow-[0_4px_30px_rgba(6,95,70,0.15)]">
-              <div class="h-48 bg-[url('/images/wedya.jpg')] bg-cover bg-center opacity-80"></div>
-              <div class="p-6">
-                <h3 class="text-lg mb-3 dark:text-emerald-200 text-emerald-900 transition-colors duration-500">
-                  Бестиарий Севера
-                </h3>
-                <p class="text-sm mb-6 leading-relaxed dark:text-emerald-200/60 text-emerald-800/70 transition-colors duration-500">
-                  Полное руководство по чудовищам Континента.
-                  Узнай их слабости и способы охоты.
+                <!-- Заголовок -->
+                <h2 class="font-heading-noble leading-[1.05] uppercase font-black tracking-tight mb-6"
+                    style="font-size: clamp(48px, 6.5vw, 96px);">
+                    <span class="text-white block">Учись.</span>
+                    <span class="text-gold-bright block">Решай.</span>
+                    <span class="text-gold-bright block">Расти.</span>
+                </h2>
+
+                <!-- Подзаголовок -->
+                <p class="font-body-noble text-gray-300 text-[27px] leading-relaxed max-w-xs mb-8">
+                    Помощь с заданиями и обучение<br>с проверенными мастерами
                 </p>
-                <button class="w-full py-2 mt-4 rounded-md transition duration-300
-                  dark:border dark:border-emerald-400/50 dark:text-emerald-200 dark:hover:bg-emerald-400/10
-                  border border-emerald-600/60 text-emerald-800 hover:bg-emerald-50">
-                  Принять Контракт
-                </button>
-              </div>
-            </div>
 
-            <!-- Card 3 -->
-            <div class="group border rounded-xl overflow-hidden transition duration-500
-              dark:bg-[#0b1f1c] dark:border-emerald-900/40 dark:hover:border-emerald-400/50
-              bg-white border-emerald-200/60 hover:border-emerald-500/50
-              shadow-[0_4px_20px_rgba(6,95,70,0.08)] hover:shadow-[0_4px_30px_rgba(6,95,70,0.15)]">
-              <div class="h-48 bg-[url('/images/wedya.jpg')] bg-cover bg-center opacity-80"></div>
-              <div class="p-6">
-                <h3 class="text-lg mb-3 dark:text-emerald-200 text-emerald-900 transition-colors duration-500">
-                  Алхимия Зелий и Бомб
-                </h3>
-                <p class="text-sm mb-6 leading-relaxed dark:text-emerald-200/60 text-emerald-800/70 transition-colors duration-500">
-                  Тайное искусство зельеварения.
-                  Освой смертельные смеси ведьмаков.
+                <!-- CTA -->
+                <a href="#"
+                    class="btn-disabled action-btn group font-body-noble inline-flex items-center gap-4 px-8 py-4 border-[1.3px] border-gold text-gold-bright text-[11px] uppercase tracking-[0.24em] font-medium hover:-translate-y-px hover:shadow-[0_0_25px_rgba(197,166,124,0.22)] transition-all duration-300">
+                    В разработке
+                </a>
+            </div>
+        </section>
+
+        <!-- ─── DIVIDER: мобайл ─── -->
+        <div class="mobile-sep w-full shrink-0 relative z-30 md:hidden"></div>
+
+        <!-- ─── DIVIDER: десктоп — молния ─── -->
+        <div class="hidden md:block absolute left-1/2 top-0 h-full w-24 -translate-x-1/2 z-30 pointer-events-none">
+            <div class="lightning-line absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2"></div>
+        </div>
+
+        <!-- ─── RIGHT PANEL: Интерактивные книги ─── -->
+        <section
+            class="bg-biblio relative flex-1 flex items-center justify-center min-h-[calc(50vh-36px)] overflow-hidden bg-cover bg-center md:w-1/2 md:flex-none md:min-h-0 md:items-start">
+            <div class="overlay-biblio absolute inset-0 z-10"></div>
+
+            <div class="relative z-20 flex flex-col items-start w-full max-w-xl p-6 md:p-14 md:pt-14 lg:p-20 lg:pt-16">
+
+                <!-- Категория -->
+                <p
+                    class="font-body-noble text-gold opacity-90 text-[10px] tracking-[0.7em] uppercase font-light mb-1.5">
+                    Интерактивные книги
                 </p>
-                <button class="w-full py-2 mt-4 rounded-md transition duration-300
-                  dark:border dark:border-emerald-400/50 dark:text-emerald-200 dark:hover:bg-emerald-400/10
-                  border border-emerald-600/60 text-emerald-800 hover:bg-emerald-50">
-                  Начать Обучение
-                </button>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- RIGHT SIDEBAR -->
-        <div class="space-y-8">
-
-          <div class="border rounded-xl p-6
-            dark:bg-[#0b1f1c] dark:border-emerald-900/40 dark:shadow-[0_0_30px_rgba(0,0,0,0.6)]
-            bg-white border-emerald-200/60 shadow-[0_4px_20px_rgba(6,95,70,0.08)]
-            transition-colors duration-500">
-            <h3 class="font-semibold mb-6 flex items-center gap-2
-              dark:text-emerald-300 text-emerald-800 transition-colors duration-500">
-              🜂 Ваши Испытания
-            </h3>
-            <div class="mb-6">
-              <div class="flex justify-between text-xs mb-1 dark:text-emerald-400/70 text-emerald-700/80 transition-colors duration-500">
-                <span>Путь Ведьмака</span><span>67%</span>
-              </div>
-              <div class="w-full h-2 rounded dark:bg-emerald-900/40 bg-emerald-100 transition-colors duration-500">
-                <div class="h-2 bg-gradient-to-r from-emerald-500 to-emerald-300 rounded" style="width:67%"></div>
-              </div>
-            </div>
-            <div class="mb-6">
-              <div class="flex justify-between text-xs mb-1 dark:text-emerald-400/70 text-emerald-700/80 transition-colors duration-500">
-                <span>Алхимия Зелий</span><span>23%</span>
-              </div>
-              <div class="w-full h-2 rounded dark:bg-emerald-900/40 bg-emerald-100 transition-colors duration-500">
-                <div class="h-2 bg-gradient-to-r from-amber-500 to-amber-300 rounded" style="width:23%"></div>
-              </div>
-            </div>
-            <div class="mb-8">
-              <div class="flex justify-between text-xs mb-1 dark:text-emerald-400/70 text-emerald-700/80 transition-colors duration-500">
-                <span>Фехтование</span><span>89%</span>
-              </div>
-              <div class="w-full h-2 rounded dark:bg-emerald-900/40 bg-emerald-100 transition-colors duration-500">
-                <div class="h-2 bg-gradient-to-r from-emerald-400 to-emerald-200 rounded" style="width:89%"></div>
-              </div>
-            </div>
-            <div class="border-t pt-6 dark:border-emerald-900/40 border-emerald-200/60 transition-colors duration-500">
-              <div class="flex justify-between text-sm mb-2 dark:text-emerald-300 text-emerald-800 transition-colors duration-500">
-                <span>Опыт Ведьмака</span><span>8 540 / 10 000 ОП</span>
-              </div>
-              <div class="w-full h-3 rounded dark:bg-emerald-900/40 bg-emerald-100 transition-colors duration-500">
-                <div class="h-3 bg-gradient-to-r from-amber-600 to-amber-400 rounded" style="width:85%"></div>
-              </div>
-              <p class="text-xs mt-2 dark:text-emerald-400/60 text-emerald-700/60 transition-colors duration-500">
-                До уровня 36 осталось 1 460 ОП
-              </p>
-            </div>
-          </div>
-
-          <div class="border rounded-xl p-6
-            dark:bg-[#0b1f1c] dark:border-emerald-900/40 dark:shadow-[0_0_30px_rgba(0,0,0,0.6)]
-            bg-white border-emerald-200/60 shadow-[0_4px_20px_rgba(6,95,70,0.08)]
-            transition-colors duration-500">
-            <h3 class="font-semibold mb-6 flex items-center gap-2
-              text-amber-600 dark:text-amber-400 transition-colors duration-500">
-              🏆 Легенды Академии
-            </h3>
-            <div class="space-y-4 text-sm">
-
-              <div class="flex items-center justify-between p-3 rounded-lg border
-                dark:bg-emerald-900/20 dark:border-emerald-900/40
-                bg-emerald-50/80 border-emerald-200/60 transition-colors duration-500">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold
-                    bg-gradient-to-br from-gray-300 to-gray-500 text-black">ЯН</div>
-                  <div>
-                    <p class="dark:text-emerald-200 text-emerald-900 transition-colors duration-500">Якуб из Новиграда</p>
-                    <p class="text-xs dark:text-emerald-400/60 text-emerald-700/60 transition-colors duration-500">Страж Континента</p>
-                  </div>
+                <div class="cat-line mb-6 w-52">
+                    <div class="w-1.5 h-1.5 bg-gold rotate-45 shrink-0"></div>
                 </div>
-                <span class="dark:text-emerald-300 text-emerald-700 transition-colors duration-500">42 ур.</span>
-              </div>
 
-              <div class="flex items-center justify-between p-3 rounded-lg border
-                dark:bg-emerald-900/20 dark:border-emerald-900/40
-                bg-emerald-50/80 border-emerald-200/60 transition-colors duration-500">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold
-                    bg-gradient-to-br from-emerald-400 to-emerald-600 text-black">ЗС</div>
-                  <div>
-                    <p class="dark:text-emerald-200 text-emerald-900 transition-colors duration-500">Зоса Стенборг</p>
-                    <p class="text-xs dark:text-emerald-400/60 text-emerald-700/60 transition-colors duration-500">Мастер Теней</p>
-                  </div>
-                </div>
-                <span class="dark:text-emerald-300 text-emerald-700 transition-colors duration-500">38 ур.</span>
-              </div>
+                <!-- Заголовок -->
+                <h2 class="font-heading-noble leading-[1.05] uppercase font-black tracking-tight mb-6"
+                    style="font-size: clamp(48px, 6.5vw, 96px);">
+                    <span class="text-white block">Читай.</span>
+                    <span class="text-gold-bright block">Выбирай.</span>
+                    <span class="text-gold-bright block">Проживай.</span>
+                </h2>
 
-              <div class="flex items-center justify-between p-3 rounded-lg border
-                dark:bg-emerald-900/20 dark:border-emerald-900/40
-                bg-emerald-50/80 border-emerald-200/60 transition-colors duration-500">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded-full overflow-hidden bg-gradient-to-br from-emerald-400 to-emerald-600">
-                    <img src="./images/svyat.webp" alt="" class="w-full h-full object-cover" />
-                  </div>
-                  <div>
-                    <p class="dark:text-emerald-200 text-emerald-900 transition-colors duration-500">Свят из ниоткуда</p>
-                    <p class="text-xs dark:text-emerald-400/60 text-emerald-700/60 transition-colors duration-500">Мастер Теней</p>
-                  </div>
-                </div>
-                <span class="dark:text-emerald-300 text-emerald-700 transition-colors duration-500">38 ур.</span>
-              </div>
+                <!-- Подзаголовок -->
+                <p class="font-body-noble text-gray-300 text-[26px] leading-relaxed max-w-xs mb-8">
+                    Истории, где каждое<br>решение меняет путь
+                </p>
 
+                <!-- CTA -->
+                <a href="{% url 'biblio' %}"
+                    class="action-btn group font-body-noble inline-flex items-center gap-4 px-8 py-4 border-[1.3px] border-gold text-gold-bright text-[11px] uppercase tracking-[0.24em] font-medium hover:-translate-y-px hover:shadow-[0_0_25px_rgba(197,166,124,0.22)] transition-all duration-300">
+                    Открыть библиотеку
+                    <span
+                        class="text-base font-light transition-transform duration-300 group-hover:translate-x-1">→</span>
+                </a>
             </div>
-          </div>
+        </section>
 
-        </div>
-      </div>
+        <!-- ─── FOOTER ─── -->
+        <footer class="relative w-full bg-dark z-40 flex flex-col items-center justify-center py-6
+                   md:absolute md:bottom-0 md:left-0 md:bg-transparent md:footer-gradient md:pb-5 md:pt-14">
+
+            <div class="w-full max-w-4xl flex flex-col items-center gap-4 px-5">
+
+                <!-- Эмблема (опционально) -->
+                <div class="h-12 flex items-center justify-center">
+                    <img src="{% static 'images/footer-emblem.png' %}" alt="" class="h-11 w-auto object-contain opacity-85"
+                        style="filter: drop-shadow(0 0 10px rgba(197,166,124,0.35))"
+                        onerror="this.style.display='none'">
+                </div>
+
+                <!-- Строка с линиями -->
+                <div class="flex items-center w-full gap-4">
+                    <div class="footer-line flex-1 h-px"></div>
+
+                    <div class="flex items-center gap-3 shrink-0">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="opacity-75">
+                            <path d="M8 1 L9.5 6 L15 6 L10.5 9.5 L12 14.5 L8 11 L4 14.5 L5.5 9.5 L1 6 L6.5 6 Z"
+                                fill="none" stroke="#c5a67c" stroke-width="1" />
+                        </svg>
+                        <p
+                            class="font-body-noble text-gold text-[9.5px] tracking-[0.6em] uppercase font-light whitespace-nowrap">
+                            Два мира — одна любовь к знаниям
+                        </p>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="opacity-75">
+                            <path d="M8 1 L9.5 6 L15 6 L10.5 9.5 L12 14.5 L8 11 L4 14.5 L5.5 9.5 L1 6 L6.5 6 Z"
+                                fill="none" stroke="#c5a67c" stroke-width="1" />
+                        </svg>
+                    </div>
+
+                    <div class="footer-line flex-1 h-px"></div>
+                </div>
+            </div>
+        </footer>
     </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer class="relative border-t overflow-hidden
-    dark:bg-[#03100d] dark:border-emerald-900/40
-    bg-[#e8f5ed] border-emerald-200/60
-    transition-colors duration-500">
-
-    <div class="absolute inset-0 opacity-10
-      bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.4),transparent_70%)]">
-    </div>
-
-    <div class="relative max-w-7xl mx-auto px-6 py-20">
-      <div class="grid md:grid-cols-3 gap-12">
-
-        <div>
-          <div class="flex items-center gap-3 mb-6">
-            <img src="./images/logo.png" alt="Логотип" class="w-10 h-10 object-contain scale-150" />
-            <h3 class="text-lg font-semibold dark:text-emerald-300 text-emerald-900 transition-colors duration-500">
-              Академия Ведьмаков
-            </h3>
-          </div>
-          <p class="text-base leading-relaxed mb-6
-            dark:text-emerald-400/60 text-emerald-800/70 transition-colors duration-500">
-            Основана в 1173 по Континентальному летоисчислению.
-            Знание — единственное оружие, которое не тупится.
-          </p>
-          <p class="tracking-[0.6em] text-xs dark:text-emerald-500/70 text-emerald-700/60 transition-colors duration-500">
-            ᚢ ᛈ ᚦ ᚱ ᛟ ᚾ ᛉ
-          </p>
-        </div>
-
-        <div>
-          <h4 class="font-semibold mb-6 text-amber-600 dark:text-amber-400 transition-colors duration-500">Знания</h4>
-          <ul class="space-y-3 text-sm dark:text-emerald-300/70 text-emerald-800/80 transition-colors duration-500">
-            <li><a href="#" class="dark:hover:text-emerald-300 hover:text-emerald-600 transition">Контракты</a></li>
-            <li><a href="#" class="dark:hover:text-emerald-300 hover:text-emerald-600 transition">Бестиарий</a></li>
-            <li><a href="#" class="dark:hover:text-emerald-300 hover:text-emerald-600 transition">Алхимия</a></li>
-            <li><a href="#" class="dark:hover:text-emerald-300 hover:text-emerald-600 transition">Летопись</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="font-semibold mb-6 text-amber-600 dark:text-amber-400 transition-colors duration-500">Академия</h4>
-          <ul class="space-y-3 text-sm dark:text-emerald-300/70 text-emerald-800/80 transition-colors duration-500">
-            <li><a href="#" class="dark:hover:text-emerald-300 hover:text-emerald-600 transition">О нас</a></li>
-            <li><a href="#" class="dark:hover:text-emerald-300 hover:text-emerald-600 transition">Преподаватели</a></li>
-            <li><a href="#" class="dark:hover:text-emerald-300 hover:text-emerald-600 transition">Гильдия</a></li>
-            <li><a href="#" class="dark:hover:text-emerald-300 hover:text-emerald-600 transition">Таверна</a></li>
-          </ul>
-        </div>
-
-      </div>
-
-      <div class="flex items-center justify-center gap-6 my-16
-        dark:text-amber-500/70 text-amber-700/70 transition-colors duration-500">
-        <div class="h-px w-24 bg-gradient-to-r from-transparent via-amber-600 to-transparent"></div>
-        <span class="text-lg tracking-widest">✦ ᛟ ✦</span>
-        <div class="h-px w-24 bg-gradient-to-r from-transparent via-amber-600 to-transparent"></div>
-      </div>
-
-      <div class="flex flex-col md:flex-row items-center justify-between text-xs gap-4
-        dark:text-emerald-500/60 text-emerald-700/60 transition-colors duration-500">
-        <p>© 1173–1274 Академия Ведьмаков. Все контракты защищены законами Континента.</p>
-        <p class="tracking-widest dark:text-emerald-400/70 text-emerald-700/70 transition-colors duration-500">
-          Пᚱ СТАРЫЙ ЯЗЫК
-        </p>
-      </div>
-    </div>
-  </footer>
 
 </body>
-<script type="module" src="{% static 'js/theme.js' %}"></script>
-<script type="module" src="{% static 'js/main.js' %}"></script>
-<script type="module" src="{% static 'js/order.js' %}"></script>
-<script type="module" src="{% static 'js/fontswitcher.js' %}"></script>
+
 </html>

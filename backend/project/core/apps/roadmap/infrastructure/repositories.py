@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Sum
+from django.db.models import Sum, Prefetch
 
 from ..domain.entities import (
     Node,
@@ -42,10 +42,15 @@ class RoadmapRepository:
             orm = (
                 RoadmapM.objects
                 .prefetch_related(
-                    "nodes__current_revision",
-                    "nodes__questions",
-                    "nodes__questions__current_revision",
-                    "nodes__questions__revisions",
+                    Prefetch(
+                        "nodes",
+                        queryset=NodeM.objects.filter(status=NodeM.NodeStatuses.PUBLISHED).order_by("order"),
+                        to_attr="published_nodes",
+                    ),
+                    "published_nodes__current_revision",
+                    "published_nodes__questions",
+                    "published_nodes__questions__current_revision",
+                    "published_nodes__questions__revisions",
                 )
                 .get(id=roadmap_id)
             )
@@ -58,7 +63,7 @@ class RoadmapRepository:
         return Roadmap(
             uid=orm_obj.id,
             title=orm_obj.title,
-            points=[self._build_node(node) for node in orm_obj.nodes.all()],
+            points=[self._build_node(node) for node in orm_obj.published_nodes],
         )
 
     def _build_node(self, orm_obj: NodeM) -> Node:

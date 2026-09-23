@@ -1,3 +1,5 @@
+const html = document.documentElement;
+
 /* ─── Burger Menu ──────────────────────────────────────────── */
 const burger = document.getElementById('burger')
 const mobileMenu = document.getElementById('mobileMenu')
@@ -27,7 +29,7 @@ function initFireflies() {
   if (!container) return
 
   // Показываем только в тёмной теме
-  const isDark = html.classList.contains('dark')
+  const isDark = document.documentElement.classList.contains('dark')
   container.style.display = isDark ? 'block' : 'none'
 
   const COUNT = 35
