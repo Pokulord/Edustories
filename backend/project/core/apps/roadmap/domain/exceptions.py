@@ -66,3 +66,15 @@ class QuestionNotFoundError(BaseRoadmapError):
         super().__init__(
             message, metadata={"question_id": question_id}
         )
+
+
+class NodeNotFoundError(BaseRoadmapError):
+    """Ошибка, которая вызывается в случае, если  узел не найден"""
+
+    error_slug = "node_not_found"
+    
+    def __init__(self, node_id: UUID):
+        message = f"Узел с id {node_id} не найден"
+        super().__init__(
+            message, metadata={"node_id": node_id}
+        )

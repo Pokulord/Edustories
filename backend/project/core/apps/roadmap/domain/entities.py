@@ -178,3 +178,22 @@ class UserNodeProgress:
     attempts_count: int
     xp_earned: int
     first_passed_at: datetime | None
+
+
+@dataclass(frozen=True)
+class MapShard:
+    """Сущность для осколка карты"""
+    uid: UUID
+    node_id: UUID
+    title: str
+    description: str
+    image_path: str | None
+
+
+@dataclass(frozen=True)
+class UserMapShard:
+    """Сущность для осколков, полученных пользователем"""
+    uid: UUID
+    user_id: UUID
+    shard: MapShard
+    received_at: datetime

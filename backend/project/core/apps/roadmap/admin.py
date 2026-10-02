@@ -10,6 +10,9 @@ from .models import (
     Question,
     QuestionRevision,
     Roadmap,
+    MapShard,
+    UserMapShard,
+    UserNodeProgress
 )
 
 
@@ -398,3 +401,192 @@ class QuestionRevisionAdmin(admin.ModelAdmin):
     @admin.display(description=_("Текст"))
     def short_text(self, obj):
         return obj.text[:60] + ("…" if len(obj.text) > 60 else "")
+
+
+@admin.register(MapShard)
+class MapShardAdmin(admin.ModelAdmin):
+    list_display = ("title", "node", "roadmap_link", "has_image", "owners_count")
+    list_filter = ("node__roadmap",)
+    search_fields = ("title", "description", "node__current_revision__title")
+    ordering = ("node__roadmap", "node__order")
+    list_select_related = ("node", "node__roadmap")
+    autocomplete_fields = ("node",)
+    readonly_fields = ("id", "image_preview")
+
+    fieldsets = (
+        (None, {
+            "fields": ("id", "node", "title", "description"),
+        }),
+        (_("Изображение"), {
+            "fields": ("image", "image_preview"),
+        }),
+    )
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related(
+            "node", "node__roadmap", "node__current_revision"
+        ).annotate(_owners_count=Count("user_shards"))
+
+    @admin.display(description=_("Дорожная карта"), ordering="node__roadmap__title")
+    def roadmap_link(self, obj):
+        return obj.node.roadmap.title if obj.node else "—"
+
+    @admin.display(description=_("Есть изображение"), boolean=True)
+    def has_image(self, obj):
+        return bool(obj.image)
+
+    @admin.display(description=_("Получили"), ordering="_owners_count")
+    def owners_count(self, obj):
+        return obj._owners_count
+
+    @admin.display(description=_("Превью"))
+    def image_preview(self, obj):
+        if not obj.image:
+            return "—"
+        return format_html(
+            '<img src="{}" style="max-height: 200px; max-width: 300px; '
+            'border-radius: 6px;" />',
+            obj.image.url,
+        )
+
+
+# ─────────────────────────────────────────────────────────────
+# UserMapShard
+# ─────────────────────────────────────────────────────────────
+
+@admin.register(UserMapShard)
+class UserMapShardAdmin(admin.ModelAdmin):
+    list_display = ("user", "shard", "received_at")
+    list_filter = ("received_at", "shard__node__roadmap")
+    search_fields = (
+        "user__username",
+        "user__email",
+        "shard__title",
+    )
+    ordering = ("-received_at",)
+    list_select_related = ("user", "shard", "shard__node")
+    autocomplete_fields = ("user", "shard")
+    readonly_fields = ("id", "received_at")
+
+    fieldsets = (
+        (None, {
+            "fields": ("id", "user", "shard", "received_at"),
+        }),
+    )
+
+    def has_add_permission(self, request):
+        """Осколки выдаются автоматически — вручную не создаём."""
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        """Только просмотр — осколки не редактируются."""
+        return False
+    
+
+# ─────────────────────────────────────────────────────────────
+# UserNodeProgress
+# ─────────────────────────────────────────────────────────────
+
+@admin.register(UserNodeProgress)
+class UserNodeProgressAdmin(admin.ModelAdmin):
+    """Прогресс пользователя по узлам.
+
+    Создаётся автоматически при прохождении.
+    Вручную не редактируется — только просмотр.
+    """
+
+    list_display = (
+        "user",
+        "node",
+        "roadmap_link",
+        "is_passed",
+        "correct_count",
+        "total_count",
+        "xp_earned",
+        "attempts_count",
+        "updated_at",
+    )
+    list_filter = (
+        "is_passed",
+        "node__roadmap",
+        "updated_at",
+    )
+    search_fields = (
+        "user__username",
+        "user__email",
+        "node__current_revision__title",
+    )
+    ordering = ("-updated_at",)
+    list_select_related = (
+        "user",
+        "node",
+        "node__roadmap",
+        "node__current_revision",
+    )
+    autocomplete_fields = ("user", "node")
+    readonly_fields = (
+        "id",
+        "correct_count",
+        "total_count",
+        "attempts_count",
+        "is_passed",
+        "xp_earned",
+        "first_passed_at",
+        "updated_at",
+    )
+
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": ("id", "user", "node"),
+            },
+        ),
+        (
+            _("Результат последней попытки"),
+            {
+                "fields": (
+                    "correct_count",
+                    "total_count",
+                    "attempts_count",
+                ),
+            },
+        ),
+        (
+            _("Прохождение"),
+            {
+                "fields": (
+                    "is_passed",
+                    "xp_earned",
+                    "first_passed_at",
+                ),
+            },
+        ),
+        (
+            _("Дата"),
+            {
+                "fields": ("updated_at",),
+            },
+        ),
+    )
+
+    # ─── Запрет ручного создания и редактирования ───
+
+    # def has_add_permission(self, request):
+    #     """Прогресс создаётся автоматически при прохождении."""
+    #     return False
+
+    # def has_change_permission(self, request, obj=None):
+    #     """Только просмотр — данные иммутабельны."""
+    #     return False
+
+    # def has_delete_permission(self, request, obj=None):
+    #     """Удаление — только суперюзер."""
+    #     return request.user.is_superuser
+
+    # ─── Отображение ───
+
+    @admin.display(description=_("Дорожная карта"), ordering="node__roadmap__title")
+    def roadmap_link(self, obj):
+        return obj.node.roadmap.title if obj.node_id else "—"

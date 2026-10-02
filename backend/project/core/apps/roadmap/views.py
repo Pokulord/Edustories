@@ -8,11 +8,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.http import JsonResponse
 
-from .infrastructure.repositories import RoadmapRepository, QuestionRepository, UserNodeProgressRepository
-from .application.services import AnswerService, RoadmapService, ProgressService
+from .infrastructure.repositories import RoadmapRepository, QuestionRepository, UserNodeProgressRepository, ShardRepository, UserShardRepository
+from .application.services import AnswerService, RoadmapService, ProgressService, ShardService
 from .domain.exceptions import RoadmapNotFoundError
 from core.apps.users.infrastructure.repositories import DjangoUserRepository
 from .presentation.serializers import roadmap_to_page_data
+from .application.use_cases import SubmitAnswerUseCase
+from .domain.exceptions import QuestionNotFoundError, NodeNotFoundError
 
 
 # Create your views here.
@@ -70,13 +72,27 @@ class CheckAnswersView(LoginRequiredMixin, View):
         if not answers:
             return JsonResponse({"error": "Нет ответов"}, status=400)
 
-        service = AnswerService(QuestionRepository())
-        result = service.check_answers(
-            node_id=node_id,
-            answers=answers,
-            user_id=request.user.id,
+                # ─── 3. Use case ───
+        use_case = SubmitAnswerUseCase(
+            answer_service=AnswerService(QuestionRepository()),
+            shard_service=ShardService(
+                shard_repo=ShardRepository(),
+                user_shard_repo=UserShardRepository(),
+            ),
         )
 
-        
-        print(result)
-        return JsonResponse(result)
+        # ─── 4. Выполнение ───
+        try:
+            result = use_case.execute(
+                node_id=node_id,
+                answers=answers,
+                user_id=request.user.id,   # ← только из request.user
+            )
+        except (NodeNotFoundError, QuestionNotFoundError) as e:
+            return JsonResponse({"error": str(e)}, status=404)
+
+        # ─── 5. Сериализация ───
+        return JsonResponse({
+            "results": result["results"],
+            "summary": result["summary"],
+        })

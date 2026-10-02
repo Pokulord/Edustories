@@ -10,6 +10,8 @@ from ..domain.entities import (
     QuestionRevision,
     Roadmap,
     UserNodeProgress,
+    MapShard,
+    UserMapShard
 )
 from ..domain.enums import NodeStatuses
 from ..domain.services import split_lore_into_pages
@@ -32,6 +34,14 @@ from ..models import (
 
 from ..models import (
     UserNodeProgress as UserNodeProgressM
+)
+
+from ..models import (
+    MapShard as MapShardM
+)
+
+from ..models import (
+    UserMapShard as UserMapShardM
 )
 
 
@@ -226,4 +236,60 @@ class UserNodeProgressRepository:
             attempts_count=orm.attempts_count,
             xp_earned=orm.xp_earned,
             first_passed_at=orm.first_passed_at,
+        )
+    
+
+class ShardRepository:
+    """Репозиторий для работы со справочником осколков"""
+
+    def get_by_node_id(self, node_id: UUID) -> MapShard | None:
+        """Метод для получения осколка по id узла (если они связаны)"""
+        orm_obj = MapShardM.objects.filter(node_id=node_id).first()
+        if not orm_obj:
+            return None
+        return self._to_domain(orm_obj)
+    
+    def _to_domain(self, orm_obj: MapShardM) -> MapShard:
+        """Маппер для преобразования в доменную сущность"""
+        return MapShard(
+            uid=orm_obj.id,
+            node_id=orm_obj.node_id,
+            title=orm_obj.title,
+            description=orm_obj.description,
+            image_path=orm_obj.image if orm_obj.image else None,
+        )
+
+
+class UserShardRepository:
+    """Репозиторий осколков пользователя."""
+
+    def get_or_create(self, user_id: UUID, shard_id: UUID) -> tuple["UserMapShard", bool]:
+        """Возвращает (запись, создано_ли). Идемпотентно."""
+        orm, created = UserMapShardM.objects.get_or_create(
+            user_id=user_id,
+            shard_id=shard_id,
+        )
+        return self._to_domain(orm), created
+
+    def list_by_user(self, user_id: UUID) -> list[UserMapShard]:
+            qs = (
+                UserMapShardM.objects
+                .filter(user_id=user_id)
+                .select_related("shard", "shard__node")
+                .order_by("shard__node__order")
+            )
+            return [self._to_domain(orm) for orm in qs]
+
+    def _to_domain(self, orm: UserMapShardM) -> UserMapShard:
+        return UserMapShard(
+            uid=orm.id,
+            user_id=orm.user_id,
+            shard=MapShard(
+                uid=orm.shard.id,
+                node_id=orm.shard.node_id,
+                title=orm.shard.title,
+                description=orm.shard.description,
+                image_path=orm.shard.image.name if orm.shard.image else None,
+            ),
+            received_at=orm.received_at,
         )

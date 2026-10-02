@@ -4,7 +4,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import FileExtensionValidator
 
-from .uploaders import node_background_upload_to
+from .uploaders import node_background_upload_to, shard_image_upload_to
 # Create your models here.
 
 
@@ -233,3 +233,65 @@ class UserNodeProgress(models.Model):
         if self.total_count <= 0:
             return False
         return self.correct_count == self.total_count
+
+
+class MapShard(models.Model):
+    """Справочник осколков карты"""
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    node = models.OneToOneField(
+        Node,
+        on_delete=models.CASCADE,
+        related_name="shard",
+        verbose_name=_("Узел"),
+        help_text=_("Узел, за который выдаётся осколок")
+    )
+    title = models.CharField(_("Название"), max_length=100)
+    description = models.TextField(_("Описание"), blank=True)
+    image = models.ImageField(
+        _("Изображение"),
+        upload_to=shard_image_upload_to,
+        null=True,
+        blank=True,
+    )
+
+
+    class Meta:
+        ordering = ("title",)
+        verbose_name = "Осколок карты"
+        verbose_name_plural = "Осколки карты"
+
+    def __str__(self):
+        return f"{self.title}"
+
+
+
+class UserMapShard(models.Model):
+    """Модель для хранения осколков, которые получены пользователями"""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(
+                "users.CustomUser",
+                on_delete=models.CASCADE,
+                verbose_name=_("Пользователь"),
+                related_name="map_shards",
+                )
+    shard = models.ForeignKey(
+        MapShard,
+        on_delete=models.CASCADE,
+        verbose_name=_("Осколок"),
+        related_name="user_shards",
+    )
+    received_at = models.DateTimeField(_("Когда получен"), auto_now_add=True)
+
+
+    class Meta:
+        unique_together = ("user", "shard")
+        ordering = ("-received_at",)
+        verbose_name = "Осколок пользователя"
+        verbose_name_plural = "Осколки пользователей"
+        indexes = [
+            models.Index(fields=("user", "-received_at")),
+        ]
+
+    def __str__(self):
+        return f"{self.user_id} / {self.shard_id}"

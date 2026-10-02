@@ -9,8 +9,14 @@ from core.apps.users.infrastructure.repositories import DjangoUserRepository
 from ..domain.entities import Roadmap
 from ..domain.exceptions import QuestionNotFoundError
 from ..domain.services import PassingPolicy
-from ..infrastructure.repositories import RoadmapRepository, QuestionRepository, UserNodeProgressRepository
-from ..models import Node, UserNodeProgress
+from ..infrastructure.repositories import (
+    RoadmapRepository,
+    QuestionRepository,
+    UserNodeProgressRepository,
+    UserShardRepository,
+    ShardRepository,
+    )
+from ..models import Node, UserNodeProgress, UserMapShard, MapShard
 
 
 class RoadmapService:
@@ -214,3 +220,51 @@ class ProgressService:
     def get_total_xp(self, user_id: UUID) -> int:
         """Общий XP пользователя."""
         return self.progress_repo.get_total_xp(user_id)
+    
+
+class ShardService:
+    """Сервис для выдачи осколков карты"""
+
+    def __init__(
+        self,
+        shard_repo: ShardRepository,
+        user_shard_repo: UserShardRepository,
+    ):
+        self.shard_repo = shard_repo
+        self.user_shard_repo = user_shard_repo
+
+    @transaction.atomic
+    def award_shard_if_passed(
+        self,
+        user_id: UUID,
+        node_id: UUID,
+    ) -> UserMapShard | None:
+        """Выдаёт осколок, если:
+        1. У узла есть осколок
+        2. Узел пройден, но пользователь ещё не получил осколок
+        """
+
+        # Проверяет, есть ли осколок у узла
+        shard =  (
+            self.shard_repo.get_by_node_id(node_id)
+        )
+
+        if not shard:
+            return None
+
+        # А был ли он выдан?
+        user_shard, created = (
+            self.user_shard_repo.get_or_create(
+                user_id=user_id,
+                shard_id=shard.uid
+            )
+        )
+
+        if not created:
+            return None
+        
+        return user_shard
+
+    def get_user_shards(self, user_id: UUID) -> list[dict]:
+        """Все осколки пользователя (для профиля)."""
+        return self.user_shard_repo.list_by_user(user_id)
