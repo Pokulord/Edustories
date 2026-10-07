@@ -22,11 +22,13 @@ from .domain.exceptions import (
 from .forms import LoginForm, UserRegistrationForm
 from .infrastructure.repositories import DjangoUserRepository
 
-from core.apps.roadmap.application.services import ShardService
+from core.apps.roadmap.application.services import ShardService, ProgressService
 from core.apps.roadmap.infrastructure.repositories import (
     UserShardRepository,
-    ShardRepository
+    ShardRepository,
+    UserNodeProgressRepository
 )
+from .application.services import ProfileService
 
 class RegisterView(View):
     """Вьюха для регистрации новых пользователей"""
@@ -123,13 +125,23 @@ class LoginView(View):
 class ProfileView(LoginRequiredMixin,View):
     """Вьюха для профиля польльзователя"""
     def get(self, request):
-        shard_service = ShardService(
-            user_shard_repo=UserShardRepository(),
-            shard_repo=ShardRepository(),
+        service = ProfileService(
+            DjangoUserRepository(),
+            UserNodeProgressRepository(),
+            UserShardRepository(),
         )
-        shards = shard_service.get_user_shards(request.user.id)
-        context = {
-            "shards": shards,
-            "shards_count": len(shards)
-        }
-        return render(request, 'profile.html', context=context)
+
+        uid = request.user.id
+        profile = service.get_profile(uid)
+        shards = service.shard_repo.list_by_user(uid)
+
+        print(profile)
+
+        return render(request, 'profile.html', {"profile": profile, "shards": shards})
+    
+
+class ProfileSettingsView(LoginRequiredMixin, View):
+    """Вьюха для настроек профиля"""
+
+    def get(self, request):
+        ...

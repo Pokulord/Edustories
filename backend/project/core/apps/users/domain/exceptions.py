@@ -97,6 +97,18 @@ class UserCannotBeActivatedError(BaseUserError):
         return reasons.get(current_status, "Неявная причина")
 
 
+class UserNotFoundError(DomainError):
+    """Ошибка, которая вызывается в случае, если  пользователь не найден"""
+
+    error_slug = "user_not_found"
+    
+    def __init__(self, user_id: UUID):
+        message = f"Пользователь с id {user_id} не найден"
+        super().__init__(
+            message, metadata={"user_id": user_id}
+        )
+
+
 class EmailError(DomainError):
     """Базовая ошибка для Email"""
     error_slug: str = "email_error"

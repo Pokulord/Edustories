@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 import uuid
 
 from .domain.enums import UserRoles
+from core.utils.uploaders import avatar_image_upload_to
 
 
 class CustomUserManager(BaseUserManager):
@@ -22,26 +23,28 @@ class CustomUserManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
-    
+
     def create_superuser(self, email, password=None, **extra_fields):
         """
         Создаём суперпользователя с email и паролем
         """
         extra_fields.setdefault("is_staff", True)
-        extra_fields.setdefault('is_superuser', True)
-        extra_fields.setdefault('is_active', True)
-        extra_fields.setdefault('role', self.model.Role.ADMIN)
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("is_active", True)
+        extra_fields.setdefault("role", self.model.Role.ADMIN)
 
         return self.create_user(email, password, **extra_fields)
-        
+
 
 class RoleModel(models.Model):
     """Модель для ролей пользователей"""
+
     code = models.CharField(
         max_length=20,
         primary_key=True,
-        choices=[(role.name, role.value) for role in UserRoles]
-    )  
+        choices=[(role.name, role.value) for role in UserRoles],
+    )
+
     class Meta:
         db_table = "roles"
         verbose_name = "Роль"
@@ -49,10 +52,11 @@ class RoleModel(models.Model):
 
     def __str__(self):
         return UserRoles[self.code].value
-    
+
 
 class CustomUser(AbstractUser):
     """Кастомная модель пользователя"""
+
     class Role(models.TextChoices):
         ADMIN = "ADMIN", _("Администратор")
         INSTRUCTOR = "INSTRUCTOR", _("Наставник")
@@ -65,15 +69,13 @@ class CustomUser(AbstractUser):
         max_length=150,
         help_text=_("Юзернейм пользователя. Необязателен для заполнения"),
         null=True,
-        blank=True
+        blank=True,
     )
 
     email = models.EmailField(_("email address"), unique=True)
 
     role = models.CharField(
-        max_length=20,
-        choices=Role.choices,
-        default=Role.BOOKREADER
+        max_length=20, choices=Role.choices, default=Role.BOOKREADER
     )
 
     USERNAME_FIELD = "email"
@@ -83,15 +85,29 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return f"Пользователь {self.email}"
 
+
     class Meta:
         verbose_name = _("пользователь")
         verbose_name_plural = _("пользователи")
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+    """Модель для профиля пользователя"""
+
+    user = models.OneToOneField(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="profile",
+        verbose_name=_("Пользователь"),
+    )
+    avatar = models.ImageField(upload_to=avatar_image_upload_to, blank=True, null=True)
     bio = models.TextField(blank=True)
+    display_name = models.CharField(_("Отображаемое имя"), max_length=40, blank=True)
 
     def __str__(self):
         return self.user.email
+
+
+    class Meta:
+        verbose_name = "Профиль"
+        verbose_name_plural = "Профили"

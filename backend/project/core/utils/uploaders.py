@@ -72,3 +72,9 @@ def shard_image_upload_to(instance, filename: str) -> str:
     Пример: shards/2026/09/11/3f2a1b4c8d9e.jpg
     """
     return _build_image_path(filename, "shards")
+
+
+def avatar_image_upload_to(instance, filename: str) -> str:
+    """Путь для аватарки профиля пользователя.
+    """
+    return _build_image_path(filename, "avatars")

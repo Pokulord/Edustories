@@ -23,3 +23,8 @@ class AbstractUserRepository(ABC):
     def get_by_email(self, email: Email) -> User|None:
         """Абстрактный метод для получения пользователя по email"""
         ...
+
+    @abstractmethod
+    def get_by_id(self, user_id : UUID) -> User | None:
+        """Абстрактный метод для получения пользователя по id"""
+        ...

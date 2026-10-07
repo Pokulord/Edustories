@@ -5,17 +5,44 @@ from .value_objects import Email
 from .enums import UserRoles, UserStatuses
 from .exceptions import UserIsNotActiveError, UserEmailAlreadyConfirmedError, UserCannotBeActivatedError
 
-@dataclass
+
+
+
+@dataclass(frozen=True)
+class UserProfile:
+    """Агрегат профиля пользователя для отображения."""
+
+    # ─── Основное ───
+    uid: UUID
+    username: str
+
+    # ─── Прогресс ───
+    level: int
+    xp: int
+    xp_to_next_level: int
+    xp_progress_percent: int
+
+    # ─── Осколки ───
+    shards_count: int = 0
+    shards_total: int = 0
+
+    avatar_path: str | None = None
+    display_name: str = "Безымянный"
+    title: str = "Искатель первых строк"
+
+@dataclass(frozen=True)
 class User:
     """Доменная сущность пользователя (априори он не подтверждён)"""
     first_name: str
     second_name: str
     email: Email
+    username: str
     uid: UUID = field(default_factory=uuid4)
     password: str | None = None
     is_email_confirmed: bool = False
     _roles: set[UserRoles] = field(default_factory= lambda: {UserRoles.BOOKREADER})
     status: UserStatuses = UserStatuses.PENDING
+    profile: UserProfile = None
 
     @property
     def initials(self) -> str:
@@ -62,3 +89,13 @@ class User:
             raise UserCannotBeActivatedError(self.uid, self.status)
         self.is_email_confirmed = True
         self.status = UserStatuses.ACTIVE
+
+
+@dataclass(frozen=True)
+class Profile:
+    uid: UUID
+    user_id: UUID
+    avatar_path: str | None
+    bio: str
+    display_name: str = "Безымянный"
+    title: str = "Искатель строк"

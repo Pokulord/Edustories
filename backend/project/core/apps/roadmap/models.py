@@ -4,7 +4,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import FileExtensionValidator
 
-from .uploaders import node_background_upload_to, shard_image_upload_to
+from ...utils.uploaders import node_background_upload_to, shard_image_upload_to
 # Create your models here.
 
 
@@ -170,22 +170,27 @@ class UserNodeProgress(models.Model):
         "users.CustomUser",
         on_delete=models.CASCADE,
         related_name="node_progress",
-        verbose_name=_("Пользователь")
+        verbose_name=_("Пользователь"),
     )
     node = models.ForeignKey(
         Node,
         on_delete=models.CASCADE,
         related_name="user_progress",
-        verbose_name=_("Узел карты")
+        verbose_name=_("Узел карты"),
     )
 
-    is_passed = models.BooleanField(_("Пройден"),default=False)
-    correct_count = models.PositiveIntegerField(_("Количество правильных ответов"),
-                                                default=0)
+    is_passed = models.BooleanField(_("Пройден"), default=False)
+    correct_count = models.PositiveIntegerField(
+        _("Количество правильных ответов"), default=0
+    )
     total_count = models.PositiveIntegerField(default=0)
     attempts_count = models.PositiveIntegerField(default=0)
-    xp_earned = models.PositiveIntegerField(default=0, help_text=_("XP, начисленные при первом прохождении"))
-    first_passed_at = models.DateTimeField(null=True, blank=True, help_text=_("Когда узел впервые пройден"))
+    xp_earned = models.PositiveIntegerField(
+        default=0, help_text=_("XP, начисленные при первом прохождении")
+    )
+    first_passed_at = models.DateTimeField(
+        null=True, blank=True, help_text=_("Когда узел впервые пройден")
+    )
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -201,13 +206,12 @@ class UserNodeProgress(models.Model):
         status = "✓" if self.is_passed else "…"
         return f"{status} {self.user_id} / {self.node_id}"
 
-
     def apply_result(
-    self,
-    correct: int,
-    total: int,
-    xp: int,
-    now,
+        self,
+        correct: int,
+        total: int,
+        xp: int,
+        now,
     ) -> None:
         """
         Применяет результат попытки. Не сохраняет.
@@ -237,14 +241,14 @@ class UserNodeProgress(models.Model):
 
 class MapShard(models.Model):
     """Справочник осколков карты"""
-    
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     node = models.OneToOneField(
         Node,
         on_delete=models.CASCADE,
         related_name="shard",
         verbose_name=_("Узел"),
-        help_text=_("Узел, за который выдаётся осколок")
+        help_text=_("Узел, за который выдаётся осколок"),
     )
     title = models.CharField(_("Название"), max_length=100)
     description = models.TextField(_("Описание"), blank=True)
@@ -255,7 +259,6 @@ class MapShard(models.Model):
         blank=True,
     )
 
-
     class Meta:
         ordering = ("title",)
         verbose_name = "Осколок карты"
@@ -265,16 +268,16 @@ class MapShard(models.Model):
         return f"{self.title}"
 
 
-
 class UserMapShard(models.Model):
     """Модель для хранения осколков, которые получены пользователями"""
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
-                "users.CustomUser",
-                on_delete=models.CASCADE,
-                verbose_name=_("Пользователь"),
-                related_name="map_shards",
-                )
+        "users.CustomUser",
+        on_delete=models.CASCADE,
+        verbose_name=_("Пользователь"),
+        related_name="map_shards",
+    )
     shard = models.ForeignKey(
         MapShard,
         on_delete=models.CASCADE,
@@ -282,7 +285,6 @@ class UserMapShard(models.Model):
         related_name="user_shards",
     )
     received_at = models.DateTimeField(_("Когда получен"), auto_now_add=True)
-
 
     class Meta:
         unique_together = ("user", "shard")
