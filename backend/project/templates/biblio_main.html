@@ -252,7 +252,47 @@ transition-colors duration-500">
         </div>
 
         <!-- Кнопки авторизации десктоп -->
-        <div class="hidden lg:flex items-center gap-2">
+        {% if user.is_authenticated %}
+        <div class="hidden lg:flex items-center gap-3">
+          <a href="{% url 'users:user_profile' %}"
+            class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0
+                    border-2 transition-all duration-300
+                    dark:border-blue-700/40 border-blue-300/60
+                    dark:hover:border-blue-400/70 hover:border-blue-500
+                    dark:hover:shadow-[0_0_15px_rgba(59,130,246,0.35)]
+                    hover:shadow-[0_0_15px_rgba(37,99,235,0.25)]"
+            title="Профиль">
+            {% if user.profile and user.profile.avatar %}
+              <img src="{{ MEDIA_URL }}{{ user.profile.avatar.name }}"
+                  alt="Аватар"
+                  class="w-full h-full object-cover" />
+            {% else %}
+              <div class="w-full h-full flex items-center justify-center
+                          dark:bg-blue-900/60 bg-blue-100
+                          dark:text-blue-300 text-blue-700
+                          text-sm font-bold">
+                {{ user.email|first|upper }}
+              </div>
+            {% endif %}
+          </a>
+
+          <form method="post" action="{% url 'users:logout' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit"
+                    id="authActionBtn"
+                    class="px-5 py-2 font-semibold text-sm tracking-widest uppercase
+                          rounded border-2 transition-all duration-300
+                          dark:border-blue-100/30 dark:text-blue-100
+                          dark:hover:bg-blue-400/10 dark:hover:border-blue-300/60
+                          border-blue-700/50 text-blue-800
+                          hover:bg-blue-50 hover:border-blue-700
+                          bg-transparent cursor-pointer">
+              Выйти
+            </button>
+          </form>
+        </div>
+          {% else %}
+          <div class="hidden lg:flex items-center gap-2">
           <a href="{% url 'users:login' %}" id="authActionBtn" class="px-5 py-2 font-semibold text-sm tracking-widest uppercase
               rounded border-2 transition-all duration-300
               dark:border-blue-100/30 dark:text-blue-100
@@ -261,6 +301,7 @@ transition-colors duration-500">
               hover:bg-blue-50 hover:border-blue-700">
             Войти
           </a>
+          {% endif%}
 
           <!-- Theme Toggle мобильный -->
           <button id="themeToggleMobile" class="lg:hidden relative w-14 h-7 rounded-full transition-colors duration-500
@@ -306,7 +347,7 @@ transition-colors duration-500">
       class="text-amber-500 dark:text-amber-400 dark:hover:text-amber-300 hover:text-amber-600 transition">Книгочей</a>
 
     <div class="flex gap-4 mt-4">
-      <a href="./register.html" id="mobileAuthAction" class="px-6 py-2.5 text-base font-semibold uppercase tracking-wider
+      <a href="{% url 'users:login' %}" id="mobileAuthAction" class="px-6 py-2.5 text-base font-semibold uppercase tracking-wider
                   rounded border-2 transition-all duration-300
                   dark:border-blue-300/40 dark:text-blue-100 dark:hover:bg-blue-400/10
                   border-blue-700 text-blue-800 hover:bg-blue-50">Войти</a>

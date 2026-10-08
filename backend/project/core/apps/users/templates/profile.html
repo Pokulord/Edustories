@@ -1005,7 +1005,7 @@ transition-colors duration-500">
   <div class="relative max-w-7xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
 
     <!-- Logo -->
-    <a href="/" class="flex items-center gap-3 flex-shrink-0">
+    <a href="{% url 'biblio' %}" class="flex items-center gap-3 flex-shrink-0">
       <div class="relative">
         <img src="{% static 'images/logo.png' %}" alt="Логотип Академии Книгочеев" class="w-12 h-12 object-contain" />
       </div>
@@ -1191,10 +1191,10 @@ transition-colors duration-500">
           {{ profile.title }}
         </div>
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-          <div class="level-badge">1</div>
+          <div class="level-badge">{{ profile.level }}</div>
           <div style="flex:1;min-width:180px;max-width:340px;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-              <span style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.7);">Уровень 1</span>
+              <span style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.7);">Уровень {{ profile.level }}</span>
               <span style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.7);">{{ profile.xp }} / {{ profile.xp_to_next_level }} XP</span>
             </div>
             <div class="xp-bar-track">

@@ -2,7 +2,7 @@
 Вьюхи (по возможности работаем только с HTTP)
 """
 
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
@@ -121,6 +121,17 @@ class LoginView(View):
         else:
             login(request, user)
             return redirect(reverse('users:user_profile'))
+
+
+class LogoutView(LoginRequiredMixin, View):
+    """View для выхода из аккаунта"""
+
+    next_page = "home"
+
+    def post(self, request):
+        logout(request)
+        return redirect(self.next_page)
+
 
 class ProfileView(LoginRequiredMixin,View):
     """Вьюха для профиля польльзователя"""

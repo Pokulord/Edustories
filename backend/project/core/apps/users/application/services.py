@@ -36,14 +36,14 @@ class ProfileService:
 
         # Расчёт уровня
 
-        level, xp_to_next, progress_percent = self._calculate_level(total_xp)
+        level, xp_to_next, progress_percent, xp_in_level = self._calculate_level(total_xp)
 
 
         return UserProfile(
             uid=user.uid,
             username=user.username,
             level=level,
-            xp=total_xp,
+            xp=xp_in_level,
             xp_to_next_level=xp_to_next,
             xp_progress_percent=progress_percent,
             shards_count=shards_count,
@@ -57,4 +57,4 @@ class ProfileService:
         xp_in_level = xp % XP_PER_LEVEL
         xp_to_next_level = XP_PER_LEVEL
         progress = xp_in_level / XP_PER_LEVEL * 100
-        return level, xp_in_level, int(progress), xp_to_next_level
+        return level, xp_to_next_level, int(progress), xp_in_level

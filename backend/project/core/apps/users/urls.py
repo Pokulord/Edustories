@@ -3,14 +3,15 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 
-from .views import LoginView, RegisterView, ProfileView, ProfileSettingsView
+from .views import LoginView, RegisterView, ProfileView, ProfileSettingsView, LogoutView
 
 app_name = "users"
 
 urlpatterns = [
     path("login/", LoginView.as_view(), name="login"),
+    path("logout/", LogoutView.as_view(next_page="home"), name="logout"),
     path("register/", RegisterView.as_view(), name="register"),
     path("profile/", ProfileView.as_view(), name="user_profile"),
-    path('profile/settings', ProfileSettingsView.as_view(), name="settings")
+    path('profile/settings', ProfileSettingsView.as_view(), name="settings"),
 ]
 
