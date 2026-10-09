@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Академия Ведьмаков - Добавление узла</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #050914;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(20, 35, 60, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(30, 45, 70, 0.3) 0%, transparent 50%);
+            color: #94a3b8;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        .font-serif-custom { font-family: "Playfair Display", "Merriweather", serif; }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0d1522; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+        /* Убираем дефолтные стрелки у input type="number" во всех браузерах */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col lg:flex-row text-sm relative">
+
+    <!-- Мобильный хедер -->
+    <div class="lg:hidden flex items-center justify-between p-4 bg-[#09101c] border-b border-[#1e293b] sticky top-0 z-40">
+        <h1 class="text-xl font-serif-custom font-bold text-white leading-tight">
+            Академия <span class="text-[#d7a751]">Ведьмаков</span>
+        </h1>
+        <button id="menuBtn" class="text-[#94a3b8] hover:text-white p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+    </div>
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity"></div>
+
+    <!-- Левый сайдбар -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-[260px] bg-[#09101c] border-r border-[#1e293b] flex flex-col justify-between transform -translate-x-full lg:translate-x-0 lg:static lg:flex-shrink-0 transition-transform duration-300 ease-in-out">
+        <div>
+            <div class="hidden lg:block px-8 pt-8 pb-6">
+                <h1 class="text-2xl font-serif-custom font-bold text-white leading-tight">
+                    Академия<br><span class="text-[#d7a751]">Ведьмаков</span>
+                </h1>
+                <p class="text-xs text-[#5c728e] mt-2">Панель администратора</p>
+            </div>
+            <div class="lg:hidden flex justify-end p-4">
+                <button id="closeBtn" class="text-[#94a3b8] hover:text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+
+            <nav class="mt-2 flex flex-col gap-1 px-4 lg:mt-0">
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#859ab5] hover:text-white hover:bg-white/5 transition-colors"><svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Панель управления</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#859ab5] hover:text-white hover:bg-white/5 transition-colors"><svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg> Пользователи</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#859ab5] hover:text-white hover:bg-white/5 transition-colors"><svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg> Гильдии</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#859ab5] hover:text-white hover:bg-white/5 transition-colors"><svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Контракты</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#859ab5] hover:text-white hover:bg-white/5 transition-colors"><svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg> Испытания</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#859ab5] hover:text-white hover:bg-white/5 transition-colors"><svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg> Бестиарий</a>
+                
+                <!-- Активный пункт -->
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#d7a751] bg-[#d7a751]/10 relative group">
+                    <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-[#d7a751] rounded-r-full"></div>
+                    <svg class="w-5 h-5 opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                    Путь Мастера
+                </a>
+
+                <div class="h-px bg-[#1e293b] my-2 mx-4"></div>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#859ab5] hover:text-white hover:bg-white/5 transition-colors"><svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> Настройки</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#859ab5] hover:text-white hover:bg-white/5 transition-colors"><svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg> Выход</a>
+            </nav>
+        </div>
+        <div class="p-6">
+            <div class="bg-[#0f172a]/80 border border-[#1e293b] rounded-xl p-4 flex items-center gap-3">
+                <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Avatar" class="w-10 h-10 rounded-full border border-[#1e293b] object-cover">
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-white truncate">Администратор</p>
+                    <p class="text-[11px] text-[#5c728e] truncate mt-0.5">admin@witchers.ac</p>
+                </div>
+            </div>
+            <div class="mt-[-10px] ml-4">
+                <span class="inline-block px-2 py-0.5 bg-[#d7a751]/10 border border-[#d7a751]/30 text-[#d7a751] text-[10px] rounded relative z-10 shadow-sm">Супер-админ</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Основной контент -->
+    <main class="flex-1 flex flex-col h-[calc(100vh-65px)] lg:h-screen overflow-hidden">
+        
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div class="max-w-[1200px] mx-auto"> <!-- Сделал чуть уже для эстетики формы -->
+                
+                <!-- Хлебные крошки и заголовок -->
+                <div class="mb-6">
+                    <a href="#" class="text-[#859ab5] hover:text-white flex items-center gap-2 transition-colors w-fit mb-4 text-xs sm:text-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        Назад к дорожной карте
+                    </a>
+                    <h2 class="text-2xl sm:text-[26px] font-bold text-white font-serif-custom tracking-wide">Добавление нового узла дорожной карты</h2>
+                    <p class="text-[#5c728e] mt-2 text-sm">Создайте новый этап для развития Пути Мастера</p>
+                </div>
+
+                <!-- ФОРМА (Обертка для всего контента) -->
+                <form id="addNodeForm" action="/api/roadmap/nodes" method="POST" class="space-y-6 mt-8">
+                    
+                    <!-- Блок 1: Основная информация -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Название узла -->
+                        <div>
+                            <label class="block text-[#94a3b8] text-sm mb-2">Название узла <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <input type="text" id="nodeNameInput" name="node_name" placeholder="Введите название узла" required class="w-full bg-[#050914] border border-[#1e293b] rounded-lg pl-4 pr-16 py-2.5 text-sm text-white placeholder-[#334155] focus:outline-none focus:border-[#d7a751] transition-colors">
+                                <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                                    <span class="text-[#334155] text-xs">0/100</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Код узла -->
+                        <div>
+                            <label class="block text-[#94a3b8] text-sm mb-2">Код узла <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <input type="text" name="node_code" placeholder="Например: mentor, advanced, master" required class="w-full bg-[#050914] border border-[#1e293b] rounded-lg pl-4 pr-16 py-2.5 text-sm text-white placeholder-[#334155] focus:outline-none focus:border-[#d7a751] transition-colors">
+                                <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                                    <span class="text-[#334155] text-xs">0/50</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Описание (На всю ширину) -->
+                        <div class="md:col-span-2">
+                            <label class="block text-[#94a3b8] text-sm mb-2">Описание</label>
+                            <div class="relative">
+                                <textarea name="node_description" rows="3" placeholder="Подробное описание этого этапа" class="w-full bg-[#050914] border border-[#1e293b] rounded-lg pl-4 pr-16 py-3 text-sm text-white placeholder-[#334155] focus:outline-none focus:border-[#d7a751] transition-colors resize-none"></textarea>
+                                <div class="absolute bottom-3 right-4 flex items-center pointer-events-none">
+                                    <span class="text-[#334155] text-xs">0/500</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Блок 2: Иконка, Цвет и Превью -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                        <!-- Иконка -->
+                        <div>
+                            <label class="block text-[#94a3b8] text-sm mb-2">Иконка узла</label>
+                            <div class="relative flex items-center">
+                                <div class="absolute left-3 w-6 h-6 border border-[#1e293b] rounded bg-[#0b121e] flex items-center justify-center text-[#5c728e] pointer-events-none">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                                </div>
+                                <select name="node_icon" class="w-full appearance-none bg-[#050914] border border-[#1e293b] rounded-lg pl-12 pr-10 py-2.5 text-sm text-[#5c728e] focus:outline-none focus:border-[#d7a751] transition-colors cursor-pointer">
+                                    <option value="" disabled selected hidden>Выберите иконку</option>
+                                    <option value="book">Книга (Знания)</option>
+                                    <option value="sword">Меч (Бой)</option>
+                                    <option value="shield">Щит (Защита)</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-[#5c728e]">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Цвет -->
+                        <div>
+                            <label class="block text-[#94a3b8] text-sm mb-2">Цвет статуса</label>
+                            <div class="relative flex items-center">
+                                <div class="absolute left-3 w-4 h-4 rounded-full bg-[#d7a751] pointer-events-none ring-2 ring-[#050914]"></div>
+                                <select name="node_color" class="w-full appearance-none bg-[#050914] border border-[#1e293b] rounded-lg pl-10 pr-10 py-2.5 text-sm text-[#5c728e] focus:outline-none focus:border-[#d7a751] transition-colors cursor-pointer">
+                                    <option value="" disabled selected hidden>Выберите цвет</option>
+                                    <option value="gold">Золотой (Легендарный)</option>
+                                    <option value="blue">Синий (Редкий)</option>
+                                    <option value="green">Зеленый (Обычный)</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center flex-col justify-center pr-3 pointer-events-none text-[#5c728e] gap-0.5">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                    <svg class="w-3 h-3 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Блок 3: Сетка настроек (3 колонки) -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        
+                        <!-- Колонка 1: Требования -->
+                        <div class="bg-[#050914] border border-[#1e293b] rounded-xl p-5">
+                            <h3 class="text-white font-medium mb-4 flex items-center gap-2">
+                                Требования для доступа
+                                <svg class="w-3.5 h-3.5 text-[#5c728e]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-[#5c728e] text-xs mb-1.5">Минимальный уровень</label>
+                                    <div class="relative">
+                                        <select name="req_level" class="w-full appearance-none bg-transparent border border-[#1e293b] rounded-lg pl-3 pr-8 py-2 text-sm text-[#5c728e] focus:outline-none focus:border-[#d7a751] cursor-pointer">
+                                            <option value="" disabled selected hidden>Выберите уровень</option>
+                                            <option value="10">Уровень 10</option>
+                                            <option value="20">Уровень 20</option>
+                                            <option value="30">Уровень 30</option>
+                                        </select>
+                                        <svg class="w-3.5 h-3.5 absolute right-3 top-2.5 text-[#5c728e] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-[#5c728e] text-xs mb-1.5">Необходимые достижения</label>
+                                    <div class="relative">
+                                        <select name="req_achievement" class="w-full appearance-none bg-transparent border border-[#1e293b] rounded-lg pl-3 pr-8 py-2 text-sm text-[#5c728e] focus:outline-none focus:border-[#d7a751] cursor-pointer">
+                                            <option value="" disabled selected hidden>Выберите достижения</option>
+                                            <option value="monster_hunter">Охотник на чудовищ</option>
+                                            <option value="potion_master">Мастер зелий</option>
+                                        </select>
+                                        <svg class="w-3.5 h-3.5 absolute right-3 top-2.5 text-[#5c728e] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-[#5c728e] text-xs mb-1.5">Минимальная репутация</label>
+                                    <div class="relative">
+                                        <input type="number" name="req_reputation" value="0" class="w-full bg-transparent border border-[#1e293b] rounded-lg pl-3 pr-8 py-2 text-sm text-white focus:outline-none focus:border-[#d7a751]">
+                                        <div class="absolute inset-y-0 right-0 flex items-center flex-col justify-center pr-2 pointer-events-none text-[#5c728e] gap-0.5">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                            <svg class="w-3 h-3 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Колонка 2: Награды -->
+                        <div class="bg-[#050914] border border-[#1e293b] rounded-xl p-5">
+                            <h3 class="text-white font-medium mb-4 flex items-center gap-2">
+                                Награды за прохождение
+                                <svg class="w-3.5 h-3.5 text-[#5c728e]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-[#5c728e] text-xs mb-1.5">Опыт</label>
+                                    <div class="relative">
+                                        <input type="number" name="reward_xp" value="0" class="w-full bg-transparent border border-[#1e293b] rounded-lg pl-3 pr-8 py-2 text-sm text-white focus:outline-none focus:border-[#d7a751]">
+                                        <div class="absolute inset-y-0 right-0 flex items-center flex-col justify-center pr-2 pointer-events-none text-[#5c728e] gap-0.5">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                            <svg class="w-3 h-3 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-[#5c728e] text-xs mb-1.5">Осколки знаний</label>
+                                    <div class="relative">
+                                        <input type="number" name="reward_shards" value="0" class="w-full bg-transparent border border-[#1e293b] rounded-lg pl-3 pr-8 py-2 text-sm text-white focus:outline-none focus:border-[#d7a751]">
+                                        <div class="absolute inset-y-0 right-0 flex items-center flex-col justify-center pr-2 pointer-events-none text-[#5c728e] gap-0.5">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                            <svg class="w-3 h-3 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-[#5c728e] text-xs mb-1.5">Особая награда</label>
+                                    <div class="relative">
+                                        <select name="reward_special" class="w-full appearance-none bg-transparent border border-[#1e293b] rounded-lg pl-3 pr-8 py-2 text-sm text-[#5c728e] focus:outline-none focus:border-[#d7a751] cursor-pointer">
+                                            <option value="" disabled selected hidden>Выберите награду</option>
+                                            <option value="item_sword">Серебряный меч</option>
+                                            <option value="item_armor">Доспех школы Волка</option>
+                                        </select>
+                                        <svg class="w-3.5 h-3.5 absolute right-3 top-2.5 text-[#5c728e] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Колонка 3: Настройки отображения -->
+                        <div class="bg-[#050914] border border-[#1e293b] rounded-xl p-5">
+                            <h3 class="text-white font-medium mb-4 flex items-center gap-2">
+                                Настройки отображения
+                                <svg class="w-3.5 h-3.5 text-[#5c728e]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-[#5c728e] text-xs mb-1.5">Порядок отображения</label>
+                                    <div class="relative">
+                                        <input type="number" name="display_order" value="0" class="w-full bg-transparent border border-[#1e293b] rounded-lg pl-3 pr-8 py-2 text-sm text-white focus:outline-none focus:border-[#d7a751]">
+                                        <div class="absolute inset-y-0 right-0 flex items-center flex-col justify-center pr-2 pointer-events-none text-[#5c728e] gap-0.5">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                            <svg class="w-3 h-3 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-[#5c728e] text-xs mb-1.5">Доступен с уровня мастера</label>
+                                    <div class="relative">
+                                        <input type="number" name="display_min_level" value="1" class="w-full bg-transparent border border-[#1e293b] rounded-lg pl-3 pr-8 py-2 text-sm text-white focus:outline-none focus:border-[#d7a751]">
+                                        <div class="absolute inset-y-0 right-0 flex items-center flex-col justify-center pr-2 pointer-events-none text-[#5c728e] gap-0.5">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                            <svg class="w-3 h-3 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-[#5c728e] text-xs mb-1.5">Видимость</label>
+                                    <label class="flex items-center cursor-pointer mt-2">
+                                        <div class="relative">
+                                            <input type="checkbox" name="is_visible" class="peer sr-only" checked>
+                                            <!-- Фон переключателя -->
+                                            <div class="block bg-[#1e293b] w-10 h-5 rounded-full peer-checked:bg-blue-500 transition-colors"></div>
+                                            <!-- Кружок переключателя -->
+                                            <div class="dot absolute left-1 top-1 bg-white w-3 h-3 rounded-full transition-transform peer-checked:translate-x-5"></div>
+                                        </div>
+                                        <div class="ml-3 text-sm text-[#94a3b8]">Показывать в дорожной карте</div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Блок 4: Связи узла -->
+                    <div class="bg-[#050914] border border-[#1e293b] rounded-xl p-5">
+                        <h3 class="text-white font-medium mb-4 flex items-center gap-2">
+                            Связи узла
+                            <svg class="w-3.5 h-3.5 text-[#5c728e]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-[#5c728e] text-xs mb-1.5">Предыдущий узел</label>
+                                <div class="relative">
+                                    <select name="link_previous" class="w-full appearance-none bg-transparent border border-[#1e293b] rounded-lg pl-3 pr-8 py-2 text-sm text-[#5c728e] focus:outline-none focus:border-[#d7a751] cursor-pointer">
+                                        <option value="" disabled selected hidden>Выберите предыдущий узел</option>
+                                        <option value="node_1">Основы магии</option>
+                                        <option value="node_2">Боевая стойка</option>
+                                    </select>
+                                    <svg class="w-3.5 h-3.5 absolute right-3 top-2.5 text-[#5c728e] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[#5c728e] text-xs mb-1.5">Следующий узел</label>
+                                <div class="relative">
+                                    <select name="link_next" class="w-full appearance-none bg-transparent border border-[#1e293b] rounded-lg pl-3 pr-8 py-2 text-sm text-[#5c728e] focus:outline-none focus:border-[#d7a751] cursor-pointer">
+                                        <option value="" disabled selected hidden>Выберите следующий узел</option>
+                                        <option value="node_4">Продвинутая алхимия</option>
+                                        <option value="node_5">Мутации</option>
+                                    </select>
+                                    <svg class="w-3.5 h-3.5 absolute right-3 top-2.5 text-[#5c728e] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Кнопки действий (Футер формы) -->
+                    <div class="flex justify-end gap-4 pt-4 border-t border-[#1e293b]">
+                        <button type="button" class="px-5 py-2.5 rounded-lg border border-[#1e293b] text-[#94a3b8] hover:text-white hover:bg-[#1e293b]/50 transition-colors text-sm">
+                            Отмена
+                        </button>
+                        <button type="submit" class="bg-[#d7a751] hover:bg-[#c49646] text-black px-6 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-[0_0_15px_rgba(215,167,81,0.2)] flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            Создать узел
+                        </button>
+                    </div>
+
+                </form>
+                <!-- КОНЕЦ ФОРМЫ -->
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Скрипты -->
+    <script>
+        // --- 1. Мобильное меню ---
+        const btnOpen = document.getElementById('menuBtn');
+        const btnClose = document.getElementById('closeBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        
+        function toggleMenu() {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+        btnOpen.addEventListener('click', toggleMenu);
+        btnClose.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+
+        // --- 2. Live Preview (Предварительный просмотр) ---
+        const nameInput = document.getElementById('nodeNameInput');
+        const previewName = document.getElementById('previewName');
+
+        nameInput.addEventListener('input', function() {
+            // Если поле пустое, возвращаем дефолтный текст
+            previewName.textContent = this.value.trim() !== '' ? this.value : 'Название узла';
+        });
+
+
+        // --- 3. Логирование отправки формы ---
+        const form = document.getElementById('addNodeForm');
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Предотвращаем реальную перезагрузку страницы
+            
+            // Собираем данные через FormData
+            const formData = new FormData(this);
+            
+            // Преобразуем FormData в обычный объект
+            const payload = Object.fromEntries(formData.entries());
+            
+            // Ручная обработка чекбокса (если он выключен, его нет в formData)
+            payload.is_visible = formData.has('is_visible');
+
+            // Вывод в консоль
+            console.log('--- ОТПРАВКА ДАННЫХ НОВОГО УЗЛА ---');
+            console.log(JSON.stringify(payload, null, 2));
+            console.log('-----------------------------------');
+            
+            alert('Форма валидна и готова к отправке! Откройте консоль (F12) для просмотра данных.');
+            
+            // В реальном проекте здесь будет отправка на сервер:
+            // this.submit();
+        });
+    </script>
+</body>
+</html>

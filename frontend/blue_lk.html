@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduStories — Личный кабинет Книгочея</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Lora:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              "heading-noble": ['"Playfair Display"', "serif"],
+              "body-noble": ["Lora", "serif"],
+            },
+            colors: {
+              gold: "#c5a67c",
+              "gold-bright": "#d4b483",
+              "gold-muted": "rgba(197,166,124,0.12)",
+              dark: "#050a0a",
+            },
+            boxShadow: {
+              gold: "0 0 25px rgba(212,175,55,0.35)",
+            },
+            spacing: {
+              header: "72px",
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      :root {
+        --gold: #c5a67c;
+        --gold-bright: #d4b483;
+      }
+
+      body {
+        background-color: #020617;
+      }
+
+      .lk-main-bg {
+        background-image:
+          radial-gradient(circle at top left, rgba(197, 166, 124, 0.12) 0, transparent 55%),
+          radial-gradient(circle at bottom right, rgba(26, 86, 219, 0.35) 0, transparent 55%),
+          radial-gradient(circle at 120% 0, rgba(197, 166, 124, 0.08) 0, transparent 55%);
+        background-color: #02081a;
+      }
+
+      .lk-card {
+        background: linear-gradient(145deg, rgba(6, 14, 30, 0.98), rgba(5, 13, 30, 0.96));
+        border: 1px solid rgba(197, 166, 124, 0.32);
+        box-shadow: 0 0 24px rgba(0, 0, 0, 0.65);
+      }
+
+      .lk-card-soft {
+        background: linear-gradient(145deg, rgba(4, 12, 28, 0.98), rgba(3, 10, 24, 0.96));
+        border: 1px solid rgba(197, 166, 124, 0.16);
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.55);
+      }
+
+      .lk-section-border {
+        box-shadow: 0 0 0 1px rgba(197, 166, 124, 0.32);
+      }
+
+      .lk-tab {
+        position: relative;
+        transition: color 0.25s ease, background 0.25s ease;
+      }
+
+      .lk-tab::after {
+        content: "";
+        position: absolute;
+        left: 18px;
+        right: 18px;
+        bottom: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        opacity: 0;
+        transform: scaleX(0.85);
+        transform-origin: center;
+        transition: opacity 0.25s ease, transform 0.25s ease;
+      }
+
+      .lk-tab-active {
+        background: linear-gradient(to top, rgba(197, 166, 124, 0.22), rgba(197, 166, 124, 0.02));
+        color: #fef9ec;
+      }
+
+      .lk-tab-active::after {
+        opacity: 1;
+        transform: scaleX(1);
+      }
+
+      .xp-bar {
+        position: relative;
+        overflow: hidden;
+        border-radius: 9999px;
+      }
+
+      .xp-bar-track {
+        background: #060f23;
+      }
+
+      .xp-bar-fill {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, #1fc4ff, #42e4ff, #f1d28a);
+        box-shadow:
+          0 0 16px rgba(31, 196, 255, 0.7),
+          0 0 26px rgba(241, 210, 138, 0.9);
+      }
+
+      .diamond-badge {
+        position: relative;
+        width: 3rem;
+        height: 3rem;
+        transform: rotate(45deg);
+        border-radius: 0.9rem;
+        border: 1px solid rgba(197, 166, 124, 0.9);
+        background:
+          radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.22), transparent 55%),
+          linear-gradient(135deg, rgba(4, 12, 28, 1), rgba(13, 40, 80, 1));
+        box-shadow:
+          0 0 12px rgba(197, 166, 124, 0.85),
+          0 0 35px rgba(10, 24, 52, 0.9);
+      }
+
+      .diamond-badge span {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: rotate(-45deg);
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #fdf7e9;
+      }
+
+      .support-btn {
+        position: fixed;
+        right: 2.5rem;
+        bottom: 1.75rem;
+        z-index: 40;
+        box-shadow:
+          0 0 18px rgba(197, 166, 124, 0.65),
+          0 0 38px rgba(18, 72, 155, 0.9);
+      }
+
+      .support-btn::before {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        border-radius: 9999px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        pointer-events: none;
+      }
+
+      .gold-scrollbar::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+
+      .gold-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .gold-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(197, 166, 124, 0.5);
+        border-radius: 9999px;
+      }
+
+      .gold-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(197, 166, 124, 0.8);
+      }
+    </style>
+  </head>
+
+  <body class="min-h-screen bg-[#020617] text-gray-100 font-body-noble">
+    <div class="lk-main-bg min-h-screen">
+      <div class="min-h-screen bg-gradient-to-b from-[rgba(3,10,24,0.98)] via-[rgba(2,6,23,0.99)] to-[#020617] flex flex-col">
+        <!-- HEADER -->
+        <header class="border-b border-[rgba(197,166,124,0.32)] bg-[rgba(3,10,24,0.98)]/95 backdrop-blur-sm">
+          <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-10">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 items-center justify-center rounded-full border border-gold bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.3),transparent_55%),#020617] shadow-[0_0_18px_rgba(197,166,124,0.7)]">
+                <span class="font-heading-noble text-lg text-gold-bright">ES</span>
+              </div>
+              <div class="flex flex-col leading-tight">
+                <span class="font-heading-noble text-lg text-white">EduStories</span>
+                <span class="text-[9px] uppercase tracking-[0.45em] text-gold/80">Знание — это оружие</span>
+              </div>
+            </div>
+
+            <nav class="hidden items-center gap-6 text-[11px] uppercase tracking-[0.26em] text-gold/80 md:flex">
+              <a href="#" class="hover:text-gold-bright">Главная</a>
+              <a href="#" class="hover:text-gold-bright">Контракты</a>
+              <a href="#" class="hover:text-gold-bright">Бестиарий</a>
+              <a href="#" class="hover:text-gold-bright">Алхимия</a>
+              <a href="#" class="hover:text-gold-bright">Таверна</a>
+              <a href="#" class="text-gold-bright">Книгочей</a>
+            </nav>
+
+            <div class="flex items-center gap-3">
+              <button class="hidden items-center gap-2 rounded-full border border-[rgba(197,166,124,0.6)] bg-[rgba(4,12,28,0.9)] px-3.5 py-1.5 text-[10px] uppercase tracking-[0.24em] text-gold-bright/90 shadow-[0_0_10px_rgba(0,0,0,0.45)] hover:shadow-[0_0_18px_rgba(197,166,124,0.45)] md:flex">
+                <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[rgba(2,6,23,0.9)]">
+                  <span class="h-2 w-2 rounded-full bg-gold-bright"></span>
+                </span>
+                День / Ночь
+              </button>
+
+              <a
+                href="#"
+                class="flex items-center gap-2 rounded-full border border-[rgba(197,166,124,0.6)] bg-[rgba(5,13,30,0.9)] px-3 py-1.5 text-left shadow-[0_0_14px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(197,166,124,0.4)]"
+              >
+                <div class="relative h-8 w-8 shrink-0 rounded-full border border-gold-muted bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.25),transparent_55%),#020617]"></div>
+                <div class="flex flex-col leading-tight">
+                  <span class="text-[10px] uppercase tracking-[0.32em] text-gold-bright">Книгочей</span>
+                  <span class="text-[11px] text-slate-200">240 XP • Уровень 1</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </header>
+
+        <main class="flex-1">
+          <div class="mx-auto max-w-7xl px-4 pb-10 pt-6 sm:px-6 lg:px-10 lg:pt-9">
+            <!-- PROFILE HEADER -->
+            <section class="lk-card-soft lk-section-border rounded-3xl px-5 py-6 sm:px-6 lg:px-8 lg:py-7">
+              <div class="flex flex-col gap-6 lg:flex-row lg:items-stretch">
+                <div class="flex items-center gap-5 lg:w-[340px]">
+                  <div class="relative shrink-0">
+                    <div class="h-28 w-28 rounded-full border border-gold-muted bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.18),transparent_55%),radial-gradient(circle_at_80%_80%,rgba(197,166,124,0.4),transparent_55%),#020617] shadow-[0_0_32px_rgba(197,166,124,0.6)]"></div>
+                    <div class="pointer-events-none absolute inset-1 rounded-full border border-[rgba(255,255,255,0.18)]"></div>
+                  </div>
+                  <div class="space-y-2">
+                    <p class="text-[10px] uppercase tracking-[0.4em] text-gold/75">EduStories • Знание — это оружие</p>
+                    <h1 class="font-heading-noble text-2xl leading-tight text-white sm:text-3xl md:text-[32px]">
+                      Тестовый <span class="text-gold-bright">Книгочей</span>
+                    </h1>
+                    <p class="text-sm text-gold-bright/90">Искатель Первых Строк</p>
+                  </div>
+                </div>
+
+                <div class="flex-1 space-y-4">
+                  <div>
+                    <div class="flex flex-wrap items-center gap-4">
+                      <div class="diamond-badge shrink-0">
+                        <span>1</span>
+                      </div>
+                      <div class="min-w-[200px] flex-1">
+                        <div class="flex items-center justify-between text-[10px] uppercase tracking-[0.3em] text-gold/90">
+                          <span>Уровень 1</span>
+                          <span>240 / 5 000 XP</span>
+                        </div>
+                        <div class="mt-3 h-2 w-full xp-bar xp-bar-track">
+                          <div class="xp-bar-fill w-[12%]"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="mt-3 text-xs text-slate-300">
+                      Пройдите ещё <span class="text-gold-bright">4 истории</span> или выполните
+                      <span class="text-gold-bright"> 6 контрактов</span>, чтобы перейти на уровень 2.
+                    </p>
+                  </div>
+
+                  <dl class="grid gap-3 text-[11px] text-slate-200 sm:grid-cols-3">
+                    <div class="rounded-xl border border-[rgba(197,166,124,0.4)] bg-[rgba(4,12,28,0.85)] px-3.5 py-2.5">
+                      <dt class="text-[9px] uppercase tracking-[0.32em] text-gold/70">Книг в библиотеке</dt>
+                      <dd class="mt-1 text-sm text-white">24</dd>
+                    </div>
+                    <div class="rounded-xl border border-[rgba(197,166,124,0.4)] bg-[rgba(4,12,28,0.85)] px-3.5 py-2.5">
+                      <dt class="text-[9px] uppercase tracking-[0.32em] text-gold/70">Прочитано</dt>
+                      <dd class="mt-1 text-sm text-white">8</dd>
+                    </div>
+                    <div class="rounded-xl border border-[rgba(197,166,124,0.4)] bg-[rgba(4,12,28,0.85)] px-3.5 py-2.5">
+                      <dt class="text-[9px] uppercase tracking-[0.32em] text-gold/70">Серия: без перерыва</dt>
+                      <dd class="mt-1 text-sm text-white">14 дней</dd>
+                    </div>
+                  </dl>
+                </div>
+
+                <div class="relative hidden min-h-[150px] flex-[0.9] overflow-hidden rounded-2xl border border-[rgba(197,166,124,0.45)] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_55%),linear-gradient(135deg,#050b1a,#0b234a)] p-5 lg:flex">
+                  <div class="z-10 flex flex-1 flex-col justify-between">
+                    <div class="flex items-center justify-between gap-2">
+                      <p class="text-[11px] uppercase tracking-[0.3em] text-gold/80">Зал обсуждений</p>
+                      <span class="rounded-full border border-gold/70 bg-[rgba(5,12,28,0.85)] px-2 py-0.5 text-[10px] uppercase tracking-[0.24em] text-gold-bright">
+                        В разработке
+                      </span>
+                    </div>
+                    <p class="mt-2 max-w-xs text-sm text-slate-100">
+                      Общайтесь с гильдией Книгочеев, делитесь открытиями и находите новых союзников для приключений.
+                    </p>
+                    <a
+                      href="#"
+                      class="mt-4 inline-flex w-max items-center gap-2 rounded-full border border-[rgba(197,166,124,0.75)] bg-[rgba(5,13,30,0.9)] px-4 py-1.5 text-[11px] uppercase tracking-[0.24em] text-gold-bright/90 hover:shadow-[0_0_18px_rgba(197,166,124,0.6)]"
+                    >
+                      Войти в зал <span class="text-base leading-none">→</span>
+                    </a>
+                  </div>
+                  <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_120%_0,#fbbf24_0,transparent_55%)] opacity-40"></div>
+                </div>
+              </div>
+            </section>
+
+            <!-- LK NAV -->
+            <nav class="mt-7 overflow-x-auto rounded-2xl border border-[rgba(197,166,124,0.35)] bg-[rgba(3,10,24,0.97)] gold-scrollbar">
+              <div class="flex min-w-max divide-x divide-[rgba(197,166,124,0.22)] text-[11px] uppercase tracking-[0.22em]">
+                <a
+                  href="#"
+                  data-lk-tab="overview"
+                  class="lk-tab lk-tab-active flex-1 px-5 py-3.5 text-center font-medium text-gold-bright sm:px-7 sm:py-4 md:px-10"
+                >
+                  Обзор
+                </a>
+                <a
+                  href="#"
+                  data-lk-tab="library"
+                  class="lk-tab flex-1 px-5 py-3.5 text-center font-medium text-gold/80 hover:bg-[rgba(197,166,124,0.06)] hover:text-gold-bright sm:px-7 sm:py-4 md:px-10"
+                >
+                  Библиотека
+                </a>
+                <a
+                  href="#"
+                  data-lk-tab="inventory"
+                  class="lk-tab flex-1 px-5 py-3.5 text-center font-medium text-gold/80 hover:bg-[rgba(197,166,124,0.06)] hover:text-gold-bright sm:px-7 sm:py-4 md:px-10"
+                >
+                  Инвентарь
+                </a>
+                <a
+                  href="#"
+                  data-lk-tab="achievements"
+                  class="lk-tab flex-1 px-5 py-3.5 text-center font-medium text-gold/80 hover:bg-[rgba(197,166,124,0.06)] hover:text-gold-bright sm:px-7 sm:py-4 md:px-10"
+                >
+                  Достижения
+                </a>
+                <a
+                  href="#"
+                  data-lk-tab="collector"
+                  class="lk-tab flex-1 px-5 py-3.5 text-center font-medium text-gold/80 hover:bg-[rgba(197,166,124,0.06)] hover:text-gold-bright sm:px-7 sm:py-4 md:px-10"
+                >
+                  Коллекционер
+                </a>
+              </div>
+            </nav>
+
+            <!-- PANELS WRAPPER -->
+            <section class="mt-8 space-y-6 pb-10">
+              <!-- OVERVIEW PANEL -->
+              <div data-lk-panel="overview" class="space-y-6">
+                <div class="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+                  <div class="space-y-6">
+                    <section class="lk-card rounded-2xl px-5 py-5 sm:px-6">
+                      <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-2">
+                          <div class="flex h-7 w-7 items-center justify-center rounded-md border border-gold bg-[rgba(5,13,30,0.95)]">
+                            <span class="text-gold-bright">📖</span>
+                          </div>
+                          <h2 class="font-heading-noble text-lg text-white">Сейчас читаю</h2>
+                        </div>
+                        <span class="text-[10px] uppercase tracking-[0.3em] text-gold/80">2 истории</span>
+                      </div>
+
+                      <div class="mt-4 space-y-4">
+                        <!-- Reading item 1 -->
+                        <article class="flex gap-4 rounded-xl bg-[rgba(6,13,28,0.92)] p-3.5">
+                          <div class="h-20 w-16 shrink-0 overflow-hidden rounded-lg border border-[rgba(197,166,124,0.4)] bg-slate-900/70">
+                            <div class="flex h-full w-full items-center justify-center text-[9px] uppercase tracking-[0.24em] text-slate-400">
+                              Обложка
+                            </div>
+                          </div>
+                          <div class="flex flex-1 flex-col gap-1.5">
+                            <div class="flex items-start justify-between gap-2">
+                              <div>
+                                <h3 class="font-heading-noble text-sm text-white">Маленький принц</h3>
+                                <p class="text-xs text-slate-300">Антуан де Сент-Экзюпери</p>
+                              </div>
+                              <span class="rounded-full border border-sky-400/70 px-2 py-0.5 text-[9px] uppercase tracking-[0.24em] text-sky-300">
+                                Читаю
+                              </span>
+                            </div>
+                            <div class="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-[#050b18]">
+                              <div class="h-full w-[78%] rounded-full bg-sky-400"></div>
+                            </div>
+                            <div class="flex items-center justify-between text-[11px] text-slate-300">
+                              <span>78%</span>
+                              <button class="text-[10px] uppercase tracking-[0.24em] text-gold-bright hover:text-gold">
+                                Продолжить чтение
+                              </button>
+                            </div>
+                          </div>
+                        </article>
+
+                        <!-- Reading item 2 -->
+                        <article class="flex gap-4 rounded-xl bg-[rgba(6,13,28,0.92)] p-3.5">
+                          <div class="h-20 w-16 shrink-0 overflow-hidden rounded-lg border border-[rgba(197,166,124,0.4)] bg-slate-900/70">
+                            <div class="flex h-full w-full items-center justify-center text-[9px] uppercase tracking-[0.24em] text-slate-400">
+                              Обложка
+                            </div>
+                          </div>
+                          <div class="flex flex-1 flex-col gap-1.5">
+                            <div class="flex items-start justify-between gap-2">
+                              <div>
+                                <h3 class="font-heading-noble text-sm text-white">Хоббит</h3>
+                                <p class="text-xs text-slate-300">Дж. Р. Р. Толкин</p>
+                              </div>
+                              <span class="rounded-full border border-gold/80 px-2 py-0.5 text-[9px] uppercase tracking-[0.24em] text-gold-bright">
+                                Прочитано
+                              </span>
+                            </div>
+                            <div class="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-[#050b18]">
+                              <div class="h-full w-full rounded-full bg-gold"></div>
+                            </div>
+                            <div class="flex items-center justify-between text-[11px] text-slate-300">
+                              <span>100%</span>
+                              <button class="text-[10px] uppercase tracking-[0.24em] text-gold-bright hover:text-gold">
+                                Повторить путешествие
+                              </button>
+                            </div>
+                          </div>
+                        </article>
+                      </div>
+                    </section>
+
+                    <!-- Ближайшая цель -->
+                    <section class="lk-card rounded-2xl px-5 py-5 sm:px-6">
+                      <div class="flex items-center gap-2">
+                        <span class="text-lg">✦</span>
+                        <h2 class="font-heading-noble text-lg text-white">Ближайшая цель</h2>
+                      </div>
+                      <p class="mt-3 text-sm text-slate-200">
+                        Пройдите «Долина Первых Строк», чтобы получить следующий осколок Великой Книги.
+                      </p>
+                      <div class="mt-4 flex items-center justify-between gap-3 text-sm text-slate-200">
+                        <div class="flex items-center gap-2">
+                          <span class="inline-flex h-7 w-7 items-center justify-center rounded-md border border-gold bg-[rgba(5,13,30,0.95)] text-xs uppercase tracking-[0.24em] text-gold-bright">
+                            Цель
+                          </span>
+                          <span class="text-xs text-slate-300">0 / 6 осколков</span>
+                        </div>
+                        <a
+                          href="#"
+                          class="inline-flex items-center gap-2 rounded-full border border-gold px-3 py-1.5 text-[10px] uppercase tracking-[0.24em] text-gold-bright hover:shadow-[0_0_18px_rgba(197,166,124,0.5)]"
+                        >
+                          К карте историй <span class="text-base leading-none">→</span>
+                        </a>
+                      </div>
+                    </section>
+                  </div>
+
+                  <!-- Правая колонка -->
+                  <section class="lk-card rounded-2xl px-5 py-5 sm:px-6">
+                    <header class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                      <div>
+                        <p class="text-[11px] uppercase tracking-[0.35em] text-gold/80">Великая Книга</p>
+                        <h2 class="font-heading-noble text-xl text-white sm:text-2xl">Восстановление Великой Книги</h2>
+                      </div>
+                      <p class="text-xs text-slate-300">0 из 6 осколков открыто</p>
+                    </header>
+
+                    <div class="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+                      <div class="rounded-2xl border border-[rgba(197,166,124,0.3)] bg-[rgba(2,7,23,0.95)] p-4">
+                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                          <div class="flex flex-col items-center justify-between rounded-xl border border-[rgba(197,166,124,0.3)] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_60%),#020617] px-3 py-3 text-center text-[11px] text-slate-200">
+                            <div class="flex h-14 w-full items-center justify-center rounded-lg border border-dashed border-[rgba(197,166,124,0.35)] bg-[rgba(2,6,23,0.96)]">
+                              <span class="text-xs text-slate-400">Осколок</span>
+                            </div>
+                            <div class="mt-2 flex items-center justify-center gap-1 text-[11px] text-slate-100">
+                              <span>Долина</span>
+                              <span class="text-[13px] text-slate-500">•</span>
+                              <span class="text-[10px] text-slate-400">0%</span>
+                            </div>
+                          </div>
+                          <div class="flex flex-col items-center justify-between rounded-xl border border-[rgba(197,166,124,0.3)] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_60%),#020617] px-3 py-3 text-center text-[11px] text-slate-200">
+                            <div class="flex h-14 w-full items-center justify-center rounded-lg border border-dashed border-[rgba(197,166,124,0.35)] bg-[rgba(2,6,23,0.96)]">
+                              <span class="text-xs text-slate-400">Осколок</span>
+                            </div>
+                            <div class="mt-2 flex items-center justify-center gap-1 text-[11px] text-slate-100">
+                              <span>Замок</span>
+                              <span class="text-[13px] text-slate-500">•</span>
+                              <span class="text-[10px] text-slate-400">0%</span>
+                            </div>
+                          </div>
+                          <div class="flex flex-col items-center justify-between rounded-xl border border-[rgba(197,166,124,0.3)] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_60%),#020617] px-3 py-3 text-center text-[11px] text-slate-200">
+                            <div class="flex h-14 w-full items-center justify-center rounded-lg border border-dashed border-[rgba(197,166,124,0.35)] bg-[rgba(2,6,23,0.96)]">
+                              <span class="text-xs text-slate-400">Осколок</span>
+                            </div>
+                            <div class="mt-2 flex items-center justify-center gap-1 text-[11px] text-slate-100">
+                              <span>Лес</span>
+                              <span class="text-[13px] text-slate-500">•</span>
+                              <span class="text-[10px] text-slate-400">0%</span>
+                            </div>
+                          </div>
+                          <div class="flex flex-col items-center justify-between rounded-xl border border-[rgba(197,166,124,0.3)] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_60%),#020617] px-3 py-3 text-center text-[11px] text-slate-200">
+                            <div class="flex h-14 w-full items-center justify-center rounded-lg border border-dashed border-[rgba(197,166,124,0.35)] bg-[rgba(2,6,23,0.96)]">
+                              <span class="text-xs text-slate-400">Осколок</span>
+                            </div>
+                            <div class="mt-2 flex items-center justify-center gap-1 text-[11px] text-slate-100">
+                              <span>Океан</span>
+                              <span class="text-[13px] text-slate-500">•</span>
+                              <span class="text-[10px] text-slate-400">0%</span>
+                            </div>
+                          </div>
+                          <div class="flex flex-col items-center justify-between rounded-xl border border-[rgba(197,166,124,0.3)] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_60%),#020617] px-3 py-3 text-center text-[11px] text-slate-200">
+                            <div class="flex h-14 w-full items-center justify-center rounded-lg border border-dashed border-[rgba(197,166,124,0.35)] bg-[rgba(2,6,23,0.96)]">
+                              <span class="text-xs text-slate-400">Осколок</span>
+                            </div>
+                            <div class="mt-2 flex items-center justify-center gap-1 text-[11px] text-slate-100">
+                              <span>Город</span>
+                              <span class="text-[13px] text-slate-500">•</span>
+                              <span class="text-[10px] text-slate-400">0%</span>
+                            </div>
+                          </div>
+                          <div class="flex flex-col items-center justify-between rounded-xl border border-[rgba(197,166,124,0.3)] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_60%),#020617] px-3 py-3 text-center text-[11px] text-slate-200">
+                            <div class="flex h-14 w-full items-center justify-center rounded-lg border border-dashed border-[rgba(197,166,124,0.35)] bg-[rgba(2,6,23,0.96)]">
+                              <span class="text-xs text-slate-400">Осколок</span>
+                            </div>
+                            <div class="mt-2 flex items-center justify-center gap-1 text-[11px] text-slate-100">
+                              <span>Библиотека</span>
+                              <span class="text-[13px] text-slate-500">•</span>
+                              <span class="text-[10px] text-slate-400">0%</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                          <p class="text-xs text-slate-200">
+                            Соберите все осколки, чтобы открыть особый титул и знак пути.
+                          </p>
+                          <a
+                            href="#"
+                            class="inline-flex items-center justify-center rounded-full border border-gold px-4 py-1.5 text-[10px] uppercase tracking-[0.24em] text-gold-bright hover:shadow-[0_0_18px_rgba(197,166,124,0.5)]"
+                          >
+                            Продолжить путь <span class="ml-1 text-base leading-none">→</span>
+                          </a>
+                        </div>
+                      </div>
+
+                      <aside class="lk-card-soft rounded-2xl p-4">
+                        <div class="flex items-center gap-2">
+                          <span class="text-lg">✸</span>
+                          <h3 class="font-heading-noble text-lg text-white">Инвентарь</h3>
+                        </div>
+                        <dl class="mt-4 space-y-2 text-sm text-slate-100">
+                          <div class="flex items-center justify-between border-b border-[rgba(15,23,42,0.65)] pb-1">
+                            <dt class="flex items-center gap-2 text-xs text-slate-200">
+                              <span class="h-1.5 w-1.5 rounded-full bg-gold"></span>
+                              Золотые чернила
+                            </dt>
+                            <dd class="text-sm text-gold-bright">1 240</dd>
+                          </div>
+                          <div class="flex items-center justify-between border-b border-[rgba(15,23,42,0.65)] pb-1">
+                            <dt class="flex items-center gap-2 text-xs text-slate-200">
+                              <span class="h-1.5 w-1.5 rounded-full bg-gold"></span>
+                              Кристаллы памяти
+                            </dt>
+                            <dd class="text-sm text-gold-bright">86</dd>
+                          </div>
+                          <div class="flex items-center justify-between border-b border-[rgba(15,23,42,0.65)] pb-1">
+                            <dt class="flex items-center gap-2 text-xs text-slate-200">
+                              <span class="h-1.5 w-1.5 rounded-full bg-gold"></span>
+                              Жетоны гильдии
+                            </dt>
+                            <dd class="text-sm text-gold-bright">315</dd>
+                          </div>
+                          <div class="flex items-center justify-between pb-1">
+                            <dt class="flex items-center gap-2 text-xs text-slate-200">
+                              <span class="h-1.5 w-1.5 rounded-full bg-gold"></span>
+                              Осколки Великой Книги
+                            </dt>
+                            <dd class="text-sm text-gold-bright">0 / 6</dd>
+                          </div>
+                        </dl>
+                        <div class="mt-4 grid grid-cols-3 gap-2">
+                          <div class="flex h-20 items-center justify-center rounded-lg border border-[rgba(197,166,124,0.35)] bg-[rgba(3,10,24,0.95)] text-[10px] uppercase tracking-[0.18em] text-slate-300">
+                            Артефакт
+                          </div>
+                          <div class="flex h-20 items-center justify-center rounded-lg border border-[rgba(197,166,124,0.35)] bg-[rgba(3,10,24,0.95)] text-[10px] uppercase tracking-[0.18em] text-slate-300">
+                            Артефакт
+                          </div>
+                          <div class="flex h-20 items-center justify-center rounded-lg border border-[rgba(197,166,124,0.35)] bg-[rgba(3,10,24,0.95)] text-[10px] uppercase tracking-[0.18em] text-slate-300">
+                            Артефакт
+                          </div>
+                        </div>
+                        <a
+                          href="#"
+                          class="mt-4 inline-flex w-full items-center justify-center rounded-md border border-gold px-4 py-2 text-[11px] uppercase tracking-[0.24em] text-gold-bright hover:shadow-[0_0_18px_rgba(197,166,124,0.5)]"
+                        >
+                          Открыть инвентарь
+                        </a>
+                      </aside>
+                    </div>
+                  </section>
+                </div>
+
+                <!-- Краткие достижения -->
+                <section class="lk-card-soft rounded-2xl px-5 py-4 sm:px-6 sm:py-5">
+                  <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <h2 class="font-heading-noble text-lg text-white">Достижения</h2>
+                      <p class="text-xs text-slate-300">3 получено • 8 всего</p>
+                    </div>
+                    <div class="grid flex-1 gap-3 sm:grid-cols-3">
+                      <div class="flex items-center gap-3 rounded-xl border border-gold bg-[rgba(5,13,30,0.96)] px-3.5 py-3 text-sm shadow-[0_0_16px_rgba(197,166,124,0.6)]">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-full border border-gold bg-[rgba(3,10,24,0.96)] text-lg">
+                          📜
+                        </div>
+                        <div>
+                          <p class="font-heading-noble text-sm text-white">Первый том</p>
+                          <p class="text-[11px] text-slate-300">Прочитана первая книга</p>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-3 rounded-xl border border-[rgba(197,166,124,0.4)] bg-[rgba(3,10,24,0.96)] px-3.5 py-3 text-sm">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-full border border-gold bg-[rgba(3,10,24,0.96)] text-lg">
+                          📜
+                        </div>
+                        <div>
+                          <p class="font-heading-noble text-sm text-white">Огонь чтения</p>
+                          <p class="text-[11px] text-slate-300">14 дней без перерыва</p>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-3 rounded-xl border border-[rgba(197,166,124,0.4)] bg-[rgba(3,10,24,0.96)] px-3.5 py-3 text-sm">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-full border border-gold bg-[rgba(3,10,24,0.96)] text-lg">
+                          📜
+                        </div>
+                        <div>
+                          <p class="font-heading-noble text-sm text-white">Внимательный критик</p>
+                          <p class="text-[11px] text-slate-300">Поставлено пять оценок</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+
+              <!-- LIBRARY PANEL -->
+              <div data-lk-panel="library" class="space-y-6 hidden">
+                <header class="space-y-1">
+                  <h2 class="font-heading-noble text-3xl text-white">Моя библиотека</h2>
+                  <p class="text-sm text-slate-300">24 книги • 8 прочитано • 3 читаю</p>
+                </header>
+
+                <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                  <div class="flex flex-wrap gap-3">
+                    <button class="rounded-full border border-gold bg-[rgba(5,13,30,0.96)] px-4 py-1.5 text-[11px] uppercase tracking-[0.24em] text-gold-bright shadow-[0_0_15px_rgba(197,166,124,0.5)]">
+                      Все
+                    </button>
+                    <button class="rounded-full border border-[rgba(197,166,124,0.35)] px-4 py-1.5 text-[11px] uppercase tracking-[0.24em] text-gold/80 hover:border-gold hover:text-gold-bright">
+                      Читаю
+                    </button>
+                    <button class="rounded-full border border-[rgba(197,166,124,0.35)] px-4 py-1.5 text-[11px] uppercase tracking-[0.24em] text-gold/80 hover:border-gold hover:text-gold-bright">
+                      Прочитано
+                    </button>
+                    <button class="rounded-full border border-[rgba(197,166,124,0.35)] px-4 py-1.5 text-[11px] uppercase tracking-[0.24em] text-gold/80 hover:border-gold hover:text-gold-bright">
+                      Хочу прочитать
+                    </button>
+                  </div>
+
+                  <div class="relative w-full max-w-md">
+                    <input
+                      type="text"
+                      placeholder="Найти книгу"
+                      class="w-full rounded-full border border-[rgba(197,166,124,0.4)] bg-[rgba(3,10,24,0.96)] px-4 py-2.5 pr-10 text-sm text-slate-100 placeholder:text-slate-500 focus:border-gold-bright focus:outline-none"
+                    />
+                    <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gold/80">
+                      🔍
+                    </span>
+                  </div>
+                </div>
+
+                <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+                  <!-- Несколько карточек книг -->
+                  <article class="flex h-full flex-col rounded-2xl border border-[rgba(197,166,124,0.4)] bg-[rgba(5,13,30,0.98)] p-3">
+                    <div class="relative overflow-hidden rounded-xl border border-[rgba(197,166,124,0.35)] bg-slate-900/80 pb-[135%]">
+                      <div class="absolute inset-0 flex items-center justify-center text-[10px] uppercase tracking-[0.24em] text-slate-400">
+                        Обложка книги
+                      </div>
+                    </div>
+                    <div class="mt-4 flex flex-1 flex-col gap-2">
+                      <div>
+                        <h3 class="font-heading-noble text-base text-white">Маленький принц</h3>
+                        <p class="text-xs text-slate-300">Антуан де Сент-Экзюпери</p>
+                      </div>
+                      <div class="flex items-center justify-between text-xs text-slate-300">
+                        <span class="text-sky-300">Читаю</span>
+                        <span>78%</span>
+                      </div>
+                      <div class="h-1.5 w-full overflow-hidden rounded-full bg-[#050b18]">
+                        <div class="h-full w-[78%] rounded-full bg-sky-400"></div>
+                      </div>
+                    </div>
+                    <button class="mt-3 w-full rounded-md border border-[rgba(197,166,124,0.6)] px-3 py-2 text-[11px] uppercase tracking-[0.24em] text-gold-bright hover:border-gold hover:shadow-[0_0_15px_rgba(197,166,124,0.5)]">
+                      Продолжить чтение
+                    </button>
+                  </article>
+
+                  <article class="flex h-full flex-col rounded-2xl border border-[rgba(197,166,124,0.4)] bg-[rgba(5,13,30,0.98)] p-3">
+                    <div class="relative overflow-hidden rounded-xl border border-[rgba(197,166,124,0.35)] bg-slate-900/80 pb-[135%]">
+                      <div class="absolute inset-0 flex items-center justify-center text-[10px] uppercase tracking-[0.24em] text-slate-400">
+                        Обложка книги
+                      </div>
+                    </div>
+                    <div class="mt-4 flex flex-1 flex-col gap-2">
+                      <div>
+                        <h3 class="font-heading-noble text-base text-white">Хоббит</h3>
+                        <p class="text-xs text-slate-300">Дж. Р. Р. Толкин</p>
+                      </div>
+                      <div class="flex items-center justify-between text-xs text-slate-300">
+                        <span class="text-gold-bright">Прочитано</span>
+                        <span>100%</span>
+                      </div>
+                      <div class="h-1.5 w-full overflow-hidden rounded-full bg-[#050b18]">
+                        <div class="h-full w-full rounded-full bg-gold"></div>
+                      </div>
+                    </div>
+                    <button class="mt-3 w-full rounded-md border border-[rgba(197,166,124,0.6)] px-3 py-2 text-[11px] uppercase tracking-[0.24em] text-gold-bright hover:border-gold hover:shadow-[0_0_15px_rgba(197,166,124,0.5)]">
+                      Прочитано
+                    </button>
+                  </article>
+
+                  <article class="flex h-full flex-col rounded-2xl border border-[rgba(197,166,124,0.4)] bg-[rgba(5,13,30,0.98)] p-3">
+                    <div class="relative overflow-hidden rounded-xl border border-[rgba(197,166,124,0.35)] bg-slate-900/80 pb-[135%]">
+                      <div class="absolute inset-0 flex items-center justify-center text-[10px] uppercase tracking-[0.24em] text-slate-400">
+                        Обложка книги
+                      </div>
+                    </div>
+                    <div class="mt-4 flex flex-1 flex-col gap-2">
+                      <div>
+                        <h3 class="font-heading-noble text-base text-white">Чучело</h3>
+                        <p class="text-xs text-slate-300">Владимир Железников</p>
+                      </div>
+                      <div class="flex items-center justify-between text-xs text-slate-300">
+                        <span class="text-sky-300">Читаю</span>
+                        <span>45%</span>
+                      </div>
+                      <div class="h-1.5 w-full overflow-hidden rounded-full bg-[#050b18]">
+                        <div class="h-full w-[45%] rounded-full bg-sky-400"></div>
+                      </div>
+                    </div>
+                    <button class="mt-3 w-full rounded-md border border-[rgba(197,166,124,0.6)] px-3 py-2 text-[11px] uppercase tracking-[0.24em] text-gold-bright hover:border-gold hover:shadow-[0_0_15px_rgba(197,166,124,0.5)]">
+                      Продолжить чтение
+                    </button>
+                  </article>
+
+                  <article class="flex h-full flex-col rounded-2xl border border-[rgba(197,166,124,0.4)] bg-[rgba(5,13,30,0.98)] p-3">
+                    <div class="relative overflow-hidden rounded-xl border border-[rgba(197,166,124,0.35)] bg-slate-900/80 pb-[135%]">
+                      <div class="absolute inset-0 flex items-center justify-center text-[10px] uppercase tracking-[0.24em] text-slate-400">
+                        Обложка книги
+                      </div>
+                    </div>
+                    <div class="mt-4 flex flex-1 flex-col gap-2">
+                      <div>
+                        <h3 class="font-heading-noble text-base text-white">451° по Фаренгейту</h3>
+                        <p class="text-xs text-slate-300">Рэй Брэдбери</p>
+                      </div>
+                      <div class="flex items-center justify-between text-xs text-slate-300">
+                        <span class="text-gold/80">Хочу прочитать</span>
+                        <span>0%</span>
+                      </div>
+                      <div class="h-1.5 w-full overflow-hidden rounded-full bg-[#050b18]">
+                        <div class="h-full w-0 rounded-full bg-sky-400"></div>
+                      </div>
+                    </div>
+                    <button class="mt-3 w-full rounded-md border border-[rgba(197,166,124,0.6)] px-3 py-2 text-[11px] uppercase tracking-[0.24em] text-gold-bright hover:border-gold hover:shadow-[0_0_15px_rgba(197,166,124,0.5)]">
+                      В списке к чтению
+                    </button>
+                  </article>
+                </div>
+              </div>
+
+              <!-- INVENTORY PANEL (краткая версия, так как основной вид есть на Обзоре) -->
+              <div data-lk-panel="inventory" class="space-y-6 hidden">
+                <header class="space-y-1">
+                  <h2 class="font-heading-noble text-3xl text-white">Инвентарь</h2>
+                  <p class="text-sm text-slate-300">Собранные ресурсы и артефакты путешествия</p>
+                </header>
+
+                <div class="grid gap-4 sm:grid-cols-3">
+                  <div class="rounded-2xl border border-[rgba(197,166,124,0.5)] bg-[rgba(5,13,30,0.98)] px-4 py-3">
+                    <p class="text-xs uppercase tracking-[0.3em] text-gold/80">Золотые чернила</p>
+                    <p class="mt-2 text-xl text-gold-bright">1 240</p>
+                  </div>
+                  <div class="rounded-2xl border border-[rgba(197,166,124,0.5)] bg-[rgba(5,13,30,0.98)] px-4 py-3">
+                    <p class="text-xs uppercase tracking-[0.3em] text-gold/80">Кристаллы памяти</p>
+                    <p class="mt-2 text-xl text-gold-bright">86</p>
+                  </div>
+                  <div class="rounded-2xl border border-[rgba(197,166,124,0.5)] bg-[rgba(5,13,30,0.98)] px-4 py-3">
+                    <p class="text-xs uppercase tracking-[0.3em] text-gold/80">Жетоны гильдии</p>
+                    <p class="mt-2 text-xl text-gold-bright">315</p>
+                  </div>
+                </div>
+
+                <section class="space-y-4">
+                  <div class="flex items-center gap-2">
+                    <span class="text-lg">✦</span>
+                    <h3 class="font-heading-noble text-2xl text-white">Артефакты</h3>
+                  </div>
+
+                  <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+                    <!-- Несколько карточек артефактов, структура повторяет вид с Обзора -->
+                    <article class="flex h-full flex-col rounded-2xl border border-[rgba(197,166,124,0.45)] bg-[rgba(5,13,30,0.98)] p-4">
+                      <div class="relative overflow-hidden rounded-xl border border-[rgba(197,166,124,0.35)] bg-slate-900/80 pb-[90%]">
+                        <div class="absolute inset-0 flex items-center justify-center text-[10px] uppercase tracking-[0.24em] text-slate-400">
+                          Арт
+                        </div>
+                      </div>
+                      <div class="mt-4 flex flex-1 flex-col gap-2">
+                        <h3 class="font-heading-noble text-base text-white">Перо Первой Страницы</h3>
+                        <p class="text-xs text-gold-bright">Легендарный</p>
+                        <p class="text-xs text-slate-300">Увеличивает получение опыта на 15%.</p>
+                      </div>
+                      <button class="mt-3 w-full rounded-md border border-gold bg-[rgba(5,13,30,0.96)] px-3 py-2 text-[11px] uppercase tracking-[0.24em] text-gold-bright shadow-[0_0_15px_rgba(197,166,124,0.6)]">
+                        Экипировано
+                      </button>
+                    </article>
+                    <article class="flex h-full flex-col rounded-2xl border border-[rgba(197,166,124,0.45)] bg-[rgba(5,13,30,0.98)] p-4">
+                      <div class="relative overflow-hidden rounded-xl border border-[rgba(197,166,124,0.35)] bg-slate-900/80 pb-[90%]">
+                        <div class="absolute inset-0 flex items-center justify-center text-[10px] uppercase tracking-[0.24em] text-slate-400">
+                          Арт
+                        </div>
+                      </div>
+                      <div class="mt-4 flex flex-1 flex-col gap-2">
+                        <h3 class="font-heading-noble text-base text-white">Фонарь Шёпота</h3>
+                        <p class="text-xs text-gold-bright">Редкий</p>
+                        <p class="text-xs text-slate-300">Освещает скрытые подсказки на карте мира.</p>
+                      </div>
+                      <button class="mt-3 w-full rounded-md border border-[rgba(197,166,124,0.6)] px-3 py-2 text-[11px] uppercase tracking-[0.24em] text-gold-bright hover:border-gold hover:shadow-[0_0_15px_rgba(197,166,124,0.5)]">
+                        Экипировать
+                      </button>
+                    </article>
+                    <article class="flex h-full flex-col rounded-2xl border border-[rgba(197,166,124,0.45)] bg-[rgba(5,13,30,0.98)] p-4">
+                      <div class="relative overflow-hidden rounded-xl border border-[rgba(197,166,124,0.35)] bg-slate-900/80 pb-[90%]">
+                        <div class="absolute inset-0 flex items-center justify-center text-[10px] uppercase tracking-[0.24em] text-slate-400">
+                          Арт
+                        </div>
+                      </div>
+                      <div class="mt-4 flex flex-1 flex-col gap-2">
+                        <h3 class="font-heading-noble text-base text-white">Печать Пергамента</h3>
+                        <p class="text-xs text-gold-bright">Эпический</p>
+                        <p class="text-xs text-slate-300">Снижает стоимость открытия страниц на 10%.</p>
+                      </div>
+                      <button class="mt-3 w-full rounded-md border border-[rgba(197,166,124,0.6)] px-3 py-2 text-[11px] uppercase tracking-[0.24em] text-gold-bright hover:border-gold hover:shadow-[0_0_15px_rgba(197,166,124,0.5)]">
+                        Экипировать
+                      </button>
+                    </article>
+                    <article class="flex h-full flex-col rounded-2xl border border-[rgba(197,166,124,0.45)] bg-[rgba(5,13,30,0.98)] p-4">
+                      <div class="relative overflow-hidden rounded-xl border border-[rgba(197,166,124,0.35)] bg-slate-900/80 pb-[90%]">
+                        <div class="absolute inset-0 flex items-center justify-center text-[10px] uppercase tracking-[0.24em] text-slate-400">
+                          Арт
+                        </div>
+                      </div>
+                      <div class="mt-4 flex flex-1 flex-col gap-2">
+                        <h3 class="font-heading-noble text-base text-white">Песочные часы Анаплии</h3>
+                        <p class="text-xs text-gold-bright">Легендарный</p>
+                        <p class="text-xs text-slate-300">Сокращают ожидание чтения на 20%.</p>
+                      </div>
+                      <button class="mt-3 w-full rounded-md border border-[rgba(197,166,124,0.6)] px-3 py-2 text-[11px] uppercase tracking-[0.24em] text-gold-bright hover:border-gold hover:shadow-[0_0_15px_rgba(197,166,124,0.5)]">
+                        Экипировать
+                      </button>
+                    </article>
+                  </div>
+                </section>
+              </div>
+
+              <!-- ACHIEVEMENTS PANEL -->
+              <div data-lk-panel="achievements" class="space-y-6 hidden">
+                <header class="space-y-1">
+                  <h2 class="font-heading-noble text-3xl text-white">Достижения</h2>
+                  <p class="text-sm text-slate-300">3 получено • 8 всего</p>
+                </header>
+
+                <section class="lk-card rounded-2xl px-5 py-5 sm:px-6">
+                  <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div class="flex items-center gap-3">
+                      <div class="flex h-12 w-12 items-center justify-center rounded-full border border-gold bg-[rgba(5,13,30,0.98)] text-2xl">
+                        🏆
+                      </div>
+                      <div>
+                        <p class="text-xs uppercase tracking-[0.3em] text-gold/80">Ближайшая цель</p>
+                        <h3 class="font-heading-noble text-xl text-white">Мастер пути</h3>
+                      </div>
+                    </div>
+                    <div class="flex-1 space-y-2">
+                      <div class="flex items-center justify-between text-xs text-slate-300">
+                        <span>Пройдите все шесть регионов Карты историй</span>
+                        <span>0 из 6</span>
+                      </div>
+                      <div class="h-1.5 w-full overflow-hidden rounded-full bg-[#050b18]">
+                        <div class="h-full w-[10%] rounded-full bg-gold"></div>
+                      </div>
+                      <p class="text-xs text-gold-bright">Награда: особый титул и знак пути</p>
+                    </div>
+                  </div>
+                </section>
+
+                <div class="grid gap-6 lg:grid-cols-2">
+                  <section class="space-y-3">
+                    <h3 class="font-heading-noble text-xl text-white">Полученные</h3>
+                    <div class="grid gap-4 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3">
+                      <article class="flex h-full flex-col items-start gap-3 rounded-2xl border border-gold bg-[rgba(5,13,30,0.98)] px-3.5 py-4 shadow-[0_0_16px_rgba(197,166,124,0.6)]">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-full border border-[rgba(197,166,124,0.65)] bg-[rgba(3,10,24,0.96)] text-xl">
+                          ✓
+                        </div>
+                        <div>
+                          <h4 class="font-heading-noble text-sm text-white">Первый том</h4>
+                          <p class="text-[11px] text-slate-300">Прочитана первая книга</p>
+                        </div>
+                      </article>
+                      <article class="flex h-full flex-col items-start gap-3 rounded-2xl border border-gold bg-[rgba(5,13,30,0.98)] px-3.5 py-4 shadow-[0_0_16px_rgba(197,166,124,0.6)]">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-full border border-[rgba(197,166,124,0.65)] bg-[rgba(3,10,24,0.96)] text-xl">
+                          ✓
+                        </div>
+                        <div>
+                          <h4 class="font-heading-noble text-sm text-white">Огонь чтения</h4>
+                          <p class="text-[11px] text-slate-300">14 дней без перерыва</p>
+                        </div>
+                      </article>
+                      <article class="flex h-full flex-col items-start gap-3 rounded-2xl border border-gold bg-[rgba(5,13,30,0.98)] px-3.5 py-4 shadow-[0_0_16px_rgba(197,166,124,0.6)]">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-full border border-[rgba(197,166,124,0.65)] bg-[rgba(3,10,24,0.96)] text-xl">
+                          ✓
+                        </div>
+                        <div>
+                          <h4 class="font-heading-noble text-sm text-white">Внимательный критик</h4>
+                          <p class="text-[11px] text-slate-300">Поставлено пять оценок</p>
+                        </div>
+                      </article>
+                    </div>
+                  </section>
+
+                  <section class="space-y-3">
+                    <h3 class="font-heading-noble text-xl text-white">Закрытые</h3>
+                    <div class="grid gap-4 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3">
+                      <article class="flex h-full flex-col items-start gap-3 rounded-2xl border border-[rgba(197,166,124,0.35)] bg-[rgba(3,10,24,0.96)] px-3.5 py-4 opacity-80">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-full border border-[rgba(197,166,124,0.65)] bg-[rgba(3,10,24,0.96)] text-xl">
+                          🔒
+                        </div>
+                        <div>
+                          <h4 class="font-heading-noble text-sm text-white">Следопыт</h4>
+                          <p class="text-[11px] text-slate-300">Открыты три точки карты</p>
+                        </div>
+                      </article>
+                      <article class="flex h-full flex-col items-start gap-3 rounded-2xl border border-[rgba(197,166,124,0.35)] bg-[rgba(3,10,24,0.96)] px-3.5 py-4 opacity-80">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-full border border-[rgba(197,166,124,0.65)] bg-[rgba(3,10,24,0.96)] text-xl">
+                          🔒
+                        </div>
+                        <div>
+                          <h4 class="font-heading-noble text-sm text-white">Голос гильдии</h4>
+                          <p class="text-[11px] text-slate-300">Завершите три задания вместе</p>
+                        </div>
+                      </article>
+                      <article class="flex h-full flex-col items-start gap-3 rounded-2xl border border-[rgba(197,166,124,0.35)] bg-[rgba(3,10,24,0.96)] px-3.5 py-4 opacity-80">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-full border border-[rgba(197,166,124,0.65)] bg-[rgba(3,10,24,0.96)] text-xl">
+                          🔒
+                        </div>
+                        <div>
+                          <h4 class="font-heading-noble text-sm text-white">Хранитель осколков</h4>
+                          <p class="text-[11px] text-slate-300">Соберите все осколки Великой Книги</p>
+                        </div>
+                      </article>
+                    </div>
+                  </section>
+                </div>
+              </div>
+
+              <!-- COLLECTOR PANEL -->
+              <div data-lk-panel="collector" class="space-y-6 hidden">
+                <header class="space-y-1">
+                  <div class="flex items-center gap-2">
+                    <span class="text-lg">✦</span>
+                    <h2 class="font-heading-noble text-3xl text-white">Коллекционер</h2>
+                  </div>
+                  <p class="text-sm text-slate-300">18 из 42 карточек</p>
+                </header>
+
+                <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                  <p class="text-xs text-slate-300">
+                    Откройте новые истории, чтобы пополнять коллекцию персонажей и мест.
+                  </p>
+                  <div class="flex flex-wrap gap-3">
+                    <button class="rounded-full border border-gold bg-[rgba(5,13,30,0.96)] px-4 py-1.5 text-[11px] uppercase tracking-[0.24em] text-gold-bright shadow-[0_0_15px_rgba(197,166,124,0.5)]">
+                      Все
+                    </button>
+                    <button class="rounded-full border border-[rgba(197,166,124,0.35)] px-4 py-1.5 text-[11px] uppercase tracking-[0.24em] text-gold/80 hover:border-gold hover:text-gold-bright">
+                      Персонажи
+                    </button>
+                    <button class="rounded-full border border-[rgba(197,166,124,0.35)] px-4 py-1.5 text-[11px] uppercase tracking-[0.24em] text-gold/80 hover:border-gold hover:text-gold-bright">
+                      Места
+                    </button>
+                    <button class="rounded-full border border-[rgba(197,166,124,0.35)] px-4 py-1.5 text-[11px] uppercase tracking-[0.24em] text-gold/80 hover:border-gold hover:text-gold-bright">
+                      Артефакты
+                    </button>
+                    <button class="rounded-full border border-[rgba(197,166,124,0.35)] px-4 py-1.5 text-[11px] uppercase tracking-[0.24em] text-gold/80 hover:border-gold hover:text-gold-bright">
+                      Редкие
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+                  <!-- Открытые карточки -->
+                  <article class="flex h-full cursor-pointer flex-col rounded-2xl border border-[rgba(197,166,124,0.45)] bg-[rgba(5,13,30,0.98)] p-3 transition-transform hover:-translate-y-0.5 hover:shadow-[0_0_18px_rgba(197,166,124,0.5)]">
+                    <div class="relative overflow-hidden rounded-xl border border-[rgba(197,166,124,0.35)] bg-slate-900/80 pb-[130%]">
+                      <div class="absolute inset-0 flex items-center justify-center text-[10px] uppercase tracking-[0.24em] text-slate-400">
+                        Иллюстрация
+                      </div>
+                    </div>
+                    <div class="mt-4 flex flex-1 flex-col justify-between gap-1">
+                      <h3 class="font-heading-noble text-base text-white">Анналия</h3>
+                      <p class="text-xs text-gold-bright">Обычная</p>
+                      <p class="mt-1 text-[11px] text-slate-400">Нажмите, чтобы перевернуть</p>
+                    </div>
+                  </article>
+                  <article class="flex h-full cursor-pointer flex-col rounded-2xl border border-[rgba(197,166,124,0.45)] bg-[rgba(5,13,30,0.98)] p-3 transition-transform hover:-translate-y-0.5 hover:shadow-[0_0_18px_rgba(197,166,124,0.5)]">
+                    <div class="relative overflow-hidden rounded-xl border border-[rgba(197,166,124,0.35)] bg-slate-900/80 pb-[130%]">
+                      <div class="absolute inset-0 flex items-center justify-center text-[10px] uppercase tracking-[0.24em] text-slate-400">
+                        Иллюстрация
+                      </div>
+                    </div>
+                    <div class="mt-4 flex flex-1 flex-col justify-between gap-1">
+                      <h3 class="font-heading-noble text-base text-white">Люминар</h3>
+                      <p class="text-xs text-gold-bright">Редкая</p>
+                      <p class="mt-1 text-[11px] text-slate-400">Нажмите, чтобы перевернуть</p>
+                    </div>
+                  </article>
+                  <article class="flex h-full cursor-pointer flex-col rounded-2xl border border-[rgba(197,166,124,0.45)] bg-[rgba(5,13,30,0.98)] p-3 transition-transform hover:-translate-y-0.5 hover:shadow-[0_0_18px_rgba(197,166,124,0.5)]">
+                    <div class="relative overflow-hidden rounded-xl border border-[rgba(197,166,124,0.35)] bg-slate-900/80 pb-[130%]">
+                      <div class="absolute inset-0 flex items-center justify-center text-[10px] uppercase tracking-[0.24em] text-slate-400">
+                        Иллюстрация
+                      </div>
+                    </div>
+                    <div class="mt-4 flex flex-1 flex-col justify-between gap-1">
+                      <h3 class="font-heading-noble text-base text-white">Инкогнита</h3>
+                      <p class="text-xs text-gold-bright">Редкая</p>
+                      <p class="mt-1 text-[11px] text-slate-400">Нажмите, чтобы перевернуть</p>
+                    </div>
+                  </article>
+                  <article class="flex h-full cursor-pointer flex-col rounded-2xl border border-[rgba(197,166,124,0.45)] bg-[rgba(5,13,30,0.98)] p-3 transition-transform hover:-translate-y-0.5 hover:shadow-[0_0_18px_rgba(197,166,124,0.5)]">
+                    <div class="relative overflow-hidden rounded-xl border border-[rgba(197,166,124,0.35)] bg-slate-900/80 pb-[130%]">
+                      <div class="absolute inset-0 flex items-center justify-center text-[10px] uppercase tracking-[0.24em] text-slate-400">
+                        Иллюстрация
+                      </div>
+                    </div>
+                    <div class="mt-4 flex flex-1 flex-col justify-between gap-1">
+                      <h3 class="font-heading-noble text-base text-white">Нова</h3>
+                      <p class="text-xs text-gold-bright">Обычная</p>
+                      <p class="mt-1 text-[11px] text-slate-400">Нажмите, чтобы перевернуть</p>
+                    </div>
+                  </article>
+                  <article class="flex h-full cursor-pointer flex-col rounded-2xl border border-[rgba(197,166,124,0.45)] bg-[rgba(5,13,30,0.98)] p-3 transition-transform hover:-translate-y-0.5 hover:shadow-[0_0_18px_rgba(197,166,124,0.5)]">
+                    <div class="relative overflow-hidden rounded-xl border border-[rgba(197,166,124,0.35)] bg-slate-900/80 pb-[130%]">
+                      <div class="absolute inset-0 flex items-center justify-center text-[10px] uppercase tracking-[0.24em] text-slate-400">
+                        Иллюстрация
+                      </div>
+                    </div>
+                    <div class="mt-4 flex flex-1 flex-col justify-between gap-1">
+                      <h3 class="font-heading-noble text-base text-white">Кси</h3>
+                      <p class="text-xs text-gold-bright">Легендарная</p>
+                      <p class="mt-1 text-[11px] text-slate-400">Нажмите, чтобы перевернуть</p>
+                    </div>
+                  </article>
+                  <article class="flex h-full cursor-pointer flex-col rounded-2xl border border-[rgba(197,166,124,0.45)] bg-[rgba(5,13,30,0.98)] p-3 transition-transform hover:-translate-y-0.5 hover:shadow-[0_0_18px_rgba(197,166,124,0.5)]">
+                    <div class="relative overflow-hidden rounded-xl border border-[rgba(197,166,124,0.35)] bg-slate-900/80 pb-[130%]">
+                      <div class="absolute inset-0 flex items-center justify-center text-[10px] uppercase tracking-[0.24em] text-slate-400">
+                        Иллюстрация
+                      </div>
+                    </div>
+                    <div class="mt-4 flex flex-1 flex-col justify-between gap-1">
+                      <h3 class="font-heading-noble text-base text-white">Великая Библиотека</h3>
+                      <p class="text-xs text-gold-bright">Легендарная</p>
+                      <p class="mt-1 text-[11px] text-slate-400">Нажмите, чтобы перевернуть</p>
+                    </div>
+                  </article>
+
+                  <!-- Закрытые карточки -->
+                  <article class="flex h-full flex-col items-center justify-center rounded-2xl border border-[rgba(148,163,184,0.6)] bg-[rgba(5,13,30,0.9)] text-center text-slate-400">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-full border border-[rgba(148,163,184,0.8)] bg-[rgba(15,23,42,0.9)] text-xl">
+                      🔒
+                    </div>
+                    <p class="mt-3 text-sm">Не открыто</p>
+                    <p class="text-[11px] text-slate-500">Продолжайте путь</p>
+                  </article>
+                  <article class="flex h-full flex-col items-center justify-center rounded-2xl border border-[rgba(148,163,184,0.6)] bg-[rgba(5,13,30,0.9)] text-center text-slate-400">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-full border border-[rgba(148,163,184,0.8)] bg-[rgba(15,23,42,0.9)] text-xl">
+                      🔒
+                    </div>
+                    <p class="mt-3 text-sm">Не открыто</p>
+                    <p class="text-[11px] text-slate-500">Продолжайте путь</p>
+                  </article>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="border-t border-[rgba(197,166,124,0.28)] bg-[rgba(3,10,24,0.98)] py-5">
+          <div class="mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 text-center text-[11px] text-slate-400 sm:flex-row sm:justify-between sm:text-left">
+            <div>
+              <p class="font-heading-noble text-sm text-white">EduStories</p>
+              <p class="text-[11px] text-slate-400">
+                Образовательное пространство, где чтение и обучение превращаются в путешествие.
+              </p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-4 text-[11px]">
+              <div class="flex flex-col gap-1 text-left">
+                <span class="text-gold/80">Платформа</span>
+                <a href="#" class="hover:text-gold-bright">Единая главная</a>
+                <a href="#" class="hover:text-gold-bright">Библиотека</a>
+                <a href="#" class="hover:text-gold-bright">Обучение</a>
+              </div>
+              <div class="flex flex-col gap-1 text-left">
+                <span class="text-gold/80">Сообщество</span>
+                <a href="#" class="hover:text-gold-bright">Гильдия Книгочеев</a>
+                <a href="#" class="hover:text-gold-bright">Таверна</a>
+                <a href="#" class="hover:text-gold-bright">Коллекционер</a>
+              </div>
+              <div class="flex flex-col gap-1 text-left">
+                <span class="text-gold/80">Связаться</span>
+                <a href="mailto:support@edustories.ru" class="hover:text-gold-bright">support@edustories.ru</a>
+                <span>Ответим в рабочее время</span>
+              </div>
+            </div>
+          </div>
+        </footer>
+
+        <!-- SUPPORT BUTTON -->
+        <a
+          href="#"
+          class="support-btn inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#1b3a7a] via-[#2e4e9a] to-[#c5a67c] px-4 py-2 text-[11px] uppercase tracking-[0.26em] text-white"
+        >
+          <span class="flex h-7 w-7 items-center justify-center rounded-full border border-[rgba(255,255,255,0.6)] bg-[rgba(3,10,24,0.9)] text-lg">
+            💬
+          </span>
+          Поддержка
+        </a>
+      </div>
+    </div>
+
+    <script>
+      const tabLinks = document.querySelectorAll('[data-lk-tab]');
+      const tabPanels = document.querySelectorAll('[data-lk-panel]');
+
+      function activateTab(id) {
+        tabLinks.forEach((link) => {
+          const isActive = link.getAttribute('data-lk-tab') === id;
+          link.classList.toggle('lk-tab-active', isActive);
+          if (isActive) {
+            link.classList.add('text-gold-bright');
+          } else {
+            link.classList.remove('text-gold-bright');
+          }
+        });
+
+        tabPanels.forEach((panel) => {
+          panel.classList.toggle('hidden', panel.getAttribute('data-lk-panel') !== id);
+        });
+      }
+
+      tabLinks.forEach((link) => {
+        link.addEventListener('click', (event) => {
+          event.preventDefault();
+          const id = link.getAttribute('data-lk-tab');
+          if (id) activateTab(id);
+        });
+      });
+    </script>
+  </body>
+</html>

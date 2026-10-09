@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Академия Ведьмаков - Профиль: Йеннифэр</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Кастомные стили для фона */
+        body {
+            background-color: #050914;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(20, 35, 60, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(30, 45, 70, 0.3) 0%, transparent 50%);
+            color: #94a3b8;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .font-serif-custom {
+            font-family: "Playfair Display", "Merriweather", serif;
+        }
+
+        /* Скроллбар */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d1522; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155; 
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col lg:flex-row text-sm relative">
+
+    <!-- Мобильный хедер -->
+    <div class="lg:hidden flex items-center justify-between p-4 bg-[#09101c] border-b border-[#1e293b] sticky top-0 z-40">
+        <h1 class="text-xl font-serif-custom font-bold text-white leading-tight">
+            Академия <span class="text-[#d7a751]">Ведьмаков</span>
+        </h1>
+        <button id="menuBtn" class="text-[#94a3b8] hover:text-white p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+    </div>
+
+    <!-- Затемнение фона для мобильного меню -->
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity"></div>
+
+    <!-- Левый сайдбар (как на предыдущей странице) -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-[260px] bg-[#09101c] border-r border-[#1e293b] flex flex-col justify-between transform -translate-x-full lg:translate-x-0 lg:static lg:flex-shrink-0 transition-transform duration-300 ease-in-out">
+        <div>
+            <div class="hidden lg:block px-8 pt-8 pb-6">
+                <h1 class="text-2xl font-serif-custom font-bold text-white leading-tight">
+                    Академия<br><span class="text-[#d7a751]">Ведьмаков</span>
+                </h1>
+                <p class="text-xs text-[#5c728e] mt-2">Панель администратора</p>
+            </div>
+
+            <div class="lg:hidden flex justify-end p-4">
+                <button id="closeBtn" class="text-[#94a3b8] hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <nav class="mt-2 flex flex-col gap-1 px-4 lg:mt-0">
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#859ab5] hover:text-white hover:bg-white/5 transition-colors">
+                    <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    Панель управления
+                </a>
+                
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#d7a751] bg-[#d7a751]/10 relative group">
+                    <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-[#d7a751] rounded-r-full"></div>
+                    <svg class="w-5 h-5 opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    Пользователи
+                </a>
+
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#859ab5] hover:text-white hover:bg-white/5 transition-colors">
+                    <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    Гильдии
+                </a>
+                
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#859ab5] hover:text-white hover:bg-white/5 transition-colors">
+                    <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Контракты
+                </a>
+
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#859ab5] hover:text-white hover:bg-white/5 transition-colors">
+                    <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    Испытания
+                </a>
+
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#859ab5] hover:text-white hover:bg-white/5 transition-colors">
+                    <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    Бестиарий
+                </a>
+
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#859ab5] hover:text-white hover:bg-white/5 transition-colors">
+                    <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                    Путь Мастера
+                </a>
+
+                <div class="h-px bg-[#1e293b] my-2 mx-4"></div>
+
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#859ab5] hover:text-white hover:bg-white/5 transition-colors">
+                    <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    Настройки
+                </a>
+
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#859ab5] hover:text-white hover:bg-white/5 transition-colors">
+                    <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    Выход
+                </a>
+            </nav>
+        </div>
+
+        <div class="p-6">
+            <div class="bg-[#0f172a]/80 border border-[#1e293b] rounded-xl p-4 flex items-center gap-3">
+                <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Avatar" class="w-10 h-10 rounded-full border border-[#1e293b] object-cover">
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-white truncate">Администратор</p>
+                    <p class="text-[11px] text-[#5c728e] truncate mt-0.5">admin@witchers.ac</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Основной контент -->
+    <main class="flex-1 flex flex-col h-[calc(100vh-65px)] lg:h-screen overflow-hidden">
+        
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div class="max-w-[1400px] mx-auto space-y-6">
+                
+                <!-- Верхняя панель действий -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <a href="#" class="text-[#859ab5] hover:text-white flex items-center gap-2 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        Назад к списку пользователей
+                    </a>
+                    
+                    <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                        <button class="flex-1 sm:flex-none bg-[#0b121e] border border-[#1e293b] hover:bg-[#1e293b]/50 text-[#94a3b8] hover:text-white px-4 py-2 rounded-lg text-sm flex justify-center items-center gap-2 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            Редактировать
+                        </button>
+                        <div class="relative flex-1 sm:flex-none">
+                            <button class="w-full bg-[#d7a751] hover:bg-[#c49646] text-black px-4 py-2 rounded-lg text-sm font-medium flex justify-center items-center gap-2 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                Действия
+                                <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                        </div>
+                        <button class="flex-1 sm:flex-none bg-red-500/5 border border-red-900/50 hover:bg-red-500/10 text-red-500 px-4 py-2 rounded-lg text-sm flex justify-center items-center gap-2 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            Заблокировать
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Главная карточка профиля -->
+                <div class="bg-[#0b121e]/80 border border-[#1e293b] rounded-xl p-6 lg:p-8 backdrop-blur-sm">
+                    <div class="flex flex-col xl:flex-row justify-between gap-8">
+                        
+                        <!-- Левая часть: Аватар и базовая инфа -->
+                        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
+                            <img src="https://i.pravatar.cc/150?u=a042581f4e29026704a" class="w-24 h-24 rounded-full border border-[#1e293b] object-cover" alt="Yennefer">
+                            <div>
+                                <div class="flex flex-col sm:flex-row items-center gap-3 mb-1">
+                                    <h2 class="text-2xl font-serif-custom text-white">Йеннифэр из Венгерберга</h2>
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#10b981]/10 border border-[#10b981]/20 text-[#10b981] text-xs rounded-md">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#10b981]"></span>
+                                        Активен
+                                    </span>
+                                </div>
+                                <div class="text-[#94a3b8] mb-4">
+                                    Ученик <span class="mx-2 opacity-50">•</span> Школа Волка
+                                    <br>
+                                    <span class="text-sm">yennefer@example.com</span>
+                                </div>
+                                <div class="space-y-1.5 text-xs text-[#5c728e]">
+                                    <div class="flex items-center justify-center sm:justify-start gap-2">
+                                        ID пользователя: usr_001248
+                                        <button class="hover:text-white transition-colors"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></button>
+                                    </div>
+                                    <div>Дата регистрации: 15 мая 2024</div>
+                                    <div>Последняя активность: 2 часа назад</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Правая часть: Блоки статистики -->
+                        <div class="flex flex-wrap sm:flex-nowrap gap-4 w-full xl:w-auto">
+                            <!-- Блок 1 -->
+                            <div class="bg-[#050914] border border-[#1e293b] rounded-lg p-5 flex-1 xl:w-[160px] flex flex-col items-center justify-center text-center">
+                                <svg class="w-6 h-6 text-[#d7a751] mb-2 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                                <div class="text-2xl font-bold text-white mb-0.5">23</div>
+                                <div class="text-xs text-[#5c728e]">Уровень</div>
+                            </div>
+                            <!-- Блок 2 -->
+                            <div class="bg-[#050914] border border-[#1e293b] rounded-lg p-5 flex-1 xl:w-[160px] flex flex-col items-center justify-center text-center">
+                                <svg class="w-6 h-6 text-blue-400 mb-2 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <div class="text-2xl font-bold text-white mb-0.5">12</div>
+                                <div class="text-xs text-[#5c728e]">Пройдено испытаний</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Вкладки (Табы) -->
+                <div class="flex gap-6 border-b border-[#1e293b] overflow-x-auto whitespace-nowrap pb-px">
+                    <button class="text-[#d7a751] border-b-2 border-[#d7a751] pb-3 text-sm font-medium px-1">Профиль</button>
+                    <button class="text-[#859ab5] hover:text-white pb-3 text-sm font-medium px-1 transition-colors">Прогресс</button>
+                    <button class="text-[#859ab5] hover:text-white pb-3 text-sm font-medium px-1 transition-colors">Испытания</button>
+                    <button class="text-[#859ab5] hover:text-white pb-3 text-sm font-medium px-1 transition-colors">Контракты</button>
+                    <button class="text-[#859ab5] hover:text-white pb-3 text-sm font-medium px-1 transition-colors">Активность</button>
+                    <button class="text-[#859ab5] hover:text-white pb-3 text-sm font-medium px-1 transition-colors">Достижения</button>
+                </div>
+
+                <!-- Сетка контента (3 колонки на ПК, 2 на планшете, 1 на мобильном) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    
+                    <!-- КОЛОНКА 1 -->
+                    <div class="space-y-6">
+                        <!-- Личная информация -->
+                        <div class="bg-[#0b121e]/80 border border-[#1e293b] rounded-xl p-5 backdrop-blur-sm">
+                            <h3 class="text-white font-medium mb-4">Личная информация</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center py-1.5 border-b border-[#1e293b]/50">
+                                    <span class="text-[#5c728e]">Имя</span>
+                                    <span class="text-white">Йеннифэр</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1.5 border-b border-[#1e293b]/50">
+                                    <span class="text-[#5c728e]">Фамилия</span>
+                                    <span class="text-white">из Венгерберга</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1.5 border-b border-[#1e293b]/50">
+                                    <span class="text-[#5c728e]">Email</span>
+                                    <span class="text-white text-right break-all ml-4">yennefer@example.com</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1.5 border-b border-[#1e293b]/50">
+                                    <span class="text-[#5c728e]">Роль</span>
+                                    <span class="inline-flex px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs rounded">Ученик</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1.5 border-b border-[#1e293b]/50">
+                                    <span class="text-[#5c728e]">Гильдия</span>
+                                    <span class="text-white">Школа Волка</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1.5 border-b border-[#1e293b]/50">
+                                    <span class="text-[#5c728e]">Дата регистрации</span>
+                                    <span class="text-white">15 мая 2024</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1.5 border-b border-[#1e293b]/50">
+                                    <span class="text-[#5c728e]">Последний вход</span>
+                                    <span class="text-white">2 часа назад</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1.5">
+                                    <span class="text-[#5c728e]">Статус</span>
+                                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-[#10b981]/10 border border-[#10b981]/20 text-[#10b981] text-xs rounded">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#10b981]"></span> Активен
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Заметки администратора -->
+                        <div class="bg-[#0b121e]/80 border border-[#1e293b] rounded-xl p-5 backdrop-blur-sm">
+                            <h3 class="text-white font-medium mb-3">Заметки администратора</h3>
+                            <p class="text-[#94a3b8] text-sm leading-relaxed mb-6">
+                                Талантливый ученик с высоким потенциалом. Проявляет интерес к продвинутой магии.
+                            </p>
+                            <div class="flex justify-between items-center text-[#5c728e] text-xs border-t border-[#1e293b]/50 pt-4">
+                                <span>Добавлено: 20 мая 2024, администратор</span>
+                                <button class="hover:text-white transition-colors"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- КОЛОНКА 2 -->
+                    <div class="space-y-6">
+                        <!-- Статистика пользователя -->
+                        <div class="bg-[#0b121e]/80 border border-[#1e293b] rounded-xl p-5 backdrop-blur-sm">
+                            <h3 class="text-white font-medium mb-4">Статистика пользователя</h3>
+                            <div class="space-y-3 mb-6">
+                                <div class="flex justify-between items-center py-1.5 border-b border-[#1e293b]/50">
+                                    <span class="text-[#5c728e]">Уровень</span>
+                                    <span class="text-white">23</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1.5 border-b border-[#1e293b]/50">
+                                    <span class="text-[#5c728e]">Очки опыта</span>
+                                    <span class="text-white">12 450 / 15 000</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1.5 border-b border-[#1e293b]/50">
+                                    <span class="text-[#5c728e]">Пройдено испытаний</span>
+                                    <span class="text-white">12</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1.5 border-b border-[#1e293b]/50">
+                                    <span class="text-[#5c728e]">Выполнено контрактов</span>
+                                    <span class="text-white">8</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1.5 border-b border-[#1e293b]/50">
+                                    <span class="text-[#5c728e]">Побед в дуэлях</span>
+                                    <span class="text-white">15</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1.5 border-b border-[#1e293b]/50">
+                                    <span class="text-[#5c728e]">Общий рейтинг</span>
+                                    <span class="text-white">1 247</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Прогресс бар -->
+                            <div>
+                                <div class="flex justify-between items-center text-xs mb-2">
+                                    <span class="text-[#5c728e]">Прогресс уровня</span>
+                                    <span class="text-white">12 450 / 15 000 XP</span>
+                                </div>
+                                <div class="w-full bg-[#1e293b] h-1.5 rounded-full overflow-hidden flex items-center">
+                                    <div class="bg-[#d7a751] w-[83%] h-full rounded-full relative">
+                                        <div class="absolute right-0 -top-6 text-xs text-[#94a3b8]">83%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Аккаунт -->
+                        <div class="bg-[#0b121e]/80 border border-[#1e293b] rounded-xl p-5 backdrop-blur-sm">
+                            <h3 class="text-white font-medium mb-4">Аккаунт</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center py-1.5 border-b border-[#1e293b]/50">
+                                    <span class="text-[#5c728e]">ID пользователя</span>
+                                    <div class="flex items-center gap-2 text-white">
+                                        usr_001248
+                                        <button class="text-[#5c728e] hover:text-white transition-colors"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></button>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center py-1.5 border-b border-[#1e293b]/50">
+                                    <span class="text-[#5c728e]">Статус аккаунта</span>
+                                    <span class="text-[#10b981]">Активен</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1.5 border-b border-[#1e293b]/50">
+                                    <span class="text-[#5c728e]">Email подтвержден</span>
+                                    <span class="text-white">Да</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1.5">
+                                    <span class="text-[#5c728e]">Двухфакторная аутентификация</span>
+                                    <span class="text-white">Да</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- КОЛОНКА 3 -->
+                    <div class="space-y-6">
+                        <!-- Недавняя активность -->
+                        <div class="bg-[#0b121e]/80 border border-[#1e293b] rounded-xl p-5 backdrop-blur-sm">
+                            <h3 class="text-white font-medium mb-4">Недавняя активность</h3>
+                            <div class="space-y-4 mb-5">
+                                <div class="flex justify-between items-start gap-4">
+                                    <span class="text-[#94a3b8] text-sm">Прошел испытание "Знак Аксий"</span>
+                                    <span class="text-[#5c728e] text-xs whitespace-nowrap pt-0.5">2 часа назад</span>
+                                </div>
+                                <div class="flex justify-between items-start gap-4">
+                                    <span class="text-[#94a3b8] text-sm">Выполнил контракт "Накер"</span>
+                                    <span class="text-[#5c728e] text-xs whitespace-nowrap pt-0.5">1 день назад</span>
+                                </div>
+                                <div class="flex justify-between items-start gap-4">
+                                    <span class="text-[#94a3b8] text-sm">Победил в дуэли с Геральтом</span>
+                                    <span class="text-[#5c728e] text-xs whitespace-nowrap pt-0.5">2 дня назад</span>
+                                </div>
+                                <div class="flex justify-between items-start gap-4">
+                                    <span class="text-[#94a3b8] text-sm">Достиг 23 уровня</span>
+                                    <span class="text-[#5c728e] text-xs whitespace-nowrap pt-0.5">3 дня назад</span>
+                                </div>
+                                <div class="flex justify-between items-start gap-4">
+                                    <span class="text-[#94a3b8] text-sm">Вступил в Школу Волка</span>
+                                    <span class="text-[#5c728e] text-xs whitespace-nowrap pt-0.5">1 месяц назад</span>
+                                </div>
+                            </div>
+                            <button class="w-full bg-transparent border border-[#1e293b] hover:bg-[#1e293b]/50 text-[#94a3b8] hover:text-white py-2 rounded-lg text-sm transition-colors">
+                                Показать всю активность
+                            </button>
+                        </div>
+
+                        <!-- Роли и разрешения -->
+                        <div class="bg-[#0b121e]/80 border border-[#1e293b] rounded-xl p-5 backdrop-blur-sm">
+                            <h3 class="text-white font-medium mb-4">Роли и разрешения</h3>
+                            <div class="space-y-4 mb-6">
+                                <div>
+                                    <div class="text-[#5c728e] text-xs mb-2">Основная роль</div>
+                                    <span class="inline-flex px-2.5 py-1 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs rounded">Ученик</span>
+                                </div>
+                                <div>
+                                    <div class="text-[#5c728e] text-xs mb-2">Дополнительные роли</div>
+                                    <span class="inline-flex px-2.5 py-1 bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs rounded">Участник турниров</span>
+                                </div>
+                            </div>
+                            <button id="openRolesModalBtn"  class="w-full bg-transparent border border-[#1e293b] hover:bg-[#1e293b]/50 text-[#94a3b8] hover:text-white py-2 rounded-lg text-sm transition-colors">
+                                Управление ролями
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+        <!-- ========================================== -->
+    <!-- МОДАЛЬНОЕ ОКНО: УПРАВЛЕНИЕ РОЛЯМИ          -->
+    <!-- ========================================== -->
+    <div id="rolesModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+        <!-- Затемнение (Backdrop) -->
+        <div id="rolesModalBackdrop" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+        
+        <!-- Контейнер модалки -->
+        <div class="relative bg-[#0b121e] border border-[#1e293b] rounded-2xl w-full max-w-lg shadow-2xl flex flex-col modal-animate">
+            
+            <!-- Шапка -->
+            <div class="flex justify-between items-center p-5 sm:p-6 border-b border-[#1e293b]">
+                <h3 class="text-xl text-white font-serif-custom">Управление ролями</h3>
+                <button id="closeRolesModalBtn" class="text-[#5c728e] hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Форма -->
+            <form id="rolesForm">
+                <div class="p-5 sm:p-6 space-y-6">
+                    
+                    <!-- Инфо о пользователе -->
+                    <div class="flex items-center gap-3 bg-[#050914] border border-[#1e293b] p-3 rounded-lg">
+                        <img src="https://i.pravatar.cc/150?u=a042581f4e29026704a" class="w-10 h-10 rounded-full border border-[#1e293b] object-cover" alt="">
+                        <div>
+                            <div class="text-white font-medium">Йеннифэр из Венгерберга</div>
+                            <div class="text-xs text-[#5c728e]">usr_001248</div>
+                        </div>
+                    </div>
+
+                    <!-- Основная роль (Radio) -->
+                    <div>
+                        <label class="block text-[#94a3b8] text-sm font-medium mb-3">Основная роль (Обязательно)</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="primary_role" value="student" class="peer sr-only" checked>
+                                <div class="px-4 py-2.5 rounded-lg border border-[#1e293b] text-center peer-checked:border-blue-500 peer-checked:bg-blue-500/10 transition-all">
+                                    <span class="text-sm font-medium text-[#94a3b8] peer-checked:text-blue-400">Ученик</span>
+                                </div>
+                            </label>
+                            
+                            <label class="cursor-pointer">
+                                <input type="radio" name="primary_role" value="mentor" class="peer sr-only">
+                                <div class="px-4 py-2.5 rounded-lg border border-[#1e293b] text-center peer-checked:border-purple-500 peer-checked:bg-purple-500/10 transition-all">
+                                    <span class="text-sm font-medium text-[#94a3b8] peer-checked:text-purple-400">Наставник</span>
+                                </div>
+                            </label>
+
+                            <label class="cursor-pointer">
+                                <input type="radio" name="primary_role" value="master" class="peer sr-only">
+                                <div class="px-4 py-2.5 rounded-lg border border-[#1e293b] text-center peer-checked:border-[#d7a751] peer-checked:bg-[#d7a751]/10 transition-all">
+                                    <span class="text-sm font-medium text-[#94a3b8] peer-checked:text-[#d7a751]">Мастер</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="w-full h-px bg-[#1e293b]"></div>
+
+                    <!-- Дополнительные роли (Checkboxes) -->
+                    <div>
+                        <label class="block text-[#94a3b8] text-sm font-medium mb-3">Дополнительные роли</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <div class="relative flex items-center justify-center">
+                                    <input type="checkbox" name="secondary_roles[]" value="tournament" class="peer sr-only" checked>
+                                    <div class="w-5 h-5 rounded border border-[#1e293b] bg-[#050914] peer-checked:bg-[#d7a751] peer-checked:border-[#d7a751] transition-colors"></div>
+                                    <svg class="w-3.5 h-3.5 text-black absolute opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                </div>
+                                <span class="text-[#94a3b8] text-sm group-hover:text-white transition-colors">Участник турниров</span>
+                            </label>
+                            
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <div class="relative flex items-center justify-center">
+                                    <input type="checkbox" name="secondary_roles[]" value="alchemist" class="peer sr-only">
+                                    <div class="w-5 h-5 rounded border border-[#1e293b] bg-[#050914] peer-checked:bg-[#d7a751] peer-checked:border-[#d7a751] transition-colors"></div>
+                                    <svg class="w-3.5 h-3.5 text-black absolute opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                </div>
+                                <span class="text-[#94a3b8] text-sm group-hover:text-white transition-colors">Алхимик</span>
+                            </label>
+
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <div class="relative flex items-center justify-center">
+                                    <input type="checkbox" name="secondary_roles[]" value="headman" class="peer sr-only">
+                                    <div class="w-5 h-5 rounded border border-[#1e293b] bg-[#050914] peer-checked:bg-[#d7a751] peer-checked:border-[#d7a751] transition-colors"></div>
+                                    <svg class="w-3.5 h-3.5 text-black absolute opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                </div>
+                                <span class="text-[#94a3b8] text-sm group-hover:text-white transition-colors">Староста гильдии</span>
+                            </label>
+                            
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <div class="relative flex items-center justify-center">
+                                    <input type="checkbox" name="secondary_roles[]" value="librarian" class="peer sr-only">
+                                    <div class="w-5 h-5 rounded border border-[#1e293b] bg-[#050914] peer-checked:bg-[#d7a751] peer-checked:border-[#d7a751] transition-colors"></div>
+                                    <svg class="w-3.5 h-3.5 text-black absolute opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                </div>
+                                <span class="text-[#94a3b8] text-sm group-hover:text-white transition-colors">Библиотекарь</span>
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Подвал модалки (Кнопки) -->
+                <div class="p-5 sm:p-6 border-t border-[#1e293b] bg-[#09101c] rounded-b-2xl flex justify-end gap-3">
+                    <button type="button" id="cancelRolesBtn" class="px-5 py-2.5 rounded-lg border border-[#1e293b] text-[#94a3b8] hover:text-white hover:bg-[#1e293b]/50 transition-colors">
+                        Отмена
+                    </button>
+                    <button type="submit" class="bg-[#d7a751] hover:bg-[#c49646] text-black px-6 py-2.5 rounded-lg font-medium transition-colors shadow-[0_0_15px_rgba(215,167,81,0.2)]">
+                        Сохранить изменения
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    <!-- КОНЕЦ МОДАЛЬНОГО ОКНА -->
+
+    <!-- Скрипты -->
+    <script>
+        // Мобильное меню
+        const btnOpen = document.getElementById('menuBtn');
+        const btnClose = document.getElementById('closeBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        function toggleMenu() {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        btnOpen.addEventListener('click', toggleMenu);
+        btnClose.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+        // ==========================================
+        // ЛОГИКА МОДАЛЬНОГО ОКНА "УПРАВЛЕНИЕ РОЛЯМИ"
+        // ==========================================
+        const modal = document.getElementById('rolesModal');
+        const openBtn = document.getElementById('openRolesModalBtn');
+        const closeBtn = document.getElementById('closeRolesModalBtn');
+        const cancelBtn = document.getElementById('cancelRolesBtn');
+        const backdrop = document.getElementById('rolesModalBackdrop');
+        const rolesForm = document.getElementById('rolesForm');
+
+        // Открытие
+        openBtn.addEventListener('click', () => {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Убираем скролл страницы
+        });
+
+        // Функция закрытия
+        const closeModal = () => {
+            modal.classList.add('hidden');
+            document.body.style.overflow = ''; // Возвращаем скролл
+        };
+
+        closeBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+        backdrop.addEventListener('click', closeModal);
+
+        // Словари для маппинга значений формы в красивые бейджи UI
+        const primaryRoleData = {
+            student: { text: 'Ученик', class: 'bg-blue-500/10 border-blue-500/20 text-blue-400' },
+            mentor: { text: 'Наставник', class: 'bg-purple-500/10 border-purple-500/20 text-purple-400' },
+            master: { text: 'Мастер', class: 'bg-[#d7a751]/10 border-[#d7a751]/20 text-[#d7a751]' }
+        };
+
+        const secondaryRoleData = {
+            tournament: { text: 'Участник турниров', class: 'bg-purple-500/10 border-purple-500/20 text-purple-400' },
+            alchemist: { text: 'Алхимик', class: 'bg-green-500/10 border-green-500/20 text-green-400' },
+            headman: { text: 'Староста гильдии', class: 'bg-red-500/10 border-red-500/20 text-red-400' },
+            librarian: { text: 'Библиотекарь', class: 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500' }
+        };
+
+        // Обработка сохранения формы
+        rolesForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Предотвращаем перезагрузку
+            
+            // Собираем данные
+            const formData = new FormData(this);
+            const selectedPrimary = formData.get('primary_role');
+            const selectedSecondary = formData.getAll('secondary_roles[]');
+
+            // Логируем данные (как вы просили)
+            const payload = {
+                user_id: "usr_001248",
+                primary_role: selectedPrimary,
+                secondary_roles: selectedSecondary
+            };
+            
+            console.log('🔄 ОТПРАВКА ДАННЫХ О РОЛЯХ:');
+            console.log(JSON.stringify(payload, null, 2));
+
+            // --- Динамическое обновление UI на странице ---
+            
+            // Обновляем основную роль
+            const roleInfo = primaryRoleData[selectedPrimary];
+            
+            // Обновляем текст под именем
+            document.getElementById('headerPrimaryRole').textContent = roleInfo.text;
+            
+            // Обновляем бейджы основной роли (их два на странице)
+            const primaryHtml = `<span class="inline-flex px-2.5 py-1 ${roleInfo.class} border text-xs rounded">${roleInfo.text}</span>`;
+            document.getElementById('uiPrimaryRoleWrapper').innerHTML = primaryHtml; // Блок "Личная инфа"
+            document.getElementById('uiPrimaryRoleContainer').innerHTML = primaryHtml; // Блок "Роли и разрешения"
+
+            // Обновляем дополнительные роли
+            const secondaryContainer = document.getElementById('uiSecondaryRolesContainer');
+            if (selectedSecondary.length === 0) {
+                secondaryContainer.innerHTML = '<span class="text-[#5c728e] text-xs italic">Нет дополнительных ролей</span>';
+            } else {
+                let secondaryHtml = '';
+                selectedSecondary.forEach(roleKey => {
+                    const secRoleInfo = secondaryRoleData[roleKey];
+                    secondaryHtml += `<span class="inline-flex px-2.5 py-1 ${secRoleInfo.class} border text-xs rounded mb-1">${secRoleInfo.text}</span> `;
+                });
+                secondaryContainer.innerHTML = secondaryHtml;
+            }
+
+            // Закрываем модалку и показываем уведомление
+            closeModal();
+            alert('Роли успешно обновлены! (Проверьте console.log)');
+        });
+    </script>
+</body>
+</html>
