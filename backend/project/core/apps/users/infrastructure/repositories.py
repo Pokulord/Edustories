@@ -1,5 +1,6 @@
 from uuid import UUID
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import Paginator
 from django.contrib.auth import get_user_model
 from django.db import transaction, DatabaseError
 from django.db.utils import IntegrityError
@@ -7,9 +8,14 @@ from django.db.utils import IntegrityError
 from ..application.abc_repositories import AbstractUserRepository
 from ..domain.entities import User, Profile
 from ..domain.enums import UserStatuses
+from ..domain.pagination import Page
+from ..domain.dto import UserListItem
 
 class DjangoUserRepository(AbstractUserRepository):
     """Имплементация репозитория работы с пользователями через Django ORM"""
+
+    DEFAULT_PAGE_SIZE = 20
+    MAX_PAGE_SIZE = 100  # защита от DoS через ?page_size=999999
 
     def __init__(self):
         self.model = get_user_model()
@@ -32,6 +38,30 @@ class DjangoUserRepository(AbstractUserRepository):
         except IntegrityError as e:
             # Позже создам тут конкретное исключение (пока что возьму исключение от Django)
             raise DatabaseError(f"Integrity error {e}") from e
+        
+    def get_all_users(self, page: int = 1, page_size: int = DEFAULT_PAGE_SIZE) -> Page[UserListItem]:
+        """Метод для получения всех пользователей"""
+        page = max(page, 1)
+        page_size = min(max(page_size, 1), self.MAX_PAGE_SIZE)
+
+        # Тут 'ленивый запрос' - на данном этапе он просто задаёт QuerySet,
+        # но обращения к БД не происходит, так как его время
+        # наступает только при обращении к конкретным объектам
+        # в цикле, при их приведении к списку и т.д
+
+        queryset = self.model.objects.all().select_related("profile").order_by("-date_joined", "-id")
+
+        paginator = Paginator(queryset, page_size)
+        django_page = paginator.page(page) # Тут уже обращаемся с LIMIT записей на запрос
+
+        items = [self._to_list_item(u) for u in django_page.object_list]
+
+        return Page(
+            items=items,
+            total_count=paginator.count,
+            page=page,
+            page_size=page_size,
+        )
 
     def get_by_email(self, email: str) -> User|None:
         try:
@@ -85,7 +115,43 @@ class DjangoUserRepository(AbstractUserRepository):
             first_name=django_user.first_name,
             second_name=django_user.last_name,
             username=django_user.username,
-            password=django_user.password,
+            date_of_join=django_user.date_joined,
             email=django_user.email,
             status=django_user.role
         )
+    
+    def _to_list_item(self, orm_user) -> UserListItem:
+        """Собирает плоскую read model из ORM-пользователя и связанного профиля."""
+        profile = getattr(orm_user, "profile", None)
+
+        return UserListItem(
+            id=orm_user.id,
+            email=orm_user.email,
+            username=orm_user.username,
+            first_name=orm_user.first_name,
+            second_name=orm_user.last_name,
+            role=orm_user.role,
+            date_joined=orm_user.date_joined,
+            avatar_url=self._avatar_url(profile),
+            display_name=self._display_name(orm_user, profile),
+        )
+    
+    @staticmethod
+    def _avatar_url(profile) -> str | None:
+        """URL аватара или None."""
+        if profile is None or not profile.avatar:
+            return None
+        return profile.avatar.url
+
+    @staticmethod
+    def _display_name(orm_user, profile) -> str:
+        """Приоритет: Profile.display_name → ФИО → username → email."""
+        if profile and profile.display_name:
+            return profile.display_name
+
+        parts = [orm_user.first_name, orm_user.last_name]
+        full = " ".join(p for p in parts if p)
+        if full:
+            return full
+
+        return orm_user.username or orm_user.email.split("@")[0]

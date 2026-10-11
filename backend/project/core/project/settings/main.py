@@ -30,7 +30,7 @@ SECRET_KEY = env('DJANGO_KEY', default="danzakuduro")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'theme',
     'core.apps.users',
     'core.apps.roadmap',
+    'core.apps.admin_panel',
 ]
 
 MIDDLEWARE = [

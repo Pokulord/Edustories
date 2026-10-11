@@ -1,0 +1,113 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Доступ запрещён - Академия Ведьмаков</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Подключаем элегантный шрифт с засечками для заголовков -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            /* Базовый темный цвет на случай, если картинка не загрузится */
+            background-color: #050914;
+            color: #e2e8f0;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        .font-serif-custom {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Золотой градиент для цифр 403, имитирующий металл */
+        .text-gold-gradient {
+            background: linear-gradient(180deg, #fceebb 0%, #d7a751 50%, #a36b22 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            /* Легкое золотистое свечение */
+            filter: drop-shadow(0px 0px 25px rgba(215, 167, 81, 0.2));
+        }
+
+        /* Анимация плавного появления страницы */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen overflow-hidden">
+
+    <div id="background-image" 
+         class="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat z-0 scale-105"
+         style="background-image: url('{% static 'images/403_background.jpg' %}');">
+    </div>
+
+    <!-- Градиентный оверлей для затемнения фона и читаемости текста -->
+    <div class="absolute inset-0 z-10 bg-gradient-to-b from-[#050914]/80 via-[#050914]/60 to-[#050914]/90 backdrop-blur-[2px]"></div>
+    
+    <!-- Радиальное затемнение по краям (виньетка) -->
+    <div class="absolute inset-0 z-10 bg-[radial-gradient(circle_at_center,transparent_0%,#02040a_100%)] opacity-80"></div>
+
+
+    <!-- Основной контент -->
+    <main class="relative z-20 flex flex-col items-center justify-center min-h-screen px-4 text-center fade-in">
+        
+        
+
+        <!-- Огромные цифры 403 -->
+        <h1 class="font-serif-custom text-8xl md:text-[150px] leading-none mb-2 text-gold-gradient tracking-tight">
+            403
+        </h1>
+
+        <!-- Заголовок -->
+        <h2 class="font-serif-custom text-2xl md:text-4xl text-white font-medium mb-6 tracking-wide drop-shadow-md">
+            Доступ запрещён
+        </h2>
+
+        <!-- Декоративный разделитель -->
+        <div class="flex items-center gap-3 mb-8 opacity-70">
+            <div class="w-16 md:w-24 h-[1px] bg-gradient-to-r from-transparent to-[#d7a751]"></div>
+            <div class="w-1.5 h-1.5 border border-[#d7a751] rotate-45"></div>
+            <div class="w-16 md:w-24 h-[1px] bg-gradient-to-l from-transparent to-[#d7a751]"></div>
+        </div>
+
+        <!-- Текст описания -->
+        <div class="space-y-2 text-[#94a3b8] text-sm md:text-base font-light max-w-lg mx-auto leading-relaxed drop-shadow-sm">
+            <p>У вас нет прав для доступа к этой странице.</p>
+            <p>Если вы считаете, что это ошибка, пожалуйста, обратитесь к администратору.</p>
+        </div>
+
+        <!-- Кнопка возврата -->
+        <div class="mt-10">
+            <a href="/" class="group relative inline-flex items-center gap-2.5 px-6 py-2.5 bg-[#050914]/50 border border-[#d7a751]/60 text-[#d7a751] text-sm rounded transition-all duration-300 hover:bg-[#d7a751]/10 hover:border-[#d7a751] backdrop-blur-md">
+                <svg class="w-4 h-4 opacity-80 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                На главную
+            </a>
+        </div>
+
+    </main>
+
+
+    <!-- Декоративные "светлячки" (летающие частицы магии на фоне) -->
+    <div class="absolute inset-0 z-10 pointer-events-none overflow-hidden">
+        <div class="absolute top-[20%] left-[20%] w-1 h-1 bg-[#d7a751] rounded-full blur-[1px] opacity-40 animate-pulse"></div>
+        <div class="absolute top-[60%] left-[80%] w-1.5 h-1.5 bg-blue-400 rounded-full blur-[1px] opacity-30 animate-pulse" style="animation-duration: 3s;"></div>
+        <div class="absolute top-[80%] left-[30%] w-1 h-1 bg-[#10b981] rounded-full blur-[1px] opacity-40 animate-pulse" style="animation-duration: 4s;"></div>
+        <div class="absolute top-[30%] left-[70%] w-1 h-1 bg-[#d7a751] rounded-full blur-[1px] opacity-30 animate-pulse" style="animation-duration: 2.5s;"></div>
+    </div>
+
+</body>
+</html>

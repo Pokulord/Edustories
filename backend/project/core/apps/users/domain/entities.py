@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from datetime import datetime
 from uuid import UUID, uuid4
 
 from .value_objects import Email
@@ -37,8 +38,8 @@ class User:
     second_name: str
     email: Email
     username: str
+    date_of_join: datetime
     uid: UUID = field(default_factory=uuid4)
-    password: str | None = None
     is_email_confirmed: bool = False
     _roles: set[UserRoles] = field(default_factory= lambda: {UserRoles.BOOKREADER})
     status: UserStatuses = UserStatuses.PENDING
@@ -52,7 +53,9 @@ class User:
     @property
     def name(self) -> str:
         """Свойство, которое по факту функция и уже она возвращает полное имя пользователя"""
-        return f"{self.first_name} {self.second_name}"
+        if self.first_name and self.second_name:
+            return f"{self.first_name} {self.second_name}"
+        return "Безымянный"
     # Бизнес-правила
     @property
     def is_instructor(self) -> bool:

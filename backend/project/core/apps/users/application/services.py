@@ -1,6 +1,7 @@
+import logging
 from uuid import UUID
 
-from ..domain.entities import UserProfile
+from ..domain.entities import UserProfile, User
 from core.apps.roadmap.infrastructure.repositories import (
     UserShardRepository,
     UserNodeProgressRepository
@@ -8,7 +9,10 @@ from core.apps.roadmap.infrastructure.repositories import (
 
 from ..infrastructure.repositories import DjangoUserRepository
 from ..domain.exceptions import UserNotFoundError
+from ..domain.pagination import Page
 
+
+logger = logging.getLogger(__name__)
 
 class ProfileService:
     """Сервис для работы с профилем"""
@@ -58,3 +62,15 @@ class ProfileService:
         xp_to_next_level = XP_PER_LEVEL
         progress = xp_in_level / XP_PER_LEVEL * 100
         return level, xp_to_next_level, int(progress), xp_in_level
+    
+
+class UserService:
+    """Сервис для работы с пользователями"""
+
+    def __init__(self, user_repo: DjangoUserRepository):
+        self._user_repo = user_repo
+
+    def get_users_page(self, page_num: int, page_size: int) -> Page[User]:
+        """Метод сервиса для получения страницы (как объекта) пользователей"""
+        logger.info("Запрошен список пользователей page_num=%s page_size = %s", page_num, page_size)
+        return self._user_repo.get_all_users(page=page_num, page_size=page_size)

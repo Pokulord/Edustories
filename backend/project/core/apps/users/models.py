@@ -68,7 +68,6 @@ class CustomUser(AbstractUser):
         _("username"),
         max_length=150,
         help_text=_("Юзернейм пользователя. Необязателен для заполнения"),
-        null=True,
         blank=True,
     )
 
@@ -81,6 +80,10 @@ class CustomUser(AbstractUser):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
     objects = CustomUserManager()
+
+    def has_role(self, *roles: 'CustomUser.Role') -> bool:
+        """Функция для проверки наличия роли"""
+        return self.role in roles
 
     def __str__(self):
         return f"Пользователь {self.email}"

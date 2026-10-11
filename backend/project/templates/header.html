@@ -1,0 +1,154 @@
+{% load static %}
+<header class="fixed top-0 left-0 w-full z-50
+  dark:bg-[#070b1a]/[.88] bg-white/90
+  backdrop-blur-xl
+  dark:border-b dark:border-blue-800/30
+  border-b border-blue-200/60
+  transition-colors duration-500">
+
+  <div class="relative max-w-7xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
+
+    <!-- Logo -->
+    <a href="{% url 'biblio' %}" class="flex items-center gap-3 flex-shrink-0">
+      <img src="{% static 'images/logo.png' %}" alt="Логотип Академии Книгочеев" class="w-12 h-12 object-contain" />
+      <div class="leading-tight">
+        <p class="text-base font-semibold dark:text-blue-100 text-blue-900 tracking-wide transition-colors duration-500">
+          Академия Книгочеев
+        </p>
+        <p class="text-[8px] tracking-[3px] dark:text-blue-400/70 text-blue-700/70 uppercase transition-colors duration-500">
+          Знание есть оружие
+        </p>
+      </div>
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="hidden lg:flex items-center gap-8 text-sm tracking-wide
+      dark:text-blue-200/80 text-blue-800/80 transition-colors duration-500">
+
+      <a href="{% url 'biblio' %}" class="dark:text-blue-100 text-blue-900 font-semibold
+                         dark:hover:text-blue-300 hover:text-blue-600 transition">Главная</a>
+      <a href="#contracts" class="dark:hover:text-blue-300 hover:text-blue-600 transition">Контракты</a>
+      <a href="#" class="dark:hover:text-blue-300 hover:text-blue-600 transition">Бестиарий</a>
+      <a href="#" class="dark:hover:text-blue-300 hover:text-blue-600 transition">Алхимия</a>
+      <a href="#" class="dark:hover:text-blue-300 hover:text-blue-600 transition">Таверна</a>
+
+      <div class="relative dropdown">
+        <button class="flex items-center gap-1 text-amber-500 dark:text-amber-400
+                       hover:text-amber-400 dark:hover:text-amber-300 transition font-medium">
+          Книгочей
+          <svg class="w-3.5 h-3.5 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div class="dropdown-menu absolute top-full left-0 mt-2 w-48 rounded-xl
+                    dark:bg-[#0b0f24] bg-white
+                    dark:border dark:border-blue-800/40 border border-blue-200/60
+                    shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.6)] py-2 z-50">
+          <a href="{% url 'users:user_profile' %}" class="block px-4 py-2.5 text-sm dark:text-blue-200/80 text-blue-800/80 dark:hover:bg-blue-900/40 hover:bg-blue-50 dark:hover:text-blue-200 hover:text-blue-900 transition">📚 Библиотека</a>
+          <a href="#" class="block px-4 py-2.5 text-sm dark:text-blue-200/80 text-blue-800/80 dark:hover:bg-blue-900/40 hover:bg-blue-50 dark:hover:text-blue-200 hover:text-blue-900 transition">📖 Свитки</a>
+          <a href="#" class="block px-4 py-2.5 text-sm dark:text-blue-200/80 text-blue-800/80 dark:hover:bg-blue-900/40 hover:bg-blue-50 dark:hover:text-blue-200 hover:text-blue-900 transition">🗺 Карты</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Right controls -->
+    <div class="flex items-center gap-2 md:gap-3">
+
+      <!-- Theme toggle (desktop) -->
+      <div class="hidden lg:flex flex-col items-center gap-0.5">
+        <button id="themeToggle" class="relative flex items-center gap-1 p-1 rounded-full transition-colors duration-300">
+          <div class="flex items-center gap-1 dark:bg-blue-900/60 bg-blue-100
+                      border dark:border-blue-700/40 border-blue-300/60 rounded-full px-1 py-1">
+            <div id="sunBtn" class="w-7 h-7 rounded-full flex items-center justify-center text-sm
+                                   transition-all duration-300
+                                   dark:bg-transparent dark:text-amber-400/60
+                                   bg-white text-amber-500 shadow-sm">☀️</div>
+            <div id="moonBtn" class="w-7 h-7 rounded-full flex items-center justify-center text-sm
+                                    transition-all duration-300
+                                    dark:bg-blue-700 dark:text-white
+                                    bg-transparent text-gray-400">🌙</div>
+          </div>
+        </button>
+        <span class="text-[9px] dark:text-blue-400/60 text-blue-700/60 tracking-wide transition-colors duration-300">
+          <span class="dark:block hidden">Тёмная тема</span>
+          <span class="dark:hidden block">Светлая тема</span>
+        </span>
+      </div>
+      <!-- Theme toggle (mobile) -->
+      <button id="themeToggleMobile" data-theme-toggle class="lg:hidden relative w-14 h-7 rounded-full transition-colors duration-500
+               focus:outline-none flex-shrink-0
+               dark:bg-blue-900/80 bg-blue-100
+               border dark:border-blue-700/40 border-blue-300/60">
+        <span class="absolute left-1.5 top-1/2 -translate-y-1/2 text-xs pointer-events-none select-none leading-none">🌙</span>
+        <span class="absolute right-1.5 top-1/2 -translate-y-1/2 text-xs pointer-events-none select-none leading-none">☀️</span>
+        <span id="themeThumbMobile" class="absolute top-0.5 left-0.5 w-6 h-6 rounded-full shadow-md transition-transform duration-500
+                                          dark:bg-blue-400 bg-white border dark:border-transparent border-blue-300
+                                          dark:translate-x-0 translate-x-7"></span>
+      </button>
+
+      <!-- Auth (desktop) -->
+      {% if user.is_authenticated %}
+      <a href="{% url 'users:user_profile' %}"
+           class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border-2 transition-all duration-300
+                  dark:border-blue-700/40 border-blue-300/60
+                  dark:hover:border-blue-400/70 hover:border-blue-500
+                  dark:hover:shadow-[0_0_15px_rgba(59,130,246,0.35)]
+                  hover:shadow-[0_0_15px_rgba(37,99,235,0.25)]"
+           title="Профиль">
+          {% if user.profile and user.profile.avatar %}
+            <img src="{{ MEDIA_URL }}{{ user.profile.avatar.name }}" alt="Аватар" class="w-full h-full object-cover" />
+          {% elif user.profile and not user.profile.avatar %}
+            <div class="w-full h-full flex items-center justify-center
+                        dark:bg-blue-900/60 bg-blue-100 dark:text-blue-300 text-blue-700 text-sm font-bold">
+              {{ user.email|first|upper }}
+            </div>
+      <div class="hidden lg:flex items-center gap-3">
+          {% endif %}
+        </a>
+        <form method="post" action="{% url 'users:logout' %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" id="authActionBtn"
+                    title="Выйти"
+                    aria-label="Выйти"
+                    class="px-3 py-2 flex items-center justify-center rounded border-2 transition-all duration-300
+                        dark:border-blue-100/30 dark:text-blue-100
+                        dark:hover:bg-blue-400/10 dark:hover:border-blue-300/60
+                        border-blue-700/50 text-blue-800
+                        hover:bg-blue-50 hover:border-blue-700 bg-transparent cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                width="18" height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            </button>
+        </form>
+      </div>
+      {% else %}
+      <div class="hidden lg:flex items-center gap-2">
+        <a href="{% url 'users:login' %}" id="authActionBtn"
+           class="px-5 py-2 font-semibold text-sm tracking-widest uppercase rounded border-2 transition-all duration-300
+                  dark:border-blue-100/30 dark:text-blue-100
+                  dark:hover:bg-blue-400/10 dark:hover:border-blue-300/60
+                  border-blue-700/50 text-blue-800
+                  hover:bg-blue-50 hover:border-blue-700">
+          Войти
+        </a>
+      </div>
+      {% endif %}
+
+      <!-- Burger -->
+      <button id="burger" class="lg:hidden flex flex-col gap-1.5 relative z-50 p-2 flex-shrink-0" aria-label="Меню">
+        <span class="w-5 h-0.5 dark:bg-blue-300 bg-blue-800 rounded transition-all duration-300 block"></span>
+        <span class="w-5 h-0.5 dark:bg-blue-300 bg-blue-800 rounded transition-all duration-300 block"></span>
+        <span class="w-5 h-0.5 dark:bg-blue-300 bg-blue-800 rounded transition-all duration-300 block"></span>
+      </button>
+    </div>
+  </div>
+</header>

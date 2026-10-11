@@ -1,125 +1,152 @@
 {% load static %}
+{% load tailwind_tags %}
 <!doctype html>
 <html lang="ru" class="dark">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>{% block title %}Академия Ведьмаков{% endblock %}</title>
+  {% block title %}<title>Академия Книгочеев</title>{% endblock %}
 
-  <!-- ✅ Theme preload (без мигания) -->
+  {# ── Тема: применяем ДО отрисовки, чтобы не было мигания ── #}
   <script>
     (function () {
-      const theme = localStorage.getItem("witcherAcademyTheme");
-      if (theme === "light") {
-        document.documentElement.classList.remove("dark");
-      } else {
+      var theme = localStorage.getItem("witcherAcademyTheme");
+      if (theme !== "light") {
         document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
       }
     })();
   </script>
 
-  <!-- ✅ Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&subset=cyrillic"
-        rel="stylesheet">
+  {% tailwind_css %}
 
-  <!-- ✅ Tailwind CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
-            cormorant: ['Cormorant Garamond', 'serif']
-          }
+            'heading': ['"Playfair Display"', 'serif'],
+            'body':    ['"Lora"', 'serif'],
+          },
+          colors: {
+            'gold':        '#c5a67c',
+            'gold-bright': '#d4b483',
+            'gold-muted':  'rgba(197,166,124,0.12)',
+            'dark':        '#050a0a',
+            'navy':        '#070d1a',
+            'navy-card':   '#0b1628',
+            'navy-light':  '#0e1c35',
+          },
         }
       }
     }
   </script>
 
-  <!-- ✅ Base styles -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Ruslan+Display&family=Alegreya:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,700;1,400&display=swap&subset=cyrillic" rel="stylesheet">
+
+  {# ── Общие CSS-переменные и стили ── #}
   <style>
+    :root {
+      --gold: #c5a67c;
+      --gold-bright: #d4b483;
+      --gold-dim: rgba(197,166,124,0.18);
+      --navy: #070d1a;
+      --navy-card: #0b1628;
+      --header-h: 72px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      font-size: 1.0rem;
+      scroll-behavior: smooth;
+    }
+
     body {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Lora', serif;
+      margin: 0;
     }
 
-    /* Background overlay glow */
-    .bg-witcher-overlay {
-      background:
-        linear-gradient(to bottom,
-          rgba(2,17,13,0.85),
-          rgba(4,27,22,0.8),
-          rgba(2,14,11,0.95)
-        );
+    /* ── Font switcher ── */
+    html[data-font="classic"]   body { font-family: 'Cormorant Garamond', 'PT Serif', serif; }
+    html[data-font="chronicle"] body { font-family: 'Ruslan Display', 'Alegreya', serif; }
+    html[data-font="noble"]     body { font-family: 'Playfair Display', 'Lora', serif; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #070d1a; }
+    ::-webkit-scrollbar-thumb { background: rgba(197,166,124,0.35); border-radius: 3px; }
+
+    /* ── Dropdown (общий для шапки) ── */
+    .dropdown:hover .dropdown-menu {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+    .dropdown-menu {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px);
+      transition: all 0.2s ease;
     }
 
-    html.dark #themeThumb { transform: translateX(0); }
-    html:not(.dark) #themeThumb { transform: translateX(2rem); }
+    /* ── Общие утилиты ── */
+    .btn-gold {
+      background: linear-gradient(135deg, #c8922a 0%, #e8b84b 50%, #c8922a 100%);
+      box-shadow: 0 0 20px rgba(200, 146, 42, 0.4);
+      transition: all 0.3s ease;
+    }
+    .btn-gold:hover {
+      box-shadow: 0 0 35px rgba(200, 146, 42, 0.7);
+      transform: translateY(-1px);
+    }
 
+    .text-gold-gradient {
+      background: linear-gradient(135deg, #e8b84b, #c8922a, #e8b84b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .site-footer {
+      background: rgba(5,10,10,0.98);
+      border-top: 1px solid rgba(197,166,124,0.1);
+    }
+    .footer-line {
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(197,166,124,0.3) 20%,
+        rgba(197,166,124,0.65) 50%,
+        rgba(197,166,124,0.3) 80%,
+        transparent 100%);
+    }
   </style>
 
+  {# ── Слот для страничных стилей ── #}
   {% block extra_css %}{% endblock %}
 </head>
 
-<body class="min-h-screen relative overflow-x-hidden
-             dark:bg-[#020e0b] dark:text-emerald-100
-             bg-[#f0f7f2] text-emerald-900 transition-colors duration-500">
+<body class="scroll-smooth transition-colors duration-500 overflow-x-hidden
+             dark:text-blue-100 text-blue-900
+             dark:bg-[#060914] bg-[#f0f4ff]">
 
-  <!-- ✅ Witcher Background -->
-  <div class="fixed inset-0 z-0 
-              bg-cover bg-center bg-fixed"
-       style="background-image: url('{% static "images/witcher-bg.jpg" %}');">
-  </div>
+  {% include "header.html" %}
+  {% include "mobile_menu.html" %}
 
-  <!-- ✅ Overlay -->
-  <div class="fixed inset-0 z-0 bg-witcher-overlay"></div>
+  {# ── Контент страницы ── #}
+  {% block content %}{% endblock %}
 
-  <!-- ✅ Emerald glow -->
-  <div class="fixed inset-0 z-0 pointer-events-none
-              bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(16,185,129,0.15),transparent)]">
-  </div>
+  {% block footer %}{% endblock %}
 
-  <!-- ✅ Top Bar -->
-  <div class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-6 py-5">
-
-    <a href="{% url 'home' %}"
-       class="text-sm tracking-wider
-              dark:text-emerald-400/65 dark:hover:text-emerald-300
-              text-emerald-700/65 hover:text-emerald-600 transition">
-      ← На главную
-    </a>
-
-    <!-- Theme toggle -->
-    <button id="themeToggle"
-      class="relative w-16 h-8 rounded-full transition-colors duration-500
-             dark:bg-emerald-900/80 bg-emerald-100
-             border dark:border-emerald-700/40 border-emerald-300/60">
-
-      <span class="absolute left-2 top-1/2 -translate-y-1/2 text-sm">🌙</span>
-      <span class="absolute right-2 top-1/2 -translate-y-1/2 text-sm">☀️</span>
-
-      <span id="themeThumb"
-        class="absolute top-1 left-1 w-6 h-6 rounded-full shadow-md
-               dark:bg-emerald-400 bg-white
-               transition-transform duration-500">
-      </span>
-    </button>
-  </div>
-
-  <!-- ✅ Main content -->
-  <main class="relative z-20 min-h-screen flex flex-col">
-    {% block content %}
-    {% endblock %}
-  </main>
-
-  <!-- ✅ Theme Script -->
-  <script>
-    document.getElementById('themeToggle').addEventListener('click', () => {
-      const dark = document.documentElement.classList.toggle('dark');
-      localStorage.setItem('witcherAcademyTheme', dark ? 'dark' : 'light');
-    });
-  </script>
+    {# ── Общие скрипты ── #}
+  {% include "js_scripts.html" %}
 
   {% block extra_js %}{% endblock %}
 

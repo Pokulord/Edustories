@@ -26,6 +26,7 @@ urlpatterns = [
     path('users/', include('core.apps.users.urls')),
     path('roadmap/', include("core.apps.roadmap.presentation.urls")),
     path('bibilio/', TemplateView.as_view(template_name='biblio_main.html'), name='biblio'),
+    path('admin_panel/', include('core.apps.admin_panel.urls')),
 ]
 
 

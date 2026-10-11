@@ -28,3 +28,4 @@ class AbstractUserRepository(ABC):
     def get_by_id(self, user_id : UUID) -> User | None:
         """Абстрактный метод для получения пользователя по id"""
         ...
+
