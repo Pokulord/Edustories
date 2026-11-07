@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 import logging
 from uuid import UUID
 
@@ -10,6 +11,7 @@ from core.apps.roadmap.infrastructure.repositories import (
 from ..infrastructure.repositories import DjangoUserRepository
 from ..domain.exceptions import UserNotFoundError
 from ..domain.pagination import Page
+from .levels import calculate_level_info
 
 
 logger = logging.getLogger(__name__)
@@ -35,34 +37,23 @@ class ProfileService:
 
         user, profile = result
 
-        total_xp = self.progress_repo.get_total_xp(user_id)
         shards_count = len(self.shard_repo.list_by_user(user_id))
+        level_info = calculate_level_info(self.progress_repo.get_total_xp(user_id))
 
         # Расчёт уровня
-
-        level, xp_to_next, progress_percent, xp_in_level = self._calculate_level(total_xp)
-
 
         return UserProfile(
             uid=user.uid,
             username=user.username,
-            level=level,
-            xp=xp_in_level,
-            xp_to_next_level=xp_to_next,
-            xp_progress_percent=progress_percent,
+            level=level_info.level,
+            xp=level_info.xp_in_level,
+            xp_to_next_level=level_info.xp_to_next_level,
+            xp_progress_percent=level_info.progress_percent,
+            xp_in_next_level=level_info.xp_in_next_level,
             shards_count=shards_count,
             avatar_path=profile.avatar_path if profile else None,
         )
-    
-    def _calculate_level(self, xp: int ) -> tuple[int, int, float]:
-        """Функция для расчёта уровня"""
-        XP_PER_LEVEL = 1000
-        level = xp // XP_PER_LEVEL + 1
-        xp_in_level = xp % XP_PER_LEVEL
-        xp_to_next_level = XP_PER_LEVEL
-        progress = xp_in_level / XP_PER_LEVEL * 100
-        return level, xp_to_next_level, int(progress), xp_in_level
-    
+
 
 class UserService:
     """Сервис для работы с пользователями"""
@@ -70,7 +61,15 @@ class UserService:
     def __init__(self, user_repo: DjangoUserRepository):
         self._user_repo = user_repo
 
-    def get_users_page(self, page_num: int, page_size: int) -> Page[User]:
+    def get_users_page(self, page_num: int, page_size: int):
         """Метод сервиса для получения страницы (как объекта) пользователей"""
         logger.info("Запрошен список пользователей page_num=%s page_size = %s", page_num, page_size)
-        return self._user_repo.get_all_users(page=page_num, page_size=page_size)
+        queryset = self._user_repo.get_all_users()
+        paginator = Paginator(queryset, page_size)
+        page = paginator.get_page(page_num)
+        page.object_list = [self._user_repo._to_list_item(user) for user in page.object_list]
+        stats = {
+            "total": paginator.count,
+            "active": queryset.filter(is_active=True).count()
+        }
+        return page, stats

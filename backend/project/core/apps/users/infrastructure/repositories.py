@@ -1,15 +1,17 @@
 from uuid import UUID
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.paginator import Paginator
 from django.contrib.auth import get_user_model
 from django.db import transaction, DatabaseError
 from django.db.utils import IntegrityError
+from django.db.models import Sum, IntegerField
+from django.db.models.functions import Coalesce
 
 from ..application.abc_repositories import AbstractUserRepository
 from ..domain.entities import User, Profile
 from ..domain.enums import UserStatuses
 from ..domain.pagination import Page
 from ..domain.dto import UserListItem
+from ..application.levels import calculate_level_info
 
 class DjangoUserRepository(AbstractUserRepository):
     """Имплементация репозитория работы с пользователями через Django ORM"""
@@ -39,29 +41,17 @@ class DjangoUserRepository(AbstractUserRepository):
             # Позже создам тут конкретное исключение (пока что возьму исключение от Django)
             raise DatabaseError(f"Integrity error {e}") from e
         
-    def get_all_users(self, page: int = 1, page_size: int = DEFAULT_PAGE_SIZE) -> Page[UserListItem]:
+    def get_all_users(self):
         """Метод для получения всех пользователей"""
-        page = max(page, 1)
-        page_size = min(max(page_size, 1), self.MAX_PAGE_SIZE)
 
         # Тут 'ленивый запрос' - на данном этапе он просто задаёт QuerySet,
         # но обращения к БД не происходит, так как его время
         # наступает только при обращении к конкретным объектам
         # в цикле, при их приведении к списку и т.д
 
-        queryset = self.model.objects.all().select_related("profile").order_by("-date_joined", "-id")
-
-        paginator = Paginator(queryset, page_size)
-        django_page = paginator.page(page) # Тут уже обращаемся с LIMIT записей на запрос
-
-        items = [self._to_list_item(u) for u in django_page.object_list]
-
-        return Page(
-            items=items,
-            total_count=paginator.count,
-            page=page,
-            page_size=page_size,
-        )
+        queryset = self.model.objects.all().select_related("profile").annotate(xp_total=Coalesce(Sum("node_progress__xp_earned"), 0, output_field=IntegerField())).order_by("-date_joined", "-id")
+        print(queryset.query)
+        return queryset
 
     def get_by_email(self, email: str) -> User|None:
         try:
@@ -124,6 +114,8 @@ class DjangoUserRepository(AbstractUserRepository):
         """Собирает плоскую read model из ORM-пользователя и связанного профиля."""
         profile = getattr(orm_user, "profile", None)
 
+        print(f"XP_TOTAL -> {orm_user.xp_total}")
+
         return UserListItem(
             id=orm_user.id,
             email=orm_user.email,
@@ -134,6 +126,8 @@ class DjangoUserRepository(AbstractUserRepository):
             date_joined=orm_user.date_joined,
             avatar_url=self._avatar_url(profile),
             display_name=self._display_name(orm_user, profile),
+            is_active=orm_user.is_active,
+            level=calculate_level_info(total_xp=orm_user.xp_total or 0).level,
         )
     
     @staticmethod

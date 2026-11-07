@@ -6,5 +6,5 @@ from .views import UsersListAdminMenu
 app_name = "admin_menu"
 
 urlpatterns = [
-    path('', UsersListAdminMenu.as_view(), name="users_list"),
+    path('get_all_users', UsersListAdminMenu.as_view(), name="users_list"),
 ]

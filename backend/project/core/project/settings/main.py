@@ -30,7 +30,7 @@ SECRET_KEY = env('DJANGO_KEY', default="danzakuduro")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.0.22']
 
 
 # Application definition

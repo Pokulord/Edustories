@@ -22,6 +22,7 @@ class UserProfile:
     xp: int
     xp_to_next_level: int
     xp_progress_percent: int
+    xp_in_next_level: int
 
     # ─── Осколки ───
     shards_count: int = 0

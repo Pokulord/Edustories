@@ -4,13 +4,23 @@
 {% block title %}<title>EduStories — Личный кабинет</title>{% endblock %}
 
 {% block extra_css %}
+<script>
+  /* Тема кабинета = тема сайта (theme.js): класс dark на <html>, ключ
+     witcherAcademyTheme в localStorage. Применяем сохранённый выбор синхронно,
+     до первой отрисовки, чтобы не было вспышки светлой темы. */
+  (function () {
+    var light = false;
+    try { light = localStorage.getItem('witcherAcademyTheme') === 'light'; } catch (e) {}
+    document.documentElement.classList.toggle('dark', !light);
+  })();
+</script>
  <style>
     
     /* ─── PROFILE BANNER ─── */
     .profile-banner {
-      background: linear-gradient(180deg, #0a1628 0%, #07111f 100%);
-      border-bottom: 1px solid rgba(197,166,124,0.14);
-      padding: calc(var(--header-h) + 24px) 0 0;;
+      background: linear-gradient(180deg, rgb(var(--lk-bg3)) 0%, rgb(var(--lk-bg)) 100%);
+      border-bottom: 1px solid rgba(var(--lk-gold),0.14);
+      padding: calc(var(--header-h, 0px) + 34px) 0 0;
       position: relative;
       overflow: hidden;
     }
@@ -20,7 +30,17 @@
       position: absolute;
       inset: 0;
       background: url('{% static 'images/profile_banner.jpg' %}') center / cover no-repeat;
-      opacity: 0.18;
+      opacity: 0.14;
+    }
+
+    .profile-banner::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 90px;
+      background: linear-gradient(180deg, rgba(var(--lk-bg),0) 0%, rgba(var(--lk-bg),0.85) 70%, rgb(var(--lk-bg)) 100%);
+      z-index: 1;
+      pointer-events: none;
     }
 
     .avatar-ring {
@@ -28,7 +48,7 @@
       height: 108px;
       border-radius: 50%;
       border: 2px solid var(--gold);
-      box-shadow: 0 0 0 4px rgba(197,166,124,0.13), 0 0 28px rgba(197,166,124,0.22);
+      box-shadow: 0 0 0 4px rgba(var(--lk-gold),0.13), 0 0 28px rgba(var(--lk-gold),0.22);
       overflow: hidden;
       position: relative;
       flex-shrink: 0;
@@ -43,80 +63,419 @@
     /* ─── XP Bar ─── */
     .xp-bar-track {
       height: 6px;
-      background: rgba(255,255,255,0.08);
+      background: rgba(var(--lk-ink),0.08);
       border-radius: 3px;
       overflow: hidden;
     }
     .xp-bar-fill {
       height: 100%;
       border-radius: 3px;
-      background: linear-gradient(90deg, #1e6fa8 0%, #3db8e8 60%, #7ee3ff 100%);
-      box-shadow: 0 0 8px rgba(61,184,232,0.5);
+      background: linear-gradient(90deg, rgb(var(--lk-blue-deep)) 0%, rgb(var(--lk-blue)) 60%, rgb(var(--lk-sky)) 100%);
+      box-shadow: 0 0 8px rgba(var(--lk-blue),0.5);
     }
 
-    /* ─── TABS NAV ─── */
-    .tab-nav {
-    background: rgba(5,10,10,0.98);
-    border-bottom: 1px solid rgba(197,166,124,0.13);
-    position: sticky;
-    top: var(--header-h);
-    z-index: 40;
+    /* ─── SIDEBAR NAV ─── */
+    /* ─── THEME TOKENS ───
+    Все цвета страницы — только через эти переменные.
+    Тёмная палитра ниже — по умолчанию. Светлая включается селекторами блока
+    «LIGHT THEME»: она активна, когда на <html> НЕТ класса dark. Этим классом
+    управляет общесайтовый theme.js (#themeToggle / #themeToggleMobile в шапке,
+    ключ witcherAcademyTheme в localStorage) — отдельных кнопок в кабинете не нужно.
+    Дополнительно поддержаны html[data-theme="light"], html.light,
+    html.light-theme, body.light-theme, body[data-theme="light"] —
+    при необходимости добавьте свой селектор туда. */
+:root {
+  --lk-sidebar-w: 228px;
+  /* акценты */
+  --lk-gold: 197,166,124;
+  --lk-gold-bright: 212,180,131;
+  --lk-gold-deep: 184,149,94;
+  --lk-blue: 61,184,232;
+  --lk-sky: 126,227,255;
+  --lk-blue-deep: 30,111,168;
+  --lk-blue-navy: 14,60,100;
+  --lk-violet: 167,139,250;
+  /* текст */
+  --lk-heading: 226,232,240;
+  --lk-text-soft: 203,213,225;
+  --lk-muted: 148,163,184;
+  --lk-ink: 255,255,255;      /* контрастная «чернила»: линии, треки, приглушённый текст */
+  --lk-on-gold: 13,30,56;     /* текст поверх золотых кнопок/бейджей */
+  --lk-on-blue: 255,255,255;  /* текст поверх синих градиентов — не зависит от темы */
+  /* поверхности */
+  --lk-bg: 7,17,31;
+  --lk-bg2: 7,13,26;
+  --lk-bg3: 10,22,40;
+  --lk-deep: 4,8,15;
+  --lk-panel: 11,22,40;
+  --lk-panel2: 14,28,53;
+  --lk-panel3: 13,24,44;
+  --lk-panel4: 9,17,33;
+  --lk-panel5: 13,30,56;
+  --lk-header: 5,10,10;
+  color-scheme: dark;
+  /* алиасы базовых переменных сайта (base.html) */
+  --gold: rgb(var(--lk-gold));
+  --gold-bright: rgb(var(--lk-gold-bright));
+}
+
+/* ─── LIGHT THEME: «дневная библиотека» ─── */
+html:not(.dark),
+html[data-theme="light"], html.light, html.light-theme,
+body.light-theme, body[data-theme="light"] {
+  --lk-gold: 146,110,44;
+  --lk-gold-bright: 171,132,62;
+  --lk-gold-deep: 122,90,32;
+  --lk-blue: 12,110,180;
+  --lk-sky: 2,116,168;
+  --lk-blue-deep: 7,74,117;
+  --lk-blue-navy: 9,42,71;
+  --lk-violet: 109,74,206;
+  --lk-heading: 30,41,59;
+  --lk-text-soft: 55,65,81;
+  --lk-muted: 100,116,139;
+  --lk-ink: 30,41,59;
+  --lk-on-gold: 255,255,255;
+  --lk-bg: 243,240,232;
+  --lk-bg2: 235,231,221;
+  --lk-bg3: 252,250,245;
+  --lk-deep: 238,234,225;
+  --lk-panel: 255,255,255;
+  --lk-panel2: 250,247,240;
+  --lk-panel3: 246,242,234;
+  --lk-panel4: 251,249,244;
+  --lk-panel5: 255,255,255;
+  --lk-header: 251,249,244;
+  color-scheme: light;
+  --gold: rgb(var(--lk-gold));
+  --gold-bright: rgb(var(--lk-gold-bright));
+}
+
+    .lk-sidebar {
+      position: fixed;
+      top: var(--header-h, 0px);
+      left: 0;
+      bottom: 0;
+      width: var(--lk-sidebar-w);
+      background: rgb(var(--lk-deep));
+      border-right: 1px solid rgba(var(--lk-gold),0.12);
+      display: flex;
+      flex-direction: column;
+      padding: 26px 16px 20px;
+      gap: 6px;
+      z-index: 60;
+      overflow-y: auto;
     }
 
-    .tab-nav-inner {
-    display: flex;
-    max-width: 1280px;      /* = max-w-7xl, как в хедере */
-    margin: 0 auto;
-    padding: 0 24px;        /* = px-6 */
-    gap: 8px;               /* опционально — расстояние между ссылками */
+    .lk-logo {
+      width: 86px;
+      height: 86px;
+      margin: 4px auto 26px;
+      border-radius: 50%;
+      border: 1px solid rgba(var(--lk-gold),0.45);
+      background: radial-gradient(circle at 50% 38%, rgba(var(--lk-gold),0.10) 0%, rgba(var(--lk-deep),0) 72%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold);
+      box-shadow: 0 0 22px rgba(var(--lk-gold),0.12);
+      flex-shrink: 0;
     }
 
-    .tab-link {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 18px 8px;
-    font-family: 'Lora', serif;
-    font-size: 13px;
-    letter-spacing: 0.06em;
-    color: rgba(197,166,124,0.6);
-    text-decoration: none;
-    border-bottom: 2px solid transparent;
-    transition: color 0.25s, border-color 0.25s;
-    cursor: pointer;
-    position: relative;
+    .side-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      font-family: 'Lora', serif;
+      font-size: 15px;
+      color: rgba(var(--lk-gold),0.72);
+      text-decoration: none;
+      transition: color 0.25s, border-color 0.25s, background 0.25s;
+      cursor: pointer;
+    }
+    .side-link svg { flex-shrink: 0; }
+    .side-link:hover { color: var(--gold-bright); background: rgba(var(--lk-gold),0.05); }
+    .side-link.active {
+      color: rgb(var(--lk-heading));
+      border-color: rgba(var(--lk-gold),0.5);
+      background: rgba(var(--lk-gold),0.07);
     }
 
-    .tab-link:hover { color: var(--gold-bright); }
+    .lk-quote {
+      margin-top: auto;
+      border: 1px solid rgba(var(--lk-gold),0.16);
+      border-radius: 10px;
+      padding: 22px 16px 16px;
+      position: relative;
+    }
+    .lk-quote::before {
+      content: '\201C';
+      position: absolute;
+      top: 2px;
+      left: 10px;
+      font-family: 'Playfair Display', serif;
+      font-size: 34px;
+      line-height: 1;
+      color: rgba(var(--lk-gold),0.4);
+    }
+    .lk-quote::after {
+      content: '\201D';
+      position: absolute;
+      bottom: -8px;
+      right: 10px;
+      font-family: 'Playfair Display', serif;
+      font-size: 34px;
+      line-height: 1;
+      color: rgba(var(--lk-gold),0.4);
+    }
+    .lk-quote-text {
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-size: 12.5px;
+      line-height: 1.65;
+      color: rgba(var(--lk-text-soft),0.72);
+      margin: 0;
+    }
+    .lk-quote-author {
+      font-family: 'Lora', serif;
+      font-size: 12px;
+      color: var(--gold);
+      margin: 12px 0 0;
+    }
 
-    .tab-link.active {
-      color: #fff;
-      border-bottom-color: var(--gold);
+    .lk-shell {
+      margin-left: var(--lk-sidebar-w);
+      background: rgb(var(--lk-bg));
+      min-height: 100vh;
+    }
+
+    /* ─── MOBILE NAV (замена сайдбара на узких экранах) ─── */
+    .lk-mobile-nav {
+      display: none;
+      background: rgba(var(--lk-header),0.98);
+      border-bottom: 1px solid rgba(var(--lk-gold),0.13);
+      position: sticky;
+      top: var(--header-h, 0px);
+      z-index: 40;
+    }
+    .lk-mobile-nav-inner {
+      display: flex;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 12px;
+    }
+    .mnav-link {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 15px 6px;
+      font-family: 'Lora', serif;
+      font-size: 12.5px;
+      letter-spacing: 0.04em;
+      color: rgba(var(--lk-gold),0.6);
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      transition: color 0.25s, border-color 0.25s;
+      cursor: pointer;
+    }
+    .mnav-link:hover { color: var(--gold-bright); }
+    .mnav-link.active { color: rgb(var(--lk-heading)); border-bottom-color: var(--gold); }
+
+    @media (max-width: 960px) {
+      .lk-sidebar { display: none; }
+      .lk-mobile-nav { display: block; }
+      .lk-shell { margin-left: 0; }
     }
 
     /* ─── SECTION PANELS ─── */
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
+    /* ─── OVERVIEW: GRID ─── */
+    .ov-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.35fr 1.05fr;
+      grid-template-areas:
+        "reading map ach"
+        "goal goal ach";
+      gap: 20px;
+    }
+    .ov-reading { grid-area: reading; }
+    .ov-map     { grid-area: map; }
+    .ov-ach     { grid-area: ach; }
+    .ov-goal    { grid-area: goal; }
+
+    .ov-card {
+      background: linear-gradient(180deg, rgba(var(--lk-panel3),0.88) 0%, rgba(var(--lk-panel4),0.92) 100%);
+      border: 1px solid rgba(var(--lk-gold),0.14);
+      border-radius: 12px;
+      padding: 22px 24px;
+    }
+
+    .ov-card-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Playfair Display', serif;
+      font-size: 19px;
+      font-weight: 700;
+      color: rgb(var(--lk-heading));
+      margin-bottom: 18px;
+    }
+
+    /* ─── OVERVIEW: Сейчас читаю ─── */
+    .ov-read-row {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 6px;
+      margin: 0 -6px;
+    }
+    .ov-read-row + .ov-read-row { margin-top: 12px; }
+    .ov-read-thumb {
+      width: 56px;
+      height: 76px;
+      background: rgba(var(--lk-panel2),0.8);
+      border: 1px solid rgba(var(--lk-gold),0.22);
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .ov-read-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .ov-read-title { font-family: 'Playfair Display', serif; font-size: 14.5px; font-weight: 700; color: rgb(var(--lk-heading)); }
+    .ov-read-author { font-family: Lora, serif; font-size: 12px; color: rgba(var(--lk-gold),0.75); margin-top: 3px; }
+    .ov-read-pct { font-family: Lora, serif; font-size: 12px; color: rgba(var(--lk-blue),0.9); white-space: nowrap; }
+
+    /* ─── OVERVIEW: Карта осколков ─── */
+    .ov-map-title { text-align: center; margin-bottom: 24px; }
+    .map-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 22px 28px;
+    }
+    .shard-count-box {
+      border: 1px solid rgba(var(--lk-gold),0.35);
+      background: rgba(var(--lk-gold),0.06);
+      border-radius: 10px;
+      padding: 22px 24px;
+      max-width: 168px;
+      min-height: 96px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--gold-bright);
+      line-height: 1.5;
+    }
+
+    /* ─── OVERVIEW: Достижения (правая колонка) ─── */
+    .ov-ach { display: flex; flex-direction: column; }
+    .ach-row { display: flex; align-items: center; gap: 13px; padding: 9px 0; }
+    .ach-ico {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(var(--lk-panel2),0.85);
+      border: 1px solid rgba(var(--lk-gold),0.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .ach-name { font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 700; color: rgb(var(--lk-heading)); }
+    .ach-sub { font-family: Lora, serif; font-size: 11.5px; color: rgba(var(--lk-gold),0.6); margin-top: 2px; }
+    .ach-total { margin-top: auto; padding-top: 20px; }
+
+    /* ─── OVERVIEW: Ближайшая цель ─── */
+    .ov-goal { display: flex; align-items: center; gap: 22px; }
+    .goal-ico {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      border: 1px solid rgba(var(--lk-gold),0.35);
+      background: rgba(var(--lk-gold),0.07);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+    .stat-card {
+      background: linear-gradient(180deg, rgba(var(--lk-panel3),0.88) 0%, rgba(var(--lk-panel4),0.92) 100%);
+      border: 1px solid rgba(var(--lk-gold),0.14);
+      border-radius: 12px;
+      padding: 20px 22px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .stat-ico {
+      width: 54px;
+      height: 54px;
+      border-radius: 12px;
+      background: rgba(var(--lk-gold),0.08);
+      border: 1px solid rgba(var(--lk-gold),0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .stat-num { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 900; color: rgb(var(--lk-heading)); line-height: 1; }
+    .stat-label { font-family: Lora, serif; font-size: 13px; color: rgba(var(--lk-text-soft),0.65); margin-top: 6px; }
+
+    @media (max-width: 1150px) {
+      .ov-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+          "reading map"
+          "ach ach"
+          "goal goal";
+      }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 700px) {
+      .ov-grid {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "reading"
+          "map"
+          "ach"
+          "goal";
+      }
+      .ov-goal { flex-direction: column; align-items: flex-start; }
+    }
+
     /* ─── CARD ─── */
     .lk-card {
-      background: rgba(11,22,40,0.85);
-      border: 1px solid rgba(197,166,124,0.13);
+      background: rgba(var(--lk-panel),0.85);
+      border: 1px solid rgba(var(--lk-gold),0.13);
       border-radius: 4px;
     }
 
     /* ─── READING PROGRESS BAR ─── */
     .read-bar-track {
       height: 3px;
-      background: rgba(255,255,255,0.08);
+      background: rgba(var(--lk-ink),0.08);
       border-radius: 2px;
       overflow: hidden;
     }
     .read-bar-fill {
       height: 100%;
       border-radius: 2px;
-      background: linear-gradient(90deg, #1e6fa8, #3db8e8);
+      background: linear-gradient(90deg, rgb(var(--lk-blue-deep)), rgb(var(--lk-blue)));
     }
 
     /* ─── MAP HEXES ─── */
@@ -133,7 +492,7 @@
       width: 96px;
       height: 110px;
       clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
-      background: rgba(11,22,40,0.85);
+      background: rgba(var(--lk-panel),0.85);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -143,8 +502,8 @@
     }
 
     .hex-shape.unlocked {
-      background: rgba(14,28,53,0.90);
-      box-shadow: 0 0 12px rgba(197,166,124,0.15);
+      background: rgba(var(--lk-panel2),0.90);
+      box-shadow: 0 0 12px rgba(var(--lk-gold),0.15);
     }
 
     .hex-shape img {
@@ -156,7 +515,7 @@
 
     .hex-lock-icon {
       position: absolute;
-      color: rgba(197,166,124,0.4);
+      color: rgba(var(--lk-gold),0.4);
       font-size: 20px;
     }
 
@@ -164,21 +523,21 @@
       font-family: 'Lora', serif;
       font-size: 11px;
       letter-spacing: 0.08em;
-      color: rgba(197,166,124,0.75);
+      color: rgba(var(--lk-gold),0.75);
       text-align: center;
     }
 
     /* ─── BOOK CARDS (Library) ─── */
     .book-card {
-      background: rgba(11,22,40,0.9);
-      border: 1px solid rgba(197,166,124,0.15);
+      background: rgba(var(--lk-panel),0.9);
+      border: 1px solid rgba(var(--lk-gold),0.15);
       border-radius: 4px;
       overflow: hidden;
       transition: border-color 0.25s, box-shadow 0.25s;
     }
     .book-card:hover {
-      border-color: rgba(197,166,124,0.38);
-      box-shadow: 0 0 18px rgba(197,166,124,0.1);
+      border-color: rgba(var(--lk-gold),0.38);
+      box-shadow: 0 0 18px rgba(var(--lk-gold),0.1);
     }
 
     .book-cover {
@@ -191,7 +550,7 @@
     .book-cover-placeholder {
       width: 100%;
       aspect-ratio: 3/4;
-      background: rgba(14,28,53,0.7);
+      background: rgba(var(--lk-panel2),0.7);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -201,9 +560,9 @@
     /* ─── FILTER TABS ─── */
     .filter-btn {
       padding: 6px 20px;
-      border: 1px solid rgba(197,166,124,0.3);
+      border: 1px solid rgba(var(--lk-gold),0.3);
       background: transparent;
-      color: rgba(197,166,124,0.7);
+      color: rgba(var(--lk-gold),0.7);
       font-family: 'Lora', serif;
       font-size: 12px;
       letter-spacing: 0.05em;
@@ -214,14 +573,14 @@
     .filter-btn:hover, .filter-btn.active {
       border-color: var(--gold);
       color: var(--gold-bright);
-      background: rgba(197,166,124,0.08);
+      background: rgba(var(--lk-gold),0.08);
     }
 
     /* ─── SEARCH INPUT ─── */
     .search-input {
-      background: rgba(11,22,40,0.85);
-      border: 1px solid rgba(197,166,124,0.2);
-      color: #e2e8f0;
+      background: rgba(var(--lk-panel),0.85);
+      border: 1px solid rgba(var(--lk-gold),0.2);
+      color: rgb(var(--lk-heading));
       font-family: 'Lora', serif;
       font-size: 13px;
       padding: 10px 14px 10px 38px;
@@ -230,31 +589,31 @@
       transition: border-color 0.25s;
       width: 260px;
     }
-    .search-input:focus { border-color: rgba(197,166,124,0.5); }
-    .search-input::placeholder { color: rgba(197,166,124,0.35); }
+    .search-input:focus { border-color: rgba(var(--lk-gold),0.5); }
+    .search-input::placeholder { color: rgba(var(--lk-gold),0.35); }
 
     /* ─── INVENTORY CURRENCY ─── */
     .currency-card {
-      background: rgba(11,22,40,0.85);
-      border: 1px solid rgba(197,166,124,0.15);
+      background: rgba(var(--lk-panel),0.85);
+      border: 1px solid rgba(var(--lk-gold),0.15);
       border-radius: 4px;
       padding: 16px 20px;
     }
 
     /* ─── ARTIFACT CARD ─── */
     .artifact-card {
-      background: rgba(11,22,40,0.9);
-      border: 1px solid rgba(197,166,124,0.18);
+      background: rgba(var(--lk-panel),0.9);
+      border: 1px solid rgba(var(--lk-gold),0.18);
       border-radius: 4px;
       overflow: hidden;
       transition: border-color 0.25s;
     }
-    .artifact-card:hover { border-color: rgba(197,166,124,0.42); }
+    .artifact-card:hover { border-color: rgba(var(--lk-gold),0.42); }
 
     /* ─── ACHIEVEMENT CARD ─── */
     .achiev-card {
-      background: rgba(11,22,40,0.85);
-      border: 1px solid rgba(197,166,124,0.15);
+      background: rgba(var(--lk-panel),0.85);
+      border: 1px solid rgba(var(--lk-gold),0.15);
       border-radius: 4px;
       padding: 16px;
       display: flex;
@@ -280,8 +639,8 @@
       width: 80px;
       height: 80px;
       border-radius: 50%;
-      background: rgba(14,28,53,0.8);
-      border: 1px solid rgba(197,166,124,0.2);
+      background: rgba(var(--lk-panel2),0.8);
+      border: 1px solid rgba(var(--lk-gold),0.2);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -328,20 +687,20 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      background: rgba(11,22,40,0.92);
-      border: 1px solid rgba(197,166,124,0.22);
+      background: rgba(var(--lk-panel),0.92);
+      border: 1px solid rgba(var(--lk-gold),0.22);
       transition: border-color 0.25s, box-shadow 0.25s;
     }
     .collector-card:not(.locked):hover .card-face {
-      border-color: rgba(197,166,124,0.55);
+      border-color: rgba(var(--lk-gold),0.55);
     }
 
     .card-back {
       position: absolute;
       inset: 0;
       transform: rotateY(180deg);
-      background: linear-gradient(160deg, #0d1e38 0%, #090f1e 100%);
-      border: 1px solid rgba(197,166,124,0.35);
+      background: linear-gradient(160deg, rgb(var(--lk-panel5)) 0%, rgb(var(--lk-bg2)) 100%);
+      border: 1px solid rgba(var(--lk-gold),0.35);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -367,7 +726,7 @@
     .card-cover-placeholder {
       width: 100%;
       height: 100%;
-      background: rgba(14,28,53,0.75);
+      background: rgba(var(--lk-panel2),0.75);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -386,7 +745,7 @@
       padding: 0 14px 10px;
       font-family: 'Lora', serif;
       font-size: 10px;
-      color: rgba(197,166,124,0.4);
+      color: rgba(var(--lk-gold),0.4);
       font-style: italic;
     }
 
@@ -396,9 +755,9 @@
       font-size: 10px;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: #3db8e8;
-      border: 1px solid rgba(61,184,232,0.3);
-      background: rgba(61,184,232,0.07);
+      color: rgb(var(--lk-blue));
+      border: 1px solid rgba(var(--lk-blue),0.3);
+      background: rgba(var(--lk-blue),0.07);
       border-radius: 2px;
       padding: 3px 10px;
       margin-top: 4px;
@@ -414,14 +773,14 @@
       font-family: 'Playfair Display', serif;
       font-size: 15px;
       font-weight: 700;
-      color: #fff;
+      color: rgb(var(--lk-heading));
       line-height: 1.2;
     }
 
     .card-back-desc {
       font-family: 'Lora', serif;
       font-size: 11px;
-      color: rgba(203,213,225,0.72);
+      color: rgba(var(--lk-text-soft),0.72);
       line-height: 1.55;
       margin-top: 2px;
     }
@@ -432,42 +791,42 @@
     }
 
     .collector-card[data-rarity="legendary"]:not(.locked) .card-face {
-      box-shadow: 0 0 0 1px rgba(197,166,124,0.18), 0 4px 24px rgba(197,166,124,0.08);
+      box-shadow: 0 0 0 1px rgba(var(--lk-gold),0.18), 0 4px 24px rgba(var(--lk-gold),0.08);
     }
     .collector-card[data-rarity="legendary"]:not(.locked):hover .card-face {
-      box-shadow: 0 0 0 1px rgba(197,166,124,0.55), 0 4px 32px rgba(197,166,124,0.18);
+      box-shadow: 0 0 0 1px rgba(var(--lk-gold),0.55), 0 4px 32px rgba(var(--lk-gold),0.18);
     }
     .collector-card[data-rarity="rare"]:not(.locked) .card-face {
-      box-shadow: 0 0 0 1px rgba(61,184,232,0.15), 0 4px 18px rgba(61,184,232,0.06);
+      box-shadow: 0 0 0 1px rgba(var(--lk-blue),0.15), 0 4px 18px rgba(var(--lk-blue),0.06);
     }
     .collector-card[data-rarity="rare"]:not(.locked):hover .card-face {
-      box-shadow: 0 0 0 1px rgba(61,184,232,0.45), 0 4px 24px rgba(61,184,232,0.14);
+      box-shadow: 0 0 0 1px rgba(var(--lk-blue),0.45), 0 4px 24px rgba(var(--lk-blue),0.14);
     }
 
     .collector-prog-bar {
       height: 4px;
-      background: rgba(255,255,255,0.08);
+      background: rgba(var(--lk-ink),0.08);
       border-radius: 2px;
       overflow: hidden;
     }
     .collector-prog-fill {
       height: 100%;
       border-radius: 2px;
-      background: linear-gradient(90deg, #1e6fa8, #3db8e8);
+      background: linear-gradient(90deg, rgb(var(--lk-blue-deep)), rgb(var(--lk-blue)));
     }
 
-    .rarity-common    { color: #94a3b8; }
-    .rarity-rare      { color: #3db8e8; }
-    .rarity-epic      { color: #a78bfa; }
+    .rarity-common    { color: rgb(var(--lk-muted)); }
+    .rarity-rare      { color: rgb(var(--lk-blue)); }
+    .rarity-epic      { color: rgb(var(--lk-violet)); }
     .rarity-legendary { color: var(--gold-bright); }
 
     .gold-divider {
       height: 1px;
       background: linear-gradient(90deg,
         transparent 0%,
-        rgba(197,166,124,0.3) 20%,
-        rgba(197,166,124,0.65) 50%,
-        rgba(197,166,124,0.3) 80%,
+        rgba(var(--lk-gold),0.3) 20%,
+        rgba(var(--lk-gold),0.65) 50%,
+        rgba(var(--lk-gold),0.3) 80%,
         transparent 100%);
     }
 
@@ -476,9 +835,9 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      background: linear-gradient(180deg, rgba(30,111,168,0.55) 0%, rgba(14,60,100,0.75) 100%);
-      border: 1px solid rgba(61,184,232,0.4);
-      color: #7ee3ff;
+      background: linear-gradient(180deg, rgba(var(--lk-blue-deep),0.55) 0%, rgba(var(--lk-blue-navy),0.75) 100%);
+      border: 1px solid rgba(var(--lk-blue),0.4);
+      color: rgb(var(--lk-sky));
       font-family: 'Lora', serif;
       font-size: 12px;
       letter-spacing: 0.08em;
@@ -489,8 +848,8 @@
       text-decoration: none;
     }
     .btn-cta:hover {
-      border-color: rgba(61,184,232,0.75);
-      box-shadow: 0 0 16px rgba(61,184,232,0.25);
+      border-color: rgba(var(--lk-blue),0.75);
+      box-shadow: 0 0 16px rgba(var(--lk-blue),0.25);
     }
 
     .btn-equip {
@@ -498,9 +857,9 @@
       width: 100%;
       text-align: center;
       padding: 9px 12px;
-      background: linear-gradient(180deg, rgba(30,111,168,0.45) 0%, rgba(10,40,75,0.6) 100%);
-      border: 1px solid rgba(61,184,232,0.3);
-      color: rgba(126,227,255,0.85);
+      background: linear-gradient(180deg, rgba(var(--lk-blue-deep),0.45) 0%, rgba(var(--lk-blue-navy),0.6) 100%);
+      border: 1px solid rgba(var(--lk-blue),0.3);
+      color: rgba(var(--lk-sky),0.85);
       font-family: 'Lora', serif;
       font-size: 11px;
       letter-spacing: 0.07em;
@@ -508,17 +867,17 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-    .btn-equip:hover { border-color: rgba(61,184,232,0.6); }
+    .btn-equip:hover { border-color: rgba(var(--lk-blue),0.6); }
     .btn-equip.equipped {
-      background: linear-gradient(180deg, rgba(30,111,168,0.65) 0%, rgba(14,60,100,0.9) 100%);
-      border-color: rgba(61,184,232,0.5);
+      background: linear-gradient(180deg, rgba(var(--lk-blue-deep),0.65) 0%, rgba(var(--lk-blue-navy),0.9) 100%);
+      border-color: rgba(var(--lk-blue),0.5);
     }
 
     .level-badge {
       width: 48px;
       height: 48px;
-      background: linear-gradient(135deg, #1e6fa8, #0e3c64);
-      border: 2px solid rgba(61,184,232,0.5);
+      background: linear-gradient(135deg, rgb(var(--lk-blue-deep)), rgb(var(--lk-blue-navy)));
+      border: 2px solid rgba(var(--lk-blue),0.5);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -526,15 +885,15 @@
       font-family: 'Playfair Display', serif;
       font-weight: 900;
       font-size: 20px;
-      color: #fff;
-      box-shadow: 0 0 16px rgba(61,184,232,0.3);
+      color: rgb(var(--lk-on-blue));
+      box-shadow: 0 0 16px rgba(var(--lk-blue),0.3);
       flex-shrink: 0;
     }
 
     .banner-art {
       position: absolute;
       right: 0; top: 0; bottom: 0;
-      width: 260px;
+      width: 54%;
       overflow: hidden;
       pointer-events: none;
     }
@@ -542,63 +901,62 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      opacity: 0.55;
-      filter: saturate(0.7);
+      opacity: 0.92;
     }
     .banner-art::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(90deg, var(--navy) 0%, transparent 40%);
+      background: linear-gradient(90deg, rgb(var(--lk-bg3)) 0%, rgba(var(--lk-panel),0.5) 45%, transparent 78%);
       z-index: 1;
     }
 
     .icon-btn {
-      width: 36px;
-      height: 36px;
+      width: 42px;
+      height: 42px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid rgba(197,166,124,0.2);
-      background: rgba(197,166,124,0.06);
-      border-radius: 3px;
+      border: 1px solid rgba(var(--lk-gold),0.22);
+      background: rgba(var(--lk-gold),0.06);
+      border-radius: 10px;
       cursor: pointer;
-      color: rgba(197,166,124,0.7);
+      color: rgba(var(--lk-gold),0.7);
       font-size: 16px;
       transition: all 0.2s;
       text-decoration: none;
     }
-    .icon-btn:hover { border-color: rgba(197,166,124,0.45); color: var(--gold-bright); }
+    .icon-btn:hover { border-color: rgba(var(--lk-gold),0.45); color: var(--gold-bright); }
 
     .fragment-slot {
       width: 46px;
       height: 46px;
       border-radius: 50%;
-      border: 1px solid rgba(197,166,124,0.25);
-      background: rgba(11,22,40,0.7);
+      border: 1px solid rgba(var(--lk-gold),0.25);
+      background: rgba(var(--lk-panel),0.7);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: rgba(197,166,124,0.35);
+      color: rgba(var(--lk-gold),0.35);
       font-size: 16px;
     }
     .fragment-slot.filled {
       border-color: var(--gold);
-      background: rgba(197,166,124,0.1);
-      box-shadow: 0 0 10px rgba(197,166,124,0.25);
+      background: rgba(var(--lk-gold),0.1);
+      box-shadow: 0 0 10px rgba(var(--lk-gold),0.25);
       color: var(--gold);
     }
 
     .goal-box {
-      background: rgba(11,22,40,0.85);
-      border: 1px solid rgba(197,166,124,0.13);
+      background: rgba(var(--lk-panel),0.85);
+      border: 1px solid rgba(var(--lk-gold),0.13);
       border-radius: 4px;
       padding: 18px 20px;
     }
 
     .next-achiev {
-      background: rgba(11,22,40,0.9);
-      border: 1px solid rgba(197,166,124,0.2);
+      background: rgba(var(--lk-panel),0.9);
+      border: 1px solid rgba(var(--lk-gold),0.2);
       border-radius: 4px;
       display: flex;
       align-items: center;
@@ -610,8 +968,8 @@
       width: 72px;
       height: 72px;
       border-radius: 50%;
-      background: rgba(14,28,53,0.8);
-      border: 1px solid rgba(197,166,124,0.2);
+      background: rgba(var(--lk-panel2),0.8);
+      border: 1px solid rgba(var(--lk-gold),0.2);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -620,23 +978,23 @@
     }
 
     .site-footer {
-      background: rgba(5,10,10,0.98);
-      border-top: 1px solid rgba(197,166,124,0.1);
+      background: rgba(var(--lk-header),0.98);
+      border-top: 1px solid rgba(var(--lk-gold),0.1);
     }
 
     .footer-line {
       height: 1px;
       background: linear-gradient(90deg,
         transparent 0%,
-        rgba(197,166,124,0.3) 20%,
-        rgba(197,166,124,0.65) 50%,
-        rgba(197,166,124,0.3) 80%,
+        rgba(var(--lk-gold),0.3) 20%,
+        rgba(var(--lk-gold),0.65) 50%,
+        rgba(var(--lk-gold),0.3) 80%,
         transparent 100%);
     }
 
     .map-container {
-      background: rgba(7,13,26,0.85);
-      border: 1px solid rgba(197,166,124,0.13);
+      background: rgba(var(--lk-bg2),0.85);
+      border: 1px solid rgba(var(--lk-gold),0.13);
       border-radius: 4px;
       padding: 28px 20px;
       position: relative;
@@ -645,9 +1003,9 @@
     .inv-thumb-placeholder {
       width: 80px;
       height: 80px;
-      border: 1px solid rgba(197,166,124,0.2);
+      border: 1px solid rgba(var(--lk-gold),0.2);
       border-radius: 3px;
-      background: rgba(14,28,53,0.7);
+      background: rgba(var(--lk-panel2),0.7);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -657,19 +1015,19 @@
     .settings-btn {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 7px 14px;
-      border: 1px solid rgba(197,166,124,0.22);
-      background: rgba(197,166,124,0.05);
-      color: rgba(197,166,124,0.7);
+      gap: 7px;
+      padding: 10px 18px;
+      border: 1px solid rgba(var(--lk-gold),0.25);
+      background: rgba(var(--lk-gold),0.05);
+      color: rgba(var(--lk-gold),0.75);
       font-family: 'Lora', serif;
-      font-size: 12px;
-      border-radius: 3px;
+      font-size: 13px;
+      border-radius: 10px;
       cursor: pointer;
       transition: all 0.2s;
       text-decoration: none;
     }
-    .settings-btn:hover { border-color: rgba(197,166,124,0.45); color: var(--gold-bright); }
+    .settings-btn:hover { border-color: rgba(var(--lk-gold),0.45); color: var(--gold-bright); }
 
     /* ── Dropdown ── */
     .dropdown:hover .dropdown-menu {
@@ -689,15 +1047,12 @@
       .banner-art { display: none; }
       .profile-banner { padding-right: 32px; }
     }
-    @media (max-width: 640px) {
-      .tab-link { font-size: 11px; padding: 14px 4px; }
-    }
 
     /* ─── DIARY MODAL ─── */
     .diary-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(4, 8, 20, 0.82);
+      background: rgba(var(--lk-deep),0.82);
       backdrop-filter: blur(6px);
       z-index: 200;
       display: flex;
@@ -714,8 +1069,8 @@
     }
 
     .diary-modal {
-      background: linear-gradient(170deg, #0d1e38 0%, #090f1e 100%);
-      border: 1px solid rgba(197,166,124,0.22);
+      background: linear-gradient(170deg, rgb(var(--lk-panel5)) 0%, rgb(var(--lk-bg2)) 100%);
+      border: 1px solid rgba(var(--lk-gold),0.22);
       border-radius: 6px;
       width: 100%;
       max-width: 520px;
@@ -723,7 +1078,7 @@
       position: relative;
       transform: translateY(18px) scale(0.97);
       transition: transform 0.28s ease;
-      box-shadow: 0 24px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(197,166,124,0.08);
+      box-shadow: 0 24px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(var(--lk-gold),0.08);
     }
     .diary-overlay.open .diary-modal {
       transform: translateY(0) scale(1);
@@ -735,13 +1090,13 @@
       background: none;
       border: none;
       cursor: pointer;
-      color: rgba(203,213,225,0.45);
+      color: rgba(var(--lk-text-soft),0.45);
       font-size: 20px;
       line-height: 1;
       transition: color 0.2s;
       font-family: 'Lora', serif;
     }
-    .diary-close:hover { color: rgba(203,213,225,0.9); }
+    .diary-close:hover { color: rgba(var(--lk-text-soft),0.9); }
 
     .diary-label {
       display: flex;
@@ -751,7 +1106,7 @@
       font-size: 10px;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: #3db8e8;
+      color: rgb(var(--lk-blue));
       margin-bottom: 14px;
     }
 
@@ -759,7 +1114,7 @@
       font-family: 'Playfair Display', serif;
       font-size: 30px;
       font-weight: 900;
-      color: #fff;
+      color: rgb(var(--lk-heading));
       line-height: 1.1;
       margin-bottom: 4px;
     }
@@ -767,7 +1122,7 @@
     .diary-author {
       font-family: 'Lora', serif;
       font-size: 13px;
-      color: rgba(197,166,124,0.8);
+      color: rgba(var(--lk-gold),0.8);
       font-style: italic;
       margin-bottom: 20px;
     }
@@ -777,8 +1132,8 @@
       align-items: center;
       gap: 20px;
       padding: 14px 0;
-      border-top: 1px solid rgba(197,166,124,0.13);
-      border-bottom: 1px solid rgba(197,166,124,0.13);
+      border-top: 1px solid rgba(var(--lk-gold),0.13);
+      border-bottom: 1px solid rgba(var(--lk-gold),0.13);
       margin-bottom: 20px;
     }
 
@@ -788,7 +1143,7 @@
       gap: 7px;
       font-family: 'Lora', serif;
       font-size: 13px;
-      color: rgba(203,213,225,0.75);
+      color: rgba(var(--lk-text-soft),0.75);
     }
 
     .star-rating {
@@ -801,7 +1156,7 @@
     .star-rating input[type="radio"] { display: none; }
     .star-rating label {
       font-size: 22px;
-      color: rgba(197,166,124,0.25);
+      color: rgba(var(--lk-gold),0.25);
       cursor: pointer;
       transition: color 0.15s, transform 0.15s;
       line-height: 1;
@@ -823,16 +1178,16 @@
       font-size: 10px;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: #3db8e8;
+      color: rgb(var(--lk-blue));
       margin-bottom: 10px;
     }
 
     .diary-textarea {
       width: 100%;
-      background: rgba(11,22,40,0.75);
-      border: 1px solid rgba(197,166,124,0.18);
+      background: rgba(var(--lk-panel),0.75);
+      border: 1px solid rgba(var(--lk-gold),0.18);
       border-radius: 4px;
-      color: #e2e8f0;
+      color: rgb(var(--lk-heading));
       font-family: 'Lora', serif;
       font-size: 13px;
       font-style: italic;
@@ -844,17 +1199,17 @@
       transition: border-color 0.2s;
       margin-bottom: 20px;
     }
-    .diary-textarea:focus { border-color: rgba(197,166,124,0.45); }
-    .diary-textarea::placeholder { color: rgba(197,166,124,0.3); font-style: italic; }
+    .diary-textarea:focus { border-color: rgba(var(--lk-gold),0.45); }
+    .diary-textarea::placeholder { color: rgba(var(--lk-gold),0.3); font-style: italic; }
 
     .diary-save-btn {
       display: block;
       width: 100%;
       padding: 15px 20px;
-      background: linear-gradient(135deg, #c5a67c 0%, #d4b483 50%, #b8955e 100%);
+      background: linear-gradient(135deg, rgb(var(--lk-gold)) 0%, rgb(var(--lk-gold-bright)) 50%, rgb(var(--lk-gold-deep)) 100%);
       border: none;
       border-radius: 4px;
-      color: #0d1e38;
+      color: rgb(var(--lk-on-gold));
       font-family: 'Playfair Display', serif;
       font-size: 15px;
       font-weight: 700;
@@ -864,7 +1219,7 @@
     }
     .diary-save-btn:hover {
       opacity: 0.92;
-      box-shadow: 0 0 22px rgba(197,166,124,0.35);
+      box-shadow: 0 0 22px rgba(var(--lk-gold),0.35);
     }
 
     .reading-thumb-link {
@@ -873,7 +1228,7 @@
       transition: box-shadow 0.2s;
     }
     .reading-thumb-link:hover {
-      box-shadow: 0 0 0 2px rgba(197,166,124,0.55);
+      box-shadow: 0 0 0 2px rgba(var(--lk-gold),0.55);
     }
 
     .book-cover-clickable {
@@ -883,7 +1238,7 @@
     .cover-hover-hint {
       position: absolute;
       inset: 0;
-      background: rgba(7,13,26,0.72);
+      background: rgba(var(--lk-bg2),0.72);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -905,215 +1260,268 @@
       transition: background 0.2s;
     }
     .overview-reading-row:hover {
-      background: rgba(197,166,124,0.06);
+      background: rgba(var(--lk-gold),0.06);
     }
-  </style>
+
+</style>
 {% endblock %}
 
  
-</head>
+
 
 
 {% block content %}
+<!-- ═══════════════════════════ SIDEBAR ═══════════════════════════ -->
+<aside class="lk-sidebar">
+  <div class="lk-logo" title="EduStories">
+    <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M14.9 9.1 13 13l-3.9 1.9L11 11z" fill="currentColor" stroke="none"/>
+      <path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+  <a class="tab-link side-link active" href="#" onclick="switchTab(event,'overview')">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+    <span>Обзор</span>
+  </a>
+  <a class="tab-link side-link" href="#" onclick="switchTab(event,'library')">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    <span>Библиотека</span>
+  </a>
+  <a class="tab-link side-link" href="#" onclick="switchTab(event,'achievements')">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 21h8M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3a1 1 0 0 1 1 1 3 3 0 0 1-3 3h-1M7 5H4a1 1 0 0 0-1 1 3 3 0 0 0 3 3h1"/></svg>
+    <span>Достижения</span>
+  </a>
+  <a class="tab-link side-link" href="#" onclick="switchTab(event,'collector')">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+    <span>Коллекционер</span>
+  </a>
+
+  <div class="lk-quote">
+    <p class="lk-quote-text">Все, что мы видим иль кажемся, — лишь сон во сне.</p>
+    <p class="lk-quote-author">Эдгар Алан-По</p>
+  </div>
+
+</aside>
+
+<!-- ═══════════════════════════ MOBILE NAV ═══════════════════════════ -->
+<nav class="lk-mobile-nav">
+  <div class="lk-mobile-nav-inner">
+    <a class="tab-link mnav-link active" href="#" onclick="switchTab(event,'overview')">Обзор</a>
+    <a class="tab-link mnav-link" href="#" onclick="switchTab(event,'library')">Библиотека</a>
+    <a class="tab-link mnav-link" href="#" onclick="switchTab(event,'achievements')">Достижения</a>
+    <a class="tab-link mnav-link" href="#" onclick="switchTab(event,'collector')">Коллекционер</a>
+  </div>
+</nav>
+
+<div class="lk-shell">
+
 <!-- ═══════════════════════════ PROFILE BANNER ═══════════════════════════ -->
-<div class="profile-banner" style="min-height:170px;">
+<div class="profile-banner" style="min-height:250px;">
   <div class="banner-art">
     <img src="{% static 'images/profile_banner_art.jpg' %}" alt=""
          onerror="this.parentNode.style.display='none'">
   </div>
 
   <div class="relative z-[2] max-w-7xl mx-auto px-6">
-    <div style="display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:flex-start;gap:26px;flex-wrap:wrap;">
       <!-- Avatar -->
       <div class="avatar-ring">
         {% if profile.avatar_path %}
         <img src="{{ MEDIA_URL }}{{ profile.avatar_path }}" alt="Avatar"
-             onerror="this.outerHTML='<div style=\'width:100%;height:100%;background:rgba(14,28,53,0.9);display:flex;align-items:center;justify-content:center;font-size:40px;\'>🧙</div>'">
+             onerror="this.outerHTML='<div style=\'width:100%;height:100%;background:rgba(var(--lk-panel2),0.9);display:flex;align-items:center;justify-content:center;font-size:40px;\'>🧙</div>'">
         {% else %}
         <img src="{% static 'images/default-avatar.png' %}" alt="Avatar"
-             onerror="this.outerHTML='<div style=\'width:100%;height:100%;background:rgba(14,28,53,0.9);display:flex;align-items:center;justify-content:center;font-size:40px;\'>🧙</div>'">     
-        {% endif %}     
+             onerror="this.outerHTML='<div style=\'width:100%;height:100%;background:rgba(var(--lk-panel2),0.9);display:flex;align-items:center;justify-content:center;font-size:40px;\'>🧙</div>'">
+        {% endif %}
       </div>
 
       <!-- Info -->
-      <div style="flex:1;min-width:220px;">
-        <div style="font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,44px);font-weight:900;color:#fff;line-height:1.1;margin-bottom:6px;">
+      <div style="flex:1;min-width:220px;padding-top:6px;">
+        <div style="font-family:'Playfair Display',serif;font-size:clamp(30px,4vw,46px);font-weight:900;color:rgb(var(--lk-heading));line-height:1.1;margin-bottom:6px;">
           {{ profile.display_name }}
         </div>
-        <div style="font-family:Lora,serif;font-size:14px;color:var(--gold);margin-bottom:16px;font-style:italic;">
+        <div style="font-family:Lora,serif;font-size:14px;color:var(--gold);margin-bottom:18px;font-style:italic;">
           {{ profile.title }}
         </div>
-        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
           <div class="level-badge">{{ profile.level }}</div>
-          <div style="flex:1;min-width:180px;max-width:340px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-              <span style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.7);">Уровень {{ profile.level }}</span>
-              <span style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.7);">{{ profile.xp }} / {{ profile.xp_to_next_level }} XP</span>
+          <div style="flex:1;min-width:200px;max-width:360px;padding-top:2px;">
+            <div style="font-family:Lora,serif;font-size:12.5px;color:rgba(var(--lk-text-soft),0.75);margin-bottom:8px;">
+              Уровень {{ profile.level }}
             </div>
-            <div class="xp-bar-track">
-              <div class="xp-bar-fill" style="width:{{ profile.xp_progress_percent }}%;"></div>
+            <div style="display:flex;align-items:center;gap:14px;">
+              <div class="xp-bar-track" style="flex:1;">
+                <div class="xp-bar-fill" style="width:{{ profile.xp_progress_percent }}%;"></div>
+              </div>
+              <span style="font-family:Lora,serif;font-size:12.5px;color:rgba(var(--lk-text-soft),0.75);white-space:nowrap;">{{ profile.xp }} / {{ profile.xp_in_next_level }} XP</span>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Top-right action buttons -->
-      <div style="display:flex;align-items:center;gap:8px;margin-left:auto;">
+      <div style="display:flex;align-items:center;gap:10px;margin-left:auto;">
         <a href="#" class="icon-btn" title="Уведомления">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         </a>
         <a href="#" class="icon-btn" title="Сообщения">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </a>
+        <a href="{% url 'users:settings' %}" class="icon-btn" title="Настройки аккаунта">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </a>
         <a href="{% url 'users:settings' %}" class="settings-btn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           Настройки
         </a>
       </div>
     </div>
   </div>
-  <div style="height:24px;position:relative;z-index:2;"></div>
+  <div style="height:36px;position:relative;z-index:2;"></div>
 </div>
-
-<!-- ═══════════════════════════ TAB NAVIGATION ═══════════════════════════ -->
-<nav class="tab-nav">
-  <div class="tab-nav-inner">
-    <a class="tab-link active" href="#" onclick="switchTab(event,'overview')">Обзор</a>
-    <a class="tab-link" href="#" onclick="switchTab(event,'library')">Библиотека</a>
-    <a class="tab-link" href="#" onclick="switchTab(event,'achievements')">Достижения</a>
-    <a class="tab-link" href="#" onclick="switchTab(event,'collector')">Коллекционер</a>
-  </div>
-</nav>
 
 <!-- ═══════════════════════════ CONTENT AREA ═══════════════════════════ -->
 <main style="min-height:calc(100vh - 280px);">
 
   <!-- ══════════ TAB: OVERVIEW ══════════ -->
-  <div id="tab-overview" class="tab-panel active" style="padding:32px 24px 48px;">
-  <div style="display:grid;grid-template-columns:1fr 1.6fr 1fr;gap:18px;max-width:1280px;margin:0 auto;">
+  <div id="tab-overview" class="tab-panel active" style="padding:28px 24px 56px;">
+    <div style="max-width:1280px;margin:0 auto;">
 
-      <!-- LEFT COL -->
-      <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="ov-grid">
 
-        <div class="lk-card" style="padding:20px;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
-            <span style="font-size:16px;">📖</span>
-            <span style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#fff;">Сейчас читаю</span>
+        <!-- СЕЙЧАС ЧИТАЮ -->
+        <div class="ov-card ov-reading">
+          <div class="ov-card-head">
+            <span style="font-size:17px;">📖</span>
+            <span>Сейчас читаю</span>
           </div>
-          <div class="overview-reading-row" style="display:flex;gap:12px;margin-bottom:8px;align-items:flex-start;"
-               data-book-title="Маленький принц" data-book-author="Антуан де Сент-Экзюпери">
-            <div style="width:48px;height:64px;background:rgba(14,28,53,0.8);border:1px solid rgba(197,166,124,0.2);border-radius:2px;overflow:hidden;flex-shrink:0;">
+
+          <div class="overview-reading-row ov-read-row" data-book-title="Маленький принц" data-book-author="Антуан де Сент-Экзюпери">
+            <div class="ov-read-thumb">
               <img src="{% static 'images/book_little_prince.jpg' %}" alt="" style="width:100%;height:100%;object-fit:cover;"
-                   onerror="this.outerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px;\'>🌹</div>'">
+                   onerror="this.outerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;\'>🌹</div>'">
             </div>
             <div style="flex:1;min-width:0;">
-              <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;">Маленький принц</div>
-              <div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.7);margin-bottom:8px;">Антуан де Сент-Экзюпери</div>
-              <div style="display:flex;align-items:center;gap:8px;">
+              <div class="ov-read-title">Маленький принц</div>
+              <div class="ov-read-author">Антуан де Сент-Экзюпери</div>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:12px;">
                 <div class="read-bar-track" style="flex:1;"><div class="read-bar-fill" style="width:78%;"></div></div>
-                <span style="font-family:Lora,serif;font-size:11px;color:rgba(61,184,232,0.9);white-space:nowrap;">78%</span>
+                <span class="ov-read-pct">78%</span>
               </div>
             </div>
           </div>
-          <div class="overview-reading-row" style="display:flex;gap:12px;align-items:flex-start;"
-               data-book-title="Хоббит" data-book-author="Дж. Р. Р. Толкин">
-            <div style="width:48px;height:64px;background:rgba(14,28,53,0.8);border:1px solid rgba(197,166,124,0.2);border-radius:2px;overflow:hidden;flex-shrink:0;">
+
+          <div class="overview-reading-row ov-read-row" data-book-title="Хоббит" data-book-author="Дж. Р. Р. Толкин">
+            <div class="ov-read-thumb">
               <img src="{% static 'images/book_hobbit.jpg' %}" alt="" style="width:100%;height:100%;object-fit:cover;"
-                   onerror="this.outerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px;\'>🧙</div>'">
+                   onerror="this.outerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;\'>🧙</div>'">
             </div>
             <div style="flex:1;min-width:0;">
-              <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;">Хоббит</div>
-              <div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.7);margin-bottom:8px;">Дж. Р. Р. Толкин</div>
-              <div style="display:flex;align-items:center;gap:8px;">
+              <div class="ov-read-title">Хоббит</div>
+              <div class="ov-read-author">Дж. Р. Р. Толкин</div>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:12px;">
                 <div class="read-bar-track" style="flex:1;"><div class="read-bar-fill" style="width:100%;"></div></div>
-                <span style="font-family:Lora,serif;font-size:11px;color:rgba(61,184,232,0.9);white-space:nowrap;">100%</span>
+                <span class="ov-read-pct">100%</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="lk-card" style="padding:20px;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
-            <span style="font-size:16px;">🎯</span>
-            <span style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#fff;">Ближайшая цель</span>
-          </div>
-          <div style="display:flex;gap:14px;align-items:flex-start;">
-            <div style="width:52px;height:52px;border:1px solid rgba(197,166,124,0.25);border-radius:4px;background:rgba(197,166,124,0.08);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">📜</div>
-            <div style="flex:1;">
-              <div style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.85);line-height:1.5;margin-bottom:14px;">
-                Пройдите «Долину Первых Строк», чтобы получить следующий осколок Великой Книги.
-              </div>
-              <div style="display:flex;justify-content:space-between;align-items:center;">
-                <div class="read-bar-track" style="flex:1;margin-right:10px;"><div class="read-bar-fill" style="width:0%;"></div></div>
-                <span style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.7);">0 / 6</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- CENTER COL: Map -->
-      <div>
-        <div class="map-container">
-          <div style="text-align:center;margin-bottom:20px;">
+        <!-- ВОССТАНОВЛЕНИЕ ВЕЛИКОЙ КНИГИ -->
+        <div class="ov-card ov-map">
+          <div class="ov-map-title">
             <span style="font-size:14px;color:var(--gold);">✦</span>
-            <span style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#fff;margin:0 10px;">Восстановление Великой Книги</span>
+            <span style="font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:rgb(var(--lk-heading));margin:0 12px;">Восстановление Великой Книги</span>
             <span style="font-size:14px;color:var(--gold);">✦</span>
           </div>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px 10px;justify-items:center;margin-bottom:20px;">
+          <div class="map-row">
             {% for user_shard in shards %}
             <div class="map-hex">
               <div class="hex-shape">
                 {% if user_shard.shard.image_path %}
                 <img src="{{ MEDIA_URL }}{{ user_shard.shard.image_path }}" alt="{{ user_shard.shard.title }}" onerror="this.style.display='none'">
                 {% endif %}
-                </div><span class="hex-label">{{ user_shard.shard.title }}</span></div>
-          </div>
-          {% empty %}
-            <p>Пока нет осколков. Проходите узлы, чтобы получить их.</p>
-          {% endfor %}
-          <div style="text-align:center;margin-bottom:14px;">
-            <div style="display:inline-block;border:1px solid rgba(197,166,124,0.35);padding:10px 28px;border-radius:3px;background:rgba(197,166,124,0.06);">
-              <span style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--gold-bright);">Число осколков: {{ profile.shards_count }}</span>
+              </div>
+              <span class="hex-label">{{ user_shard.shard.title }}</span>
+            </div>
+            {% empty %}
+            <p style="font-family:Lora,serif;font-size:13px;color:rgba(var(--lk-gold),0.6);text-align:center;margin:0;">Пока нет осколков. Проходите узлы, чтобы получить их.</p>
+            {% endfor %}
+            <div class="shard-count-box">
+              <span>Число осколков: {{ profile.shards_count }}</span>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- ACHIEVEMENTS STRIP -->
-    <div style="max-width:1280px;margin:18px auto 0;padding:0 24px;">
-      <div style="background:rgba(11,22,40,0.85);border:1px solid rgba(197,166,124,0.13);border-radius:4px;padding:16px 24px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
-        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-          <span style="font-size:16px;">🏆</span>
-          <span style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#fff;">Достижения</span>
+        <!-- ДОСТИЖЕНИЯ -->
+        <div class="ov-card ov-ach">
+          <div class="ov-card-head">
+            <span style="font-size:17px;">🏆</span>
+            <span>Достижения</span>
+          </div>
+
+          <div class="ach-row">
+            <div class="ach-ico">📖</div>
+            <div style="flex:1;min-width:0;">
+              <div class="ach-name">Первый том</div>
+              <div class="ach-sub">Прочитана первая книга</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:rgba(var(--lk-blue),0.85);flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="ach-row">
+            <div class="ach-ico">🔥</div>
+            <div style="flex:1;min-width:0;">
+              <div class="ach-name">Огонь чтения</div>
+              <div class="ach-sub">14 дней без перерыва</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:rgba(var(--lk-blue),0.85);flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="ach-row">
+            <div class="ach-ico">🗺️</div>
+            <div style="flex:1;min-width:0;">
+              <div class="ach-name">Следопыт</div>
+              <div class="ach-sub">Открыты три точки карты</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:rgba(var(--lk-blue),0.85);flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="ach-row">
+            <div class="ach-ico">⭐</div>
+            <div style="flex:1;min-width:0;">
+              <div class="ach-name">Внимательный критик</div>
+              <div class="ach-sub">Поставлены пять оценок</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:rgba(var(--lk-blue),0.85);flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+
+          <div class="ach-total">
+            <div style="font-family:'Playfair Display',serif;font-size:30px;font-weight:900;color:var(--gold-bright);line-height:1;">240</div>
+            <div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.65);letter-spacing:0.06em;margin-top:7px;">Общий опыт</div>
+          </div>
         </div>
-        <div style="display:flex;flex-wrap:wrap;gap:0;flex:1;">
-          <div style="display:flex;align-items:center;gap:10px;padding:8px 20px;border-right:1px solid rgba(197,166,124,0.1);flex:1;min-width:140px;">
-            <div style="width:32px;height:32px;border-radius:50%;background:rgba(14,28,53,0.8);border:1px solid rgba(197,166,124,0.25);display:flex;align-items:center;justify-content:center;font-size:14px;">📖</div>
-            <div><div style="font-family:'Playfair Display',serif;font-size:12px;font-weight:700;color:#fff;">Первый том</div><div style="font-family:Lora,serif;font-size:10px;color:rgba(197,166,124,0.6);">Прочитана первая книга</div></div>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(61,184,232,0.8)" stroke-width="2.5" style="margin-left:auto;flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>
+
+        <!-- БЛИЖАЙШАЯ ЦЕЛЬ -->
+        <div class="ov-card ov-goal">
+          <div class="goal-ico">📜</div>
+          <div style="flex:1;min-width:220px;">
+            <div class="ov-card-head" style="margin-bottom:8px;">
+              <span>Ближайшая цель</span>
+            </div>
+            <p style="font-family:Lora,serif;font-size:13px;color:rgba(var(--lk-text-soft),0.8);line-height:1.6;margin:0;">
+              Пройдите «Долину Первых Строк», чтобы получить следующий осколок Великой Книги.
+            </p>
           </div>
-          <div style="display:flex;align-items:center;gap:10px;padding:8px 20px;border-right:1px solid rgba(197,166,124,0.1);flex:1;min-width:140px;">
-            <div style="width:32px;height:32px;border-radius:50%;background:rgba(14,28,53,0.8);border:1px solid rgba(197,166,124,0.25);display:flex;align-items:center;justify-content:center;font-size:14px;">🔥</div>
-            <div><div style="font-family:'Playfair Display',serif;font-size:12px;font-weight:700;color:#fff;">Огонь чтения</div><div style="font-family:Lora,serif;font-size:10px;color:rgba(197,166,124,0.6);">14 дней без перерыва</div></div>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(61,184,232,0.8)" stroke-width="2.5" style="margin-left:auto;flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;padding:8px 20px;border-right:1px solid rgba(197,166,124,0.1);flex:1;min-width:140px;">
-            <div style="width:32px;height:32px;border-radius:50%;background:rgba(14,28,53,0.8);border:1px solid rgba(197,166,124,0.25);display:flex;align-items:center;justify-content:center;font-size:14px;">🗺️</div>
-            <div><div style="font-family:'Playfair Display',serif;font-size:12px;font-weight:700;color:#fff;">Следопыт</div><div style="font-family:Lora,serif;font-size:10px;color:rgba(197,166,124,0.6);">Открыты три точки карты</div></div>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(61,184,232,0.8)" stroke-width="2.5" style="margin-left:auto;flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;padding:8px 20px;flex:1;min-width:140px;">
-            <div style="width:32px;height:32px;border-radius:50%;background:rgba(14,28,53,0.8);border:1px solid rgba(197,166,124,0.25);display:flex;align-items:center;justify-content:center;font-size:14px;">⭐</div>
-            <div><div style="font-family:'Playfair Display',serif;font-size:12px;font-weight:700;color:#fff;">Внимательный критик</div><div style="font-family:Lora,serif;font-size:10px;color:rgba(197,166,124,0.6);">Поставлены пять оценок</div></div>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(61,184,232,0.8)" stroke-width="2.5" style="margin-left:auto;flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>
+          <div style="width:min(300px,100%);flex-shrink:0;">
+            <div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
+              <span style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--gold-bright);">0 / 6</span>
+            </div>
+            <div class="read-bar-track"><div class="read-bar-fill" style="width:0%;"></div></div>
           </div>
         </div>
-        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--gold-bright);flex-shrink:0;white-space:nowrap;">
-          240<br><span style="font-size:10px;font-family:Lora,serif;color:rgba(197,166,124,0.7);font-weight:400;letter-spacing:0.05em;">ОБЩИЙ ОПЫТ</span>
-        </div>
-      </div>
+
+      </div><!-- /ov-grid --
+
     </div>
   </div>
 
@@ -1122,13 +1530,13 @@
   <div style="max-width:1280px;margin:0 auto;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;margin-bottom:24px;">
         <div>
-          <h1 style="font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,42px);font-weight:900;color:#fff;margin:0 0 6px;">Моя библиотека</h1>
+          <h1 style="font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,42px);font-weight:900;color:rgb(var(--lk-heading));margin:0 0 6px;">Моя библиотека</h1>
           <p style="font-family:Lora,serif;font-size:13px;color:var(--gold);margin:0;">
-            24 книги · <span style="color:rgba(61,184,232,0.85);">8 прочитано</span> · <span style="color:rgba(197,166,124,0.7);">3 читаю</span>
+            24 книги · <span style="color:rgba(var(--lk-blue),0.85);">8 прочитано</span> · <span style="color:rgba(var(--lk-gold),0.7);">3 читаю</span>
           </p>
         </div>
         <div style="position:relative;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(197,166,124,0.45)" stroke-width="1.8" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color:rgba(var(--lk-gold),0.45);position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input type="text" placeholder="Найти книгу" class="search-input" />
         </div>
       </div>
@@ -1146,11 +1554,11 @@
             <div class="cover-hover-hint">📖 Записать мысли</div>
           </div>
           <div style="padding:14px;">
-            <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;">Маленький принц</div>
-            <div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.7);margin-bottom:10px;">Антуан де Сент-Экзюпери</div>
-            <div style="display:flex;align-items:center;gap:6px;font-family:Lora,serif;font-size:11px;color:rgba(61,184,232,0.8);margin-bottom:8px;"><span>📖</span><span>Читаю</span></div>
+            <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:rgb(var(--lk-heading));margin-bottom:4px;">Маленький принц</div>
+            <div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.7);margin-bottom:10px;">Антуан де Сент-Экзюпери</div>
+            <div style="display:flex;align-items:center;gap:6px;font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-blue),0.8);margin-bottom:8px;"><span>📖</span><span>Читаю</span></div>
             <div class="read-bar-track" style="margin-bottom:10px;"><div class="read-bar-fill" style="width:78%;"></div></div>
-            <div style="display:flex;justify-content:flex-end;font-family:Lora,serif;font-size:11px;color:rgba(61,184,232,0.8);margin-bottom:10px;">78%</div>
+            <div style="display:flex;justify-content:flex-end;font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-blue),0.8);margin-bottom:10px;">78%</div>
             <a href="#" class="btn-cta book-diary-btn" style="width:100%;font-size:11px;padding:8px;">Продолжить чтение</a>
           </div>
         </div>
@@ -1161,11 +1569,11 @@
             <div class="cover-hover-hint">📖 Записать мысли</div>
           </div>
           <div style="padding:14px;">
-            <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;">Хоббит</div>
-            <div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.7);margin-bottom:10px;">Дж. Р. Р. Толкин</div>
-            <div style="display:flex;align-items:center;gap:6px;font-family:Lora,serif;font-size:11px;color:rgba(61,184,232,0.8);margin-bottom:8px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Прочитано</span></div>
+            <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:rgb(var(--lk-heading));margin-bottom:4px;">Хоббит</div>
+            <div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.7);margin-bottom:10px;">Дж. Р. Р. Толкин</div>
+            <div style="display:flex;align-items:center;gap:6px;font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-blue),0.8);margin-bottom:8px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Прочитано</span></div>
             <div class="read-bar-track" style="margin-bottom:10px;"><div class="read-bar-fill" style="width:100%;"></div></div>
-            <div style="display:flex;justify-content:flex-end;font-family:Lora,serif;font-size:11px;color:rgba(61,184,232,0.8);margin-bottom:10px;">100%</div>
+            <div style="display:flex;justify-content:flex-end;font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-blue),0.8);margin-bottom:10px;">100%</div>
             <a href="#" class="btn-cta book-diary-btn" style="width:100%;font-size:11px;padding:8px;">Записать мысли</a>
           </div>
         </div>
@@ -1176,11 +1584,11 @@
             <div class="cover-hover-hint">📖 Записать мысли</div>
           </div>
           <div style="padding:14px;">
-            <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;">Чучело</div>
-            <div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.7);margin-bottom:10px;">Владимир Железников</div>
-            <div style="display:flex;align-items:center;gap:6px;font-family:Lora,serif;font-size:11px;color:rgba(61,184,232,0.8);margin-bottom:8px;"><span>📖</span><span>Читаю</span></div>
+            <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:rgb(var(--lk-heading));margin-bottom:4px;">Чучело</div>
+            <div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.7);margin-bottom:10px;">Владимир Железников</div>
+            <div style="display:flex;align-items:center;gap:6px;font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-blue),0.8);margin-bottom:8px;"><span>📖</span><span>Читаю</span></div>
             <div class="read-bar-track" style="margin-bottom:10px;"><div class="read-bar-fill" style="width:45%;"></div></div>
-            <div style="display:flex;justify-content:flex-end;font-family:Lora,serif;font-size:11px;color:rgba(61,184,232,0.8);margin-bottom:10px;">45%</div>
+            <div style="display:flex;justify-content:flex-end;font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-blue),0.8);margin-bottom:10px;">45%</div>
             <a href="#" class="btn-cta book-diary-btn" style="width:100%;font-size:11px;padding:8px;">Продолжить чтение</a>
           </div>
         </div>
@@ -1191,11 +1599,11 @@
             <div class="cover-hover-hint">📖 Записать мысли</div>
           </div>
           <div style="padding:14px;">
-            <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;">Два капитана</div>
-            <div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.7);margin-bottom:10px;">Вениамин Каверин</div>
-            <div style="display:flex;align-items:center;gap:6px;font-family:Lora,serif;font-size:11px;color:rgba(61,184,232,0.8);margin-bottom:8px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Прочитано</span></div>
+            <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:rgb(var(--lk-heading));margin-bottom:4px;">Два капитана</div>
+            <div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.7);margin-bottom:10px;">Вениамин Каверин</div>
+            <div style="display:flex;align-items:center;gap:6px;font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-blue),0.8);margin-bottom:8px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Прочитано</span></div>
             <div class="read-bar-track" style="margin-bottom:10px;"><div class="read-bar-fill" style="width:100%;"></div></div>
-            <div style="display:flex;justify-content:flex-end;font-family:Lora,serif;font-size:11px;color:rgba(61,184,232,0.8);margin-bottom:10px;">100%</div>
+            <div style="display:flex;justify-content:flex-end;font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-blue),0.8);margin-bottom:10px;">100%</div>
             <a href="#" class="btn-cta book-diary-btn" style="width:100%;font-size:11px;padding:8px;">Записать мысли</a>
           </div>
         </div>
@@ -1206,11 +1614,11 @@
             <div class="cover-hover-hint">📖 Записать мысли</div>
           </div>
           <div style="padding:14px;">
-            <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;">451° по Фаренгейту</div>
-            <div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.7);margin-bottom:10px;">Рэй Брэдбери</div>
-            <div style="display:flex;align-items:center;gap:6px;font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.6);margin-bottom:8px;"><span>📋</span><span>Хочу прочитать</span></div>
+            <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:rgb(var(--lk-heading));margin-bottom:4px;">451° по Фаренгейту</div>
+            <div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.7);margin-bottom:10px;">Рэй Брэдбери</div>
+            <div style="display:flex;align-items:center;gap:6px;font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.6);margin-bottom:8px;"><span>📋</span><span>Хочу прочитать</span></div>
             <div class="read-bar-track" style="margin-bottom:10px;"><div class="read-bar-fill" style="width:0%;"></div></div>
-            <div style="display:flex;justify-content:flex-end;font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.5);margin-bottom:10px;">0%</div>
+            <div style="display:flex;justify-content:flex-end;font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.5);margin-bottom:10px;">0%</div>
           </div>
         </div>
 
@@ -1220,11 +1628,11 @@
             <div class="cover-hover-hint">📖 Записать мысли</div>
           </div>
           <div style="padding:14px;">
-            <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;">Капитанская дочка</div>
-            <div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.7);margin-bottom:10px;">Александр Пушкин</div>
-            <div style="display:flex;align-items:center;gap:6px;font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.6);margin-bottom:8px;"><span>📋</span><span>Хочу прочитать</span></div>
+            <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:rgb(var(--lk-heading));margin-bottom:4px;">Капитанская дочка</div>
+            <div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.7);margin-bottom:10px;">Александр Пушкин</div>
+            <div style="display:flex;align-items:center;gap:6px;font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.6);margin-bottom:8px;"><span>📋</span><span>Хочу прочитать</span></div>
             <div class="read-bar-track" style="margin-bottom:10px;"><div class="read-bar-fill" style="width:0%;"></div></div>
-            <div style="display:flex;justify-content:flex-end;font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.5);margin-bottom:10px;">0%</div>
+            <div style="display:flex;justify-content:flex-end;font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.5);margin-bottom:10px;">0%</div>
           </div>
         </div>
 
@@ -1235,22 +1643,22 @@
   <!-- ══════════ TAB: ACHIEVEMENTS ══════════ -->
   <div id="tab-achievements" class="tab-panel" style="padding:32px 32px 48px;">
     <div style="max-width:1440px;margin:0 auto;">
-      <h1 style="font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,42px);font-weight:900;color:#fff;margin:0 0 6px;">Достижения</h1>
-      <p style="font-family:Lora,serif;font-size:13px;color:rgba(197,166,124,0.7);margin:0 0 24px;">3 получено · 8 всего</p>
+      <h1 style="font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,42px);font-weight:900;color:rgb(var(--lk-heading));margin:0 0 6px;">Достижения</h1>
+      <p style="font-family:Lora,serif;font-size:13px;color:rgba(var(--lk-gold),0.7);margin:0 0 24px;">3 получено · 8 всего</p>
 
       <div class="next-achiev" style="margin-bottom:32px;">
         <div class="next-achiev-img">🏆</div>
         <div style="flex:1;">
-          <div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.7);margin-bottom:6px;letter-spacing:0.06em;text-transform:uppercase;">Ближайшая цель</div>
-          <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:4px;">Мастер пути</div>
-          <div style="font-family:Lora,serif;font-size:13px;color:rgba(203,213,225,0.75);margin-bottom:12px;">Пройдите все шесть регионов Карты историй</div>
+          <div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.7);margin-bottom:6px;letter-spacing:0.06em;text-transform:uppercase;">Ближайшая цель</div>
+          <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:rgb(var(--lk-heading));margin-bottom:4px;">Мастер пути</div>
+          <div style="font-family:Lora,serif;font-size:13px;color:rgba(var(--lk-text-soft),0.75);margin-bottom:12px;">Пройдите все шесть регионов Карты историй</div>
           <div style="display:flex;align-items:center;gap:10px;">
             <div class="read-bar-track" style="flex:1;max-width:320px;"><div class="read-bar-fill" style="width:0%;"></div></div>
             <span style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--gold-bright);">0 из 6</span>
           </div>
         </div>
-        <div style="border-left:1px solid rgba(197,166,124,0.15);padding-left:24px;text-align:center;">
-          <div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.6);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em;">Награда</div>
+        <div style="border-left:1px solid rgba(var(--lk-gold),0.15);padding-left:24px;text-align:center;">
+          <div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.6);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em;">Награда</div>
           <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--gold-bright);line-height:1.4;">Особый титул<br>и знак пути</div>
         </div>
       </div>
@@ -1260,33 +1668,33 @@
           <h2 style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gold-bright);text-align:center;margin-bottom:16px;">Полученные</h2>
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
             <div class="achiev-card">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(61,184,232,0.8)" stroke-width="2.5" style="position:absolute;top:10px;right:10px;"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:rgba(var(--lk-blue),0.8);position:absolute;top:10px;right:10px;"><polyline points="20 6 9 17 4 12"/></svg>
               <div class="achiev-badge-placeholder">📖</div>
-              <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#fff;">Первый том</div>
-              <div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.6);">Прочитана первая книга</div>
+              <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgb(var(--lk-heading));">Первый том</div>
+              <div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.6);">Прочитана первая книга</div>
             </div>
             <div class="achiev-card">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(61,184,232,0.8)" stroke-width="2.5" style="position:absolute;top:10px;right:10px;"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:rgba(var(--lk-blue),0.8);position:absolute;top:10px;right:10px;"><polyline points="20 6 9 17 4 12"/></svg>
               <div class="achiev-badge-placeholder">🔥</div>
-              <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#fff;">Огонь чтения</div>
-              <div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.6);">14 дней без перерыва</div>
+              <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgb(var(--lk-heading));">Огонь чтения</div>
+              <div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.6);">14 дней без перерыва</div>
             </div>
             <div class="achiev-card">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(61,184,232,0.8)" stroke-width="2.5" style="position:absolute;top:10px;right:10px;"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:rgba(var(--lk-blue),0.8);position:absolute;top:10px;right:10px;"><polyline points="20 6 9 17 4 12"/></svg>
               <div class="achiev-badge-placeholder">✍️</div>
-              <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#fff;">Внимательный критик</div>
-              <div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.6);">Поставлены пять оценок</div>
+              <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgb(var(--lk-heading));">Внимательный критик</div>
+              <div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.6);">Поставлены пять оценок</div>
             </div>
           </div>
         </div>
         <div>
-          <h2 style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:rgba(203,213,225,0.6);text-align:center;margin-bottom:16px;">Закрытые</h2>
+          <h2 style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:rgba(var(--lk-text-soft),0.6);text-align:center;margin-bottom:16px;">Закрытые</h2>
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;">
-            <div class="achiev-card locked"><span style="position:absolute;top:10px;right:10px;font-size:12px;color:rgba(203,213,225,0.35);">🔒</span><div class="achiev-badge-placeholder" style="filter:grayscale(1);">🧭</div><div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgba(255,255,255,0.5);">Следопыт</div><div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.4);">Открыты три точки карты</div></div>
-            <div class="achiev-card locked"><span style="position:absolute;top:10px;right:10px;font-size:12px;color:rgba(203,213,225,0.35);">🔒</span><div class="achiev-badge-placeholder" style="filter:grayscale(1);">🏆</div><div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgba(255,255,255,0.5);">Мастер пути</div><div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.4);">Пройдите всю карту</div></div>
-            <div class="achiev-card locked"><span style="position:absolute;top:10px;right:10px;font-size:12px;color:rgba(203,213,225,0.35);">🔒</span><div class="achiev-badge-placeholder" style="filter:grayscale(1);">⚓</div><div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgba(255,255,255,0.5);">Голос гильдии</div><div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.4);">Завершите три задания вместе</div></div>
-            <div class="achiev-card locked"><span style="position:absolute;top:10px;right:10px;font-size:12px;color:rgba(203,213,225,0.35);">🔒</span><div class="achiev-badge-placeholder" style="filter:grayscale(1);">📚</div><div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgba(255,255,255,0.5);">Хранитель осколков</div><div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.4);">Соберите все осколки Великой Книги</div></div>
-            <div class="achiev-card locked" style="grid-column:1/-1;max-width:160px;margin:0 auto;"><span style="position:absolute;top:10px;right:10px;font-size:12px;color:rgba(203,213,225,0.35);">🔒</span><div class="achiev-badge-placeholder" style="filter:grayscale(1);">🏛️</div><div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgba(255,255,255,0.5);">Легенда библиотеки</div><div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.4);">Соберите все книги в коллекции</div></div>
+            <div class="achiev-card locked"><span style="position:absolute;top:10px;right:10px;font-size:12px;color:rgba(var(--lk-text-soft),0.35);">🔒</span><div class="achiev-badge-placeholder" style="filter:grayscale(1);">🧭</div><div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgba(var(--lk-ink),0.5);">Следопыт</div><div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.4);">Открыты три точки карты</div></div>
+            <div class="achiev-card locked"><span style="position:absolute;top:10px;right:10px;font-size:12px;color:rgba(var(--lk-text-soft),0.35);">🔒</span><div class="achiev-badge-placeholder" style="filter:grayscale(1);">🏆</div><div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgba(var(--lk-ink),0.5);">Мастер пути</div><div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.4);">Пройдите всю карту</div></div>
+            <div class="achiev-card locked"><span style="position:absolute;top:10px;right:10px;font-size:12px;color:rgba(var(--lk-text-soft),0.35);">🔒</span><div class="achiev-badge-placeholder" style="filter:grayscale(1);">⚓</div><div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgba(var(--lk-ink),0.5);">Голос гильдии</div><div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.4);">Завершите три задания вместе</div></div>
+            <div class="achiev-card locked"><span style="position:absolute;top:10px;right:10px;font-size:12px;color:rgba(var(--lk-text-soft),0.35);">🔒</span><div class="achiev-badge-placeholder" style="filter:grayscale(1);">📚</div><div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgba(var(--lk-ink),0.5);">Хранитель осколков</div><div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.4);">Соберите все осколки Великой Книги</div></div>
+            <div class="achiev-card locked" style="grid-column:1/-1;max-width:160px;margin:0 auto;"><span style="position:absolute;top:10px;right:10px;font-size:12px;color:rgba(var(--lk-text-soft),0.35);">🔒</span><div class="achiev-badge-placeholder" style="filter:grayscale(1);">🏛️</div><div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgba(var(--lk-ink),0.5);">Легенда библиотеки</div><div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.4);">Соберите все книги в коллекции</div></div>
           </div>
         </div>
       </div>
@@ -1301,20 +1709,20 @@
         <div>
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
             <span style="font-size:18px;color:var(--gold);">✦</span>
-            <h1 style="font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,42px);font-weight:900;color:#fff;margin:0;">Коллекционер</h1>
+            <h1 style="font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,42px);font-weight:900;color:rgb(var(--lk-heading));margin:0;">Коллекционер</h1>
           </div>
-          <p style="font-family:Lora,serif;font-size:13px;color:rgba(197,166,124,0.7);margin:0;">18 из 42 карточек</p>
+          <p style="font-family:Lora,serif;font-size:13px;color:rgba(var(--lk-gold),0.7);margin:0;">18 из 42 карточек</p>
         </div>
 
         <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;">
           <div style="position:relative;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(197,166,124,0.45)" stroke-width="1.8" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color:rgba(var(--lk-gold),0.45);position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" placeholder="Найти карточку" class="search-input" oninput="filterCollectorBySearch(this.value)" />
           </div>
           <div class="lk-card" style="padding:14px 18px;min-width:180px;">
-            <div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.6);margin-bottom:4px;">До новой карточки —</div>
+            <div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.6);margin-bottom:4px;">До новой карточки —</div>
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-              <span style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#fff;">2 истории</span>
+              <span style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:rgb(var(--lk-heading));">2 истории</span>
               <span style="font-size:20px;">🃏</span>
             </div>
             <div class="collector-prog-bar">
@@ -1342,7 +1750,7 @@
                      onerror="this.parentNode.innerHTML='<div class=\'card-cover-placeholder\'>🌟</div>'">
               </div>
               <div class="card-info">
-                <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#fff;">Анналия</div>
+                <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgb(var(--lk-heading));">Анналия</div>
                 <div class="rarity-common" style="font-family:Lora,serif;font-size:11px;">Обычная <span style="color:var(--gold);">✦</span></div>
               </div>
               <div class="card-hint">Нажмите, чтобы перевернуть</div>
@@ -1365,7 +1773,7 @@
                      onerror="this.parentNode.innerHTML='<div class=\'card-cover-placeholder\'>🏮</div>'">
               </div>
               <div class="card-info">
-                <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#fff;">Люминар</div>
+                <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgb(var(--lk-heading));">Люминар</div>
                 <div class="rarity-rare" style="font-family:Lora,serif;font-size:11px;">Редкая <span style="color:var(--gold);">✦</span></div>
               </div>
               <div class="card-hint">Нажмите, чтобы перевернуть</div>
@@ -1388,7 +1796,7 @@
                      onerror="this.parentNode.innerHTML='<div class=\'card-cover-placeholder\'>🎭</div>'">
               </div>
               <div class="card-info">
-                <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#fff;">Инкогнита</div>
+                <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgb(var(--lk-heading));">Инкогнита</div>
                 <div class="rarity-rare" style="font-family:Lora,serif;font-size:11px;">Редкая <span style="color:var(--gold);">✦</span></div>
               </div>
               <div class="card-hint">Нажмите, чтобы перевернуть</div>
@@ -1411,7 +1819,7 @@
                      onerror="this.parentNode.innerHTML='<div class=\'card-cover-placeholder\'>✨</div>'">
               </div>
               <div class="card-info">
-                <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#fff;">Нова</div>
+                <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgb(var(--lk-heading));">Нова</div>
                 <div class="rarity-common" style="font-family:Lora,serif;font-size:11px;">Обычная <span style="color:var(--gold);">✦</span></div>
               </div>
               <div class="card-hint">Нажмите, чтобы перевернуть</div>
@@ -1434,7 +1842,7 @@
                      onerror="this.parentNode.innerHTML='<div class=\'card-cover-placeholder\'>🐱</div>'">
               </div>
               <div class="card-info">
-                <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#fff;">Кси</div>
+                <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgb(var(--lk-heading));">Кси</div>
                 <div class="rarity-legendary" style="font-family:Lora,serif;font-size:11px;">Легендарная <span style="color:var(--gold);">✦</span></div>
               </div>
               <div class="card-hint">Нажмите, чтобы перевернуть</div>
@@ -1457,7 +1865,7 @@
                      onerror="this.parentNode.innerHTML='<div class=\'card-cover-placeholder\'>🏛️</div>'">
               </div>
               <div class="card-info">
-                <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#fff;">Великая Библиотека</div>
+                <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgb(var(--lk-heading));">Великая Библиотека</div>
                 <div class="rarity-legendary" style="font-family:Lora,serif;font-size:11px;">Легендарная <span style="color:var(--gold);">✦</span></div>
               </div>
               <div class="card-hint">Нажмите, чтобы перевернуть</div>
@@ -1476,11 +1884,11 @@
           <div class="card-inner">
             <div class="card-face">
               <div class="card-cover-wrap">
-                <div class="card-cover-placeholder" style="font-size:36px;color:rgba(197,166,124,0.3);">🔒</div>
+                <div class="card-cover-placeholder" style="font-size:36px;color:rgba(var(--lk-gold),0.3);">🔒</div>
               </div>
               <div class="card-info">
-                <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgba(255,255,255,0.4);">Не открыто</div>
-                <div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.3);">Продолжайте путь</div>
+                <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgba(var(--lk-ink),0.4);">Не открыто</div>
+                <div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.3);">Продолжайте путь</div>
               </div>
             </div>
           </div>
@@ -1490,11 +1898,11 @@
           <div class="card-inner">
             <div class="card-face">
               <div class="card-cover-wrap">
-                <div class="card-cover-placeholder" style="font-size:36px;color:rgba(197,166,124,0.3);">🔒</div>
+                <div class="card-cover-placeholder" style="font-size:36px;color:rgba(var(--lk-gold),0.3);">🔒</div>
               </div>
               <div class="card-info">
-                <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgba(255,255,255,0.4);">Не открыто</div>
-                <div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.3);">Продолжайте путь</div>
+                <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:rgba(var(--lk-ink),0.4);">Не открыто</div>
+                <div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.3);">Продолжайте путь</div>
               </div>
             </div>
           </div>
@@ -1503,35 +1911,36 @@
       </div><!-- /collectorGrid -->
 
       <div style="margin-top:40px;display:flex;align-items:center;justify-content:center;gap:12px;">
-        <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(197,166,124,0.3));"></div>
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(var(--lk-gold),0.3));"></div>
         <span style="color:var(--gold);font-size:14px;">✦</span>
-        <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(197,166,124,0.3),transparent);"></div>
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(var(--lk-gold),0.3),transparent);"></div>
       </div>
 
     </div>
   </div>
 
 </main>
+    </div><!-- /lk-shell -->
 {% endblock %}
 
 
 {% block footer %}
 <!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
-<footer class="site-footer" style="padding:48px 32px 32px;">
+<footer class="site-footer lk-shell" style="padding:48px 32px 32px;">
   <div style="max-width:1440px;margin:0 auto;">
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:32px;margin-bottom:40px;">
 
       <div>
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-          <div style="width:36px;height:36px;border:1.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(197,166,124,0.07);">
+          <div style="width:36px;height:36px;border:1.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(var(--lk-gold),0.07);">
             <img src="{% static 'images/logo_icon.png' %}" alt="" style="width:22px;height:22px;object-fit:contain;" onerror="this.outerHTML='<span style=\'color:var(--gold);font-size:11px;font-family:Playfair Display,serif;font-weight:700;\'>ES</span>'">
           </div>
           <div>
-            <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#fff;">EduStories</div>
+            <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:rgb(var(--lk-heading));">EduStories</div>
             <div style="font-family:Lora,serif;font-size:8px;letter-spacing:0.45em;color:var(--gold);text-transform:uppercase;">Знания оживают</div>
           </div>
         </div>
-        <p style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.55);line-height:1.65;margin-top:12px;">
+        <p style="font-family:Lora,serif;font-size:12px;color:rgba(var(--lk-text-soft),0.55);line-height:1.65;margin-top:12px;">
           Образовательное пространство, в котором чтение, творчество и обучение превращаются в настоящее путешествие.
         </p>
       </div>
@@ -1539,49 +1948,49 @@
       <div>
         <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--gold-bright);margin-bottom:14px;">Платформа</div>
         <div style="display:flex;flex-direction:column;gap:8px;">
-          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.6);text-decoration:none;" onmouseover="this.style.color='rgba(197,166,124,0.9)'" onmouseout="this.style.color='rgba(203,213,225,0.6)'">Единая главная</a>
-          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.6);text-decoration:none;" onmouseover="this.style.color='rgba(197,166,124,0.9)'" onmouseout="this.style.color='rgba(203,213,225,0.6)'">📖 Библиотека</a>
-          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.6);text-decoration:none;" onmouseover="this.style.color='rgba(197,166,124,0.9)'" onmouseout="this.style.color='rgba(203,213,225,0.6)'">🎓 Обучение</a>
-          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.6);text-decoration:none;" onmouseover="this.style.color='rgba(197,166,124,0.9)'" onmouseout="this.style.color='rgba(203,213,225,0.6)'">Карта историй</a>
+          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(var(--lk-text-soft),0.6);text-decoration:none;" onmouseover="this.style.color='rgba(var(--lk-gold),0.9)'" onmouseout="this.style.color='rgba(var(--lk-text-soft),0.6)'">Единая главная</a>
+          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(var(--lk-text-soft),0.6);text-decoration:none;" onmouseover="this.style.color='rgba(var(--lk-gold),0.9)'" onmouseout="this.style.color='rgba(var(--lk-text-soft),0.6)'">📖 Библиотека</a>
+          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(var(--lk-text-soft),0.6);text-decoration:none;" onmouseover="this.style.color='rgba(var(--lk-gold),0.9)'" onmouseout="this.style.color='rgba(var(--lk-text-soft),0.6)'">🎓 Обучение</a>
+          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(var(--lk-text-soft),0.6);text-decoration:none;" onmouseover="this.style.color='rgba(var(--lk-gold),0.9)'" onmouseout="this.style.color='rgba(var(--lk-text-soft),0.6)'">Карта историй</a>
         </div>
       </div>
 
       <div>
         <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--gold-bright);margin-bottom:14px;">Сообщество</div>
         <div style="display:flex;flex-direction:column;gap:8px;">
-          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.6);text-decoration:none;" onmouseover="this.style.color='rgba(197,166,124,0.9)'" onmouseout="this.style.color='rgba(203,213,225,0.6)'">Гильдии Книгочеев</a>
-          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.6);text-decoration:none;" onmouseover="this.style.color='rgba(197,166,124,0.9)'" onmouseout="this.style.color='rgba(203,213,225,0.6)'">Таверна</a>
-          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.6);text-decoration:none;" onmouseover="this.style.color='rgba(197,166,124,0.9)'" onmouseout="this.style.color='rgba(203,213,225,0.6)'">Бестиарий</a>
-          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.6);text-decoration:none;" onmouseover="this.style.color='rgba(197,166,124,0.9)'" onmouseout="this.style.color='rgba(203,213,225,0.6)'">Коллекционер</a>
+          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(var(--lk-text-soft),0.6);text-decoration:none;" onmouseover="this.style.color='rgba(var(--lk-gold),0.9)'" onmouseout="this.style.color='rgba(var(--lk-text-soft),0.6)'">Гильдии Книгочеев</a>
+          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(var(--lk-text-soft),0.6);text-decoration:none;" onmouseover="this.style.color='rgba(var(--lk-gold),0.9)'" onmouseout="this.style.color='rgba(var(--lk-text-soft),0.6)'">Таверна</a>
+          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(var(--lk-text-soft),0.6);text-decoration:none;" onmouseover="this.style.color='rgba(var(--lk-gold),0.9)'" onmouseout="this.style.color='rgba(var(--lk-text-soft),0.6)'">Бестиарий</a>
+          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(var(--lk-text-soft),0.6);text-decoration:none;" onmouseover="this.style.color='rgba(var(--lk-gold),0.9)'" onmouseout="this.style.color='rgba(var(--lk-text-soft),0.6)'">Коллекционер</a>
         </div>
       </div>
 
       <div>
         <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--gold-bright);margin-bottom:14px;">Информация</div>
         <div style="display:flex;flex-direction:column;gap:8px;">
-          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.6);text-decoration:none;" onmouseover="this.style.color='rgba(197,166,124,0.9)'" onmouseout="this.style.color='rgba(203,213,225,0.6)'">О проекте</a>
-          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.6);text-decoration:none;" onmouseover="this.style.color='rgba(197,166,124,0.9)'" onmouseout="this.style.color='rgba(203,213,225,0.6)'">Для школ и педагогов</a>
-          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.6);text-decoration:none;" onmouseover="this.style.color='rgba(197,166,124,0.9)'" onmouseout="this.style.color='rgba(203,213,225,0.6)'">Частые вопросы</a>
-          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.6);text-decoration:none;" onmouseover="this.style.color='rgba(197,166,124,0.9)'" onmouseout="this.style.color='rgba(203,213,225,0.6)'">Правила сообщества</a>
+          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(var(--lk-text-soft),0.6);text-decoration:none;" onmouseover="this.style.color='rgba(var(--lk-gold),0.9)'" onmouseout="this.style.color='rgba(var(--lk-text-soft),0.6)'">О проекте</a>
+          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(var(--lk-text-soft),0.6);text-decoration:none;" onmouseover="this.style.color='rgba(var(--lk-gold),0.9)'" onmouseout="this.style.color='rgba(var(--lk-text-soft),0.6)'">Для школ и педагогов</a>
+          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(var(--lk-text-soft),0.6);text-decoration:none;" onmouseover="this.style.color='rgba(var(--lk-gold),0.9)'" onmouseout="this.style.color='rgba(var(--lk-text-soft),0.6)'">Частые вопросы</a>
+          <a href="#" style="font-family:Lora,serif;font-size:12px;color:rgba(var(--lk-text-soft),0.6);text-decoration:none;" onmouseover="this.style.color='rgba(var(--lk-gold),0.9)'" onmouseout="this.style.color='rgba(var(--lk-text-soft),0.6)'">Правила сообщества</a>
         </div>
       </div>
 
       <div>
         <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--gold-bright);margin-bottom:14px;">Связаться с нами</div>
         <div style="display:flex;flex-direction:column;gap:8px;">
-          <a href="mailto:support@edustories.ru" style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.6);text-decoration:none;display:flex;align-items:center;gap:6px;" onmouseover="this.style.color='rgba(197,166,124,0.9)'" onmouseout="this.style.color='rgba(203,213,225,0.6)'">
+          <a href="mailto:support@edustories.ru" style="font-family:Lora,serif;font-size:12px;color:rgba(var(--lk-text-soft),0.6);text-decoration:none;display:flex;align-items:center;gap:6px;" onmouseover="this.style.color='rgba(var(--lk-gold),0.9)'" onmouseout="this.style.color='rgba(var(--lk-text-soft),0.6)'">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
             support@edustories.ru
           </a>
-          <div style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.6);display:flex;align-items:center;gap:6px;">
+          <div style="font-family:Lora,serif;font-size:12px;color:rgba(var(--lk-text-soft),0.6);display:flex;align-items:center;gap:6px;">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             Поддержка на каждой странице
           </div>
-          <div style="font-family:Lora,serif;font-size:12px;color:rgba(203,213,225,0.6);display:flex;align-items:center;gap:6px;">
+          <div style="font-family:Lora,serif;font-size:12px;color:rgba(var(--lk-text-soft),0.6);display:flex;align-items:center;gap:6px;">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
             Россия
           </div>
-          <div style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.4);margin-top:4px;">Ответим в рабочее время</div>
+          <div style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.4);margin-top:4px;">Ответим в рабочее время</div>
         </div>
       </div>
 
@@ -1589,14 +1998,15 @@
 
     <div class="footer-line" style="margin-bottom:20px;"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
-      <p style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.4);margin:0;">© 2025 EduStories. Все права защищены.</p>
-      <p style="font-family:Lora,serif;font-size:11px;color:rgba(197,166,124,0.35);margin:0;">🚀 Проект развивается</p>
+      <p style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.4);margin:0;">© 2025 EduStories. Все права защищены.</p>
+      <p style="font-family:Lora,serif;font-size:11px;color:rgba(var(--lk-gold),0.35);margin:0;">🚀 Проект развивается</p>
     </div>
   </div>
 </footer>
 {% endblock %}
 
 
+{% block extra_js %}
 <!-- ═══════════════════════════ DIARY MODAL ═══════════════════════════ -->
 <div class="diary-overlay" id="diaryOverlay" role="dialog" aria-modal="true" aria-labelledby="diaryBookTitle">
   <div class="diary-modal">
@@ -1609,7 +2019,7 @@
     <div class="diary-author" id="diaryBookAuthor">—</div>
     <div class="diary-meta-row">
       <div class="diary-meta-item">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(197,166,124,0.6)" stroke-width="1.8"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color:rgba(var(--lk-gold),0.6)"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
         <span id="diaryDate"></span>
       </div>
       <div class="diary-meta-item">
@@ -1620,7 +2030,7 @@
           <input type="radio" name="diary-rating" id="s2" value="2"><label for="s2" title="2">★</label>
           <input type="radio" name="diary-rating" id="s1" value="1"><label for="s1" title="1">★</label>
         </div>
-        <span id="diaryRatingText" style="font-family:Lora,serif;font-size:13px;color:rgba(203,213,225,0.6);margin-left:6px;">— из 5</span>
+        <span id="diaryRatingText" style="font-family:Lora,serif;font-size:13px;color:rgba(var(--lk-text-soft),0.6);margin-left:6px;">— из 5</span>
       </div>
     </div>
     <div class="diary-notes-label">
@@ -1632,7 +2042,6 @@
   </div>
 </div>
 
-{% block extra_js %}
 <!-- ═══════════════════════════ SCRIPTS ═══════════════════════════ -->
 <script>
   /* ─── Tab switching ─────────────────────────────────────────── */
@@ -1647,7 +2056,7 @@
         link.classList.add('active');
       }
     });
-    window.scrollTo({ top: document.querySelector('.tab-nav').offsetTop - 72, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function setLibFilter(e, filter) {
@@ -1762,7 +2171,7 @@
     };
     localStorage.setItem(key, JSON.stringify(data));
     diarySaveBtn.textContent = '✓ Сохранено!';
-    diarySaveBtn.style.background = 'linear-gradient(135deg,#3db8e8,#1e6fa8)';
+    diarySaveBtn.style.background = 'linear-gradient(135deg,rgb(var(--lk-blue)),rgb(var(--lk-blue-deep)))';
     diarySaveBtn.style.color = '#fff';
     setTimeout(() => {
       diarySaveBtn.textContent = 'Сохранить запись';
@@ -1797,6 +2206,7 @@
     });
   });
 </script>
+
 {% endblock %}
 
 

@@ -1,0 +1,101 @@
+{% comment %}
+Переиспользуемая пагинация для Django Paginator.
+
+Ожидает в контексте:
+  - page_obj              — объект Page (обязательно)
+  - pagination_label      — необязательно, «пользователей», «книг» и т.п.
+  - pagination_per_page   — необязательно, текущее значение per_page (для сохранения)
+
+Пример:
+  {% include 'includes/pagination.html' with pagination_label="пользователей" %}
+{% endcomment %}
+
+{% if page_obj.paginator.num_pages > 0 %}
+<div class="p-4 border-t border-[#1e293b] flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-[#5c728e]">
+
+    <!-- Показано X–Y из N -->
+    <div class="text-center md:text-left w-full md:w-auto">
+        Показано {{ page_obj.start_index }}–{{ page_obj.end_index }}
+        из {{ page_obj.paginator.count }}
+        {{ pagination_label|default:"записей" }}
+    </div>
+
+    <!-- Кнопки страниц -->
+    <div class="flex items-center gap-1 flex-wrap justify-center">
+
+        <!-- Назад -->
+        {% if page_obj.has_previous %}
+            <a href="?{% if pagination_querystring %}{{ pagination_querystring }}&{% endif %}page={{ page_obj.previous_page_number }}"
+               class="w-7 h-7 flex items-center justify-center rounded border border-[#1e293b] hover:bg-white/5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </a>
+        {% else %}
+            <span class="w-7 h-7 flex items-center justify-center rounded border border-[#1e293b] opacity-40 cursor-not-allowed">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </span>
+        {% endif %}
+
+        <!-- Номера страниц -->
+        {% for num in page_obj.paginator.page_range %}
+            {% if num == page_obj.number %}
+                <span class="w-7 h-7 flex items-center justify-center rounded border border-[#d7a751] bg-[#d7a751]/10 text-[#d7a751]">
+                    {{ num }}
+                </span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?{% if pagination_querystring %}{{ pagination_querystring }}&{% endif %}page={{ num }}"
+                   class="w-7 h-7 flex items-center justify-center rounded border border-transparent hover:bg-white/5">
+                    {{ num }}
+                </a>
+            {% elif forloop.first or forloop.last %}
+                <a href="?{% if pagination_querystring %}{{ pagination_querystring }}&{% endif %}page={{ num }}"
+                   class="w-7 h-7 flex items-center justify-center rounded border border-transparent hover:bg-white/5">
+                    {{ num }}
+                </a>
+            {% elif num == page_obj.number|add:'-3' or num == page_obj.number|add:'3' %}
+                <span class="px-1">...</span>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Вперёд -->
+        {% if page_obj.has_next %}
+            <a href="?{% if pagination_querystring %}{{ pagination_querystring }}&{% endif %}page={{ page_obj.next_page_number }}"
+               class="w-7 h-7 flex items-center justify-center rounded border border-[#1e293b] hover:bg-white/5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </a>
+        {% else %}
+            <span class="w-7 h-7 flex items-center justify-center rounded border border-[#1e293b] opacity-40 cursor-not-allowed">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </span>
+        {% endif %}
+    </div>
+
+    <!-- На странице -->
+    <form method="get" class="flex items-center gap-2 justify-center w-full md:w-auto"
+        action="?{{ pagination_querystring }}">
+        <input type="hidden" name="page" value="1">
+
+        <span>На странице:</span>
+        <div class="relative">
+            <select name="page_size"
+                    onchange="this.form.submit()"
+                    class="appearance-none bg-transparent border-none pr-4 font-medium text-[#94a3b8] focus:outline-none cursor-pointer">
+                <option value="5" {% if page_obj.paginator.per_page == 5 %}selected{% endif %}>5</option>
+                <option value="10" {% if page_obj.paginator.per_page == 10 %}selected{% endif %}>10</option>
+                <option value="20" {% if page_obj.paginator.per_page == 20 %}selected{% endif %}>20</option>
+                <option value="50" {% if page_obj.paginator.per_page == 50 %}selected{% endif %}>50</option>
+            </select>
+            <svg class="w-3.5 h-3.5 absolute right-0 top-0.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </div>
+    </form>
+</div>
+{% endif %}

@@ -14,9 +14,15 @@ class UserListItem:
     date_joined: datetime
     avatar_url: str | None
     display_name: str
+    is_active: bool = False
+    level: int = 1
 
     @property
     def initials(self) -> str:
         if self.first_name and self.second_name:
             return f"{self.first_name[0]}{self.second_name[0]}".upper()
         return (self.username or self.email)[:2].upper()
+    
+    @property
+    def status_label(self) -> str:
+        return "Активен" if self.is_active else "Заблокирован"

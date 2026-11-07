@@ -531,7 +531,6 @@ class UserNodeProgressAdmin(admin.ModelAdmin):
         "total_count",
         "attempts_count",
         "is_passed",
-        "xp_earned",
         "first_passed_at",
         "updated_at",
     )
